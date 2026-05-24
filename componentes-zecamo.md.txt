@@ -1,0 +1,2620 @@
+cá va el paquete completo, listo para pegar en src/ de un proyecto Next.js 15 + TS + Tailwind v4. Notas al final.
+
+src/app/globals.css
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors */
+  --color-bg: #0A0F1F;
+  --color-surface: #0F1730;
+  --color-surface2: #131C3A;
+  --color-primary: #2B5BFF;
+  --color-primary-hover: #4F7BFF;
+  --color-primary-dark: #0A1A4F;
+  --color-ink: #FFFFFF;
+  --color-muted: #93A4D1;
+  --color-line: #1A2547;
+
+  /* Typography */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Shadows */
+  --shadow-glow: 0 0 0 1px rgba(43,91,255,.35), 0 10px 40px -10px rgba(43,91,255,.55), 0 0 60px -10px rgba(43,91,255,.35);
+  --shadow-glow-sm: 0 0 0 1px rgba(43,91,255,.30), 0 6px 24px -8px rgba(43,91,255,.45);
+  --shadow-card: 0 1px 0 0 rgba(255,255,255,.04) inset, 0 30px 60px -30px rgba(0,0,0,.5);
+}
+
+:root { color-scheme: dark; }
+html, body { background: var(--color-bg); color: var(--color-ink); }
+body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--color-primary); color: #fff; }
+
+.dot-grid {
+  background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.line-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.grad-border { position: relative; background: var(--color-surface); border-radius: 20px; }
+.grad-border::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+  background: linear-gradient(140deg, rgba(43,91,255,.6), rgba(43,91,255,.05) 40%, rgba(43,91,255,0) 70%, rgba(79,123,255,.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+.grad-border-strong::before {
+  background: linear-gradient(140deg, rgba(43,91,255,.9), rgba(43,91,255,.1) 40%, rgba(79,123,255,.55));
+}
+
+.blob {
+  position: absolute; border-radius: 9999px; filter: blur(120px);
+  opacity: .55; pointer-events: none; mix-blend-mode: screen;
+}
+/* TODO: migrar a Framer Motion (motion.div con animate loops) */
+@keyframes float1 { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(60px,-40px,0) scale(1.1); } }
+@keyframes float2 { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-80px,50px,0) scale(1.15); } }
+@keyframes float3 { 0%,100% { transform: translate3d(0,0,0) scale(1.05); } 50% { transform: translate3d(40px,60px,0) scale(.95); } }
+.b-anim-1 { animation: float1 14s ease-in-out infinite; }
+.b-anim-2 { animation: float2 18s ease-in-out infinite; }
+.b-anim-3 { animation: float3 22s ease-in-out infinite; }
+
+.cta-glow { position: relative; }
+.cta-glow::after {
+  content: ""; position: absolute; inset: -4px; border-radius: inherit;
+  background: radial-gradient(closest-side, rgba(43,91,255,.55), transparent 70%);
+  filter: blur(14px); z-index: -1; opacity: .9; transition: opacity .25s ease;
+}
+.cta-glow:hover::after { opacity: 1; }
+
+/* TODO: migrar a Framer Motion (whileInView) */
+.reveal {
+  opacity: 0; transform: translate3d(0,24px,0);
+  transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+.word {
+  display: inline-block; opacity: 0; transform: translate3d(0,28px,0); filter: blur(8px);
+  transition: opacity .7s ease, transform .7s ease, filter .7s ease;
+}
+.word.in { opacity: 1; transform: none; filter: blur(0); }
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 40s linear infinite; }
+
+.field {
+  width: 100%; background: rgba(15,23,48,.55); border: 1px solid var(--color-line);
+  border-radius: 14px; padding: 14px 16px; color: var(--color-ink); font-size: 15px;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  backdrop-filter: blur(10px);
+}
+.field::placeholder { color: #5b6da0; }
+.field:focus {
+  outline: none; border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(43,91,255,.18);
+  background: rgba(15,23,48,.85);
+}
+src/app/layout.tsx
+import type { Metadata } from "next";
+import { Space_Grotesk, Inter } from "next/font/google";
+import "./globals.css";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Zecamo Studios — IA que trabaja. Resultados que se miden.",
+  description:
+    "Agencia B2B argentina de automatización con IA, vibe coding, agentes IA y consultoría. Construido en Tucumán. Pensado para el mundo.",
+  metadataBase: new URL("https://zecamostudios.com"),
+  openGraph: {
+    title: "Zecamo Studios",
+    description: "IA que trabaja. Resultados que se miden.",
+    url: "https://zecamostudios.com",
+    siteName: "Zecamo Studios",
+    locale: "es_AR",
+    type: "website",
+    // TODO: agregar OG image en /public/og.png
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zecamo Studios",
+    description: "IA que trabaja. Resultados que se miden.",
+    images: ["/og.png"],
+  },
+  icons: {
+    // TODO: agregar favicons en /public/
+    icon: "/favicon.ico",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="es" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+      <body className="bg-bg text-ink font-body antialiased">{children}</body>
+    </html>
+  );
+}
+src/app/page.tsx
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import StickyContactCTA from "@/components/layout/StickyContactCTA";
+import Hero from "@/components/sections/Hero";
+import Services from "@/components/sections/Services";
+import ForWho from "@/components/sections/ForWho";
+import Cases from "@/components/sections/Cases";
+import Method from "@/components/sections/Method";
+import Contact from "@/components/sections/Contact";
+
+export default function Page() {
+  return (
+    <>
+      <Navbar />
+      <main>
+        <Hero />
+        <Services />
+        <ForWho />
+        <Cases />
+        <Method />
+        <Contact />
+      </main>
+      <Footer />
+      <StickyContactCTA />
+    </>
+  );
+}
+src/components/ui/PrimaryBtn.tsx
+"use client";
+import {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  ReactNode,
+} from "react";
+
+type CommonProps = {
+  children: ReactNode;
+  icon?: ReactNode;
+  className?: string;
+};
+
+type AsButton = CommonProps & { as?: "button" } & ButtonHTMLAttributes<HTMLButtonElement>;
+type AsAnchor = CommonProps & { as: "a" } & AnchorHTMLAttributes<HTMLAnchorElement>;
+type PrimaryBtnProps = AsButton | AsAnchor;
+
+export default function PrimaryBtn(props: PrimaryBtnProps) {
+  const { children, icon, className = "", as = "button", ...rest } = props as AsAnchor & AsButton;
+  const cls =
+    "cta-glow inline-flex items-center justify-center gap-2 rounded-full " +
+    "bg-primary hover:bg-primary-hover px-6 py-3 " +
+    "font-display font-medium text-[15px] tracking-tight text-white " +
+    "transition-colors duration-200 " +
+    className;
+
+  if (as === "a") {
+    return (
+      <a className={cls} {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}>
+        <span>{children}</span>
+        {icon}
+      </a>
+    );
+  }
+  return (
+    <button className={cls} {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}>
+      <span>{children}</span>
+      {icon}
+    </button>
+  );
+}
+src/components/ui/GhostBtn.tsx
+"use client";
+import {
+  AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
+  ReactNode,
+} from "react";
+
+type CommonProps = {
+  children: ReactNode;
+  icon?: ReactNode;
+  className?: string;
+};
+
+type AsButton = CommonProps & { as?: "button" } & ButtonHTMLAttributes<HTMLButtonElement>;
+type AsAnchor = CommonProps & { as: "a" } & AnchorHTMLAttributes<HTMLAnchorElement>;
+type GhostBtnProps = AsButton | AsAnchor;
+
+export default function GhostBtn(props: GhostBtnProps) {
+  const { children, icon, className = "", as = "button", ...rest } = props as AsAnchor & AsButton;
+  const cls =
+    "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 " +
+    "font-display font-medium text-[15px] tracking-tight text-white " +
+    "border border-line bg-white/[.02] hover:bg-white/[.05] hover:border-primary/50 " +
+    "transition-colors duration-200 " +
+    className;
+
+  if (as === "a") {
+    return (
+      <a className={cls} {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}>
+        <span>{children}</span>
+        {icon}
+      </a>
+    );
+  }
+  return (
+    <button className={cls} {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}>
+      <span>{children}</span>
+      {icon}
+    </button>
+  );
+}
+src/components/ui/Reveal.tsx
+"use client";
+import {
+  ElementType,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+interface RevealProps {
+  children: ReactNode;
+  delay?: number;
+  as?: ElementType;
+  className?: string;
+}
+
+// TODO: migrar a Framer Motion (motion.div con whileInView + variants)
+export default function Reveal({
+  children,
+  delay = 0,
+  as: Tag = "div",
+  className = "",
+}: RevealProps) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [seen, setSeen] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            setTimeout(() => setSeen(true), delay);
+            io.disconnect();
+          }
+        });
+      },
+      { rootMargin: "-8% 0px -8% 0px", threshold: 0.05 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [delay]);
+
+  return (
+    <Tag ref={ref as never} className={`reveal ${seen ? "in " : ""}${className}`}>
+      {children}
+    </Tag>
+  );
+}
+src/components/ui/Mesh.tsx
+interface MeshProps {
+  variant?: "hero" | "soft";
+  className?: string;
+}
+
+// TODO: migrar a Framer Motion (motion.div con animate de transform en loop)
+export default function Mesh({ variant = "hero", className = "" }: MeshProps) {
+  if (variant === "hero") {
+    return (
+      <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`} aria-hidden>
+        <div
+          className="blob b-anim-1"
+          style={{ width: 720, height: 720, left: "-12%", top: "-22%", background: "radial-gradient(circle, #2B5BFF 0%, rgba(43,91,255,0) 60%)" }}
+        />
+        <div
+          className="blob b-anim-2"
+          style={{ width: 600, height: 600, right: "-10%", top: "8%", background: "radial-gradient(circle, #4F7BFF 0%, rgba(79,123,255,0) 60%)", opacity: 0.45 }}
+        />
+        <div
+          className="blob b-anim-3"
+          style={{ width: 520, height: 520, left: "30%", bottom: "-25%", background: "radial-gradient(circle, #0A1A4F 0%, rgba(10,26,79,0) 60%)", opacity: 0.85, mixBlendMode: "normal" }}
+        />
+      </div>
+    );
+  }
+  return (
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`} aria-hidden>
+      <div
+        className="blob b-anim-2"
+        style={{ width: 520, height: 520, left: "-8%", top: "20%", background: "radial-gradient(circle, #2B5BFF 0%, rgba(43,91,255,0) 65%)", opacity: 0.35 }}
+      />
+      <div
+        className="blob b-anim-1"
+        style={{ width: 480, height: 480, right: "-6%", bottom: "10%", background: "radial-gradient(circle, #4F7BFF 0%, rgba(79,123,255,0) 65%)", opacity: 0.28 }}
+      />
+    </div>
+  );
+}
+src/components/ui/ZWatermark.tsx
+import Image from "next/image";
+import { CSSProperties } from "react";
+
+interface ZWatermarkProps {
+  className?: string;
+  opacity?: number;
+  size?: number;
+  style?: CSSProperties;
+}
+
+// TODO: agregar /public/brand/logo-z.svg con fondo transparente.
+export default function ZWatermark({
+  className = "",
+  opacity = 0.07,
+  size = 720,
+  style = {},
+}: ZWatermarkProps) {
+  return (
+    <div
+      className={`absolute pointer-events-none ${className}`}
+      style={{ width: size, height: size, opacity, ...style }}
+      aria-hidden
+    >
+      <Image
+        src="/brand/logo-z.svg"
+        alt=""
+        width={size}
+        height={size}
+        style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "screen" }}
+      />
+    </div>
+  );
+}
+src/components/ui/SectionTitle.tsx
+import { ReactNode } from "react";
+import Reveal from "./Reveal";
+
+interface SectionTitleProps {
+  eyebrow?: ReactNode;
+  title: ReactNode;
+  kicker?: ReactNode;
+  align?: "left" | "center";
+  id?: string;
+}
+
+export default function SectionTitle({
+  eyebrow,
+  title,
+  kicker,
+  align = "left",
+  id,
+}: SectionTitleProps) {
+  return (
+    <div
+      id={id}
+      className={`flex flex-col gap-4 ${align === "center" ? "items-center text-center" : ""}`}
+    >
+      {eyebrow && (
+        <Reveal>
+          <div className="inline-flex items-center gap-2 text-[12px] tracking-[.22em] uppercase text-muted font-mono">
+            <span className="w-6 h-px bg-primary/70" />
+            <span>{eyebrow}</span>
+          </div>
+        </Reveal>
+      )}
+      <Reveal delay={60}>
+        <h2
+          className="font-display font-semibold tracking-tight text-ink leading-[1.02]"
+          style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.75rem)" }}
+        >
+          {title}
+        </h2>
+      </Reveal>
+      {kicker && (
+        <Reveal delay={120}>
+          <p
+            className={`text-muted text-[17px] leading-relaxed ${
+              align === "center" ? "max-w-2xl mx-auto" : "max-w-2xl"
+            }`}
+          >
+            {kicker}
+          </p>
+        </Reveal>
+      )}
+    </div>
+  );
+}
+src/components/ui/Modal.tsx
+"use client";
+import {
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+
+interface ModalProps {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  ariaLabel?: string;
+  hasNav?: boolean;
+  onPrev?: () => void;
+  onNext?: () => void;
+  count?: number;
+  activeIndex?: number;
+  onJump?: (i: number) => void;
+}
+
+// TODO: migrar animaciones a Framer Motion (AnimatePresence + motion.div con variants).
+export default function Modal({
+  open,
+  onClose,
+  children,
+  ariaLabel,
+  hasNav = false,
+  onPrev,
+  onNext,
+  count = 0,
+  activeIndex = 0,
+  onJump,
+}: ModalProps) {
+  const [mount, setMount] = useState(open);
+  const [anim, setAnim] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setMount(true);
+      requestAnimationFrame(() => requestAnimationFrame(() => setAnim(true)));
+    } else if (mount) {
+      setAnim(false);
+      const t = setTimeout(() => setMount(false), 280);
+      return () => clearTimeout(t);
+    }
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (hasNav && e.key === "ArrowLeft" && onPrev) onPrev();
+      if (hasNav && e.key === "ArrowRight" && onNext) onNext();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose, hasNav, onPrev, onNext]);
+
+  if (!mount) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center p-3 md:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label={ariaLabel}
+    >
+      <div
+        onClick={onClose}
+        className={`absolute inset-0 transition-opacity duration-300 ${anim ? "opacity-100" : "opacity-0"}`}
+        style={{
+          background: "rgba(5,8,18,.7)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+        }}
+      />
+
+      {hasNav && (
+        <>
+          <button
+            onClick={onPrev}
+            aria-label="Anterior"
+            className={`hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full items-center justify-center transition-all border border-line bg-bg/70 backdrop-blur-md text-muted hover:text-white hover:border-primary/60 hover:bg-primary/15 ${anim ? "opacity-100" : "opacity-0"}`}
+          >
+            <ChevronLeft size={18} strokeWidth={2} />
+          </button>
+          <button
+            onClick={onNext}
+            aria-label="Siguiente"
+            className={`hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full items-center justify-center transition-all border border-line bg-bg/70 backdrop-blur-md text-muted hover:text-white hover:border-primary/60 hover:bg-primary/15 ${anim ? "opacity-100" : "opacity-0"}`}
+          >
+            <ChevronRight size={18} strokeWidth={2} />
+          </button>
+        </>
+      )}
+
+      <div
+        className={`relative w-full md:max-w-[960px] md:rounded-[20px] rounded-2xl overflow-hidden border border-primary/30 bg-surface transition-all duration-300 ${anim ? "opacity-100 scale-100" : "opacity-0 scale-[.96]"}`}
+        style={{
+          maxHeight: "92vh",
+          boxShadow:
+            "0 0 0 1px rgba(43,91,255,.4), 0 40px 120px -20px rgba(0,0,0,.7), 0 0 140px -20px rgba(43,91,255,.45)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Cerrar"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full border border-line bg-bg/70 backdrop-blur-md text-muted hover:text-white hover:border-primary/60 hover:bg-primary/10 transition flex items-center justify-center"
+        >
+          <X size={16} strokeWidth={2} />
+        </button>
+
+        <div className="overflow-y-auto" style={{ maxHeight: "92vh" }}>
+          {children}
+
+          {hasNav && count > 1 && (
+            <div className="px-6 md:px-10 pb-6 pt-2 flex items-center justify-between gap-4 border-t border-line/70">
+              <button
+                onClick={onPrev}
+                aria-label="Anterior"
+                className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-line bg-bg/40 text-muted hover:text-white hover:border-primary/60 transition"
+              >
+                <ChevronLeft size={16} strokeWidth={2} />
+              </button>
+
+              <div className="flex items-center gap-2 mx-auto">
+                <span className="text-[12px] font-mono tracking-[.18em] uppercase text-muted mr-2">
+                  {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                  {String(count).padStart(2, "0")}
+                </span>
+                {Array.from({ length: count }).map((_, i) => (
+                  <button
+                    key={i}
+                    aria-label={`Ir al ${i + 1}`}
+                    onClick={() => onJump?.(i)}
+                    className="group p-1"
+                  >
+                    <span
+                      className={`block rounded-full transition-all ${
+                        i === activeIndex
+                          ? "w-6 h-1.5 bg-primary"
+                          : "w-1.5 h-1.5 bg-muted/40 group-hover:bg-muted/80"
+                      }`}
+                      style={
+                        i === activeIndex
+                          ? { boxShadow: "0 0 10px rgba(43,91,255,.6)" }
+                          : {}
+                      }
+                    />
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={onNext}
+                aria-label="Siguiente"
+                className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-line bg-bg/40 text-muted hover:text-white hover:border-primary/60 transition"
+              >
+                <ChevronRight size={16} strokeWidth={2} />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ModalSection({
+  title,
+  children,
+  className = "",
+}: {
+  title: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`mt-10 pt-8 border-t border-line/70 ${className}`}>
+      <div className="font-mono text-[11px] tracking-[.22em] uppercase text-muted mb-4">
+        {title}
+      </div>
+      {children}
+    </div>
+  );
+}
+src/components/layout/Navbar.tsx
+"use client";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import PrimaryBtn from "@/components/ui/PrimaryBtn";
+
+interface NavLink { href: string; label: string; }
+
+const LINKS: NavLink[] = [
+  { href: "#servicios",  label: "Servicios" },
+  { href: "#para-quien", label: "Para quién" },
+  { href: "#metodo",     label: "Método" },
+  { href: "#casos",      label: "Casos" },
+  { href: "#contacto",   label: "Contacto" },
+];
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header
+      className={`fixed inset-x-0 top-0 z-40 transition-all duration-300 ${
+        scrolled
+          ? "backdrop-blur-xl bg-bg/70 border-b border-line/80"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
+      <div className="max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="h-16 md:h-[72px] flex items-center justify-between">
+          {/* TODO: agregar /public/brand/logo-z.svg */}
+          <a href="#top" className="flex items-center gap-2.5 group">
+            <Image
+              src="/brand/logo-z.svg"
+              alt="Zecamo Studios"
+              width={32}
+              height={32}
+              style={{
+                mixBlendMode: "screen",
+                filter: "drop-shadow(0 0 10px rgba(43,91,255,.25))",
+              }}
+              className="group-hover:scale-105 transition-transform"
+            />
+            <span className="hidden sm:inline font-display font-semibold tracking-tight text-[15px] leading-none">
+              <span className="text-primary">z</span>ecamo studios
+            </span>
+          </a>
+
+          <nav className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            {LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="px-3 py-2 text-[14px] text-muted hover:text-white font-medium transition-colors rounded-full hover:bg-white/[.04]"
+              >
+                {l.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <PrimaryBtn
+              as="a"
+              href="#contacto"
+              className="!px-5 !py-2.5 !text-[14px] ring-1 ring-white/10"
+              icon={<ArrowUpRight size={16} strokeWidth={1.75} />}
+              style={{
+                boxShadow:
+                  "0 0 0 1px rgba(255,255,255,.06), 0 8px 30px -8px rgba(43,91,255,.65), 0 0 40px -10px rgba(43,91,255,.55)",
+              } as React.CSSProperties}
+            >
+              Hablemos
+            </PrimaryBtn>
+            <button
+              className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-line text-white"
+              onClick={() => setOpen((o) => !o)}
+              aria-label="Menú"
+            >
+              {open ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </div>
+
+        {open && (
+          <div className="md:hidden pb-4">
+            <div className="grad-border p-2 flex flex-col">
+              {LINKS.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="px-4 py-3 text-[15px] text-muted hover:text-white hover:bg-white/[.04] rounded-xl transition-colors"
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+src/components/layout/Footer.tsx
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
+
+interface FooterColProps {
+  title: string;
+  items: { l: string; h: string }[];
+}
+
+function FooterCol({ title, items }: FooterColProps) {
+  return (
+    <div>
+      <div className="text-[11px] tracking-[.22em] uppercase font-mono text-muted/80 mb-4">
+        {title}
+      </div>
+      <ul className="space-y-2.5">
+        {items.map((it, i) => (
+          <li key={i}>
+            <a href={it.h} className="text-[14.5px] text-ink/90 hover:text-primary transition">
+              {it.l}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default function Footer() {
+  const year = new Date().getFullYear();
+  return (
+    <footer className="relative pt-20 pb-10 overflow-hidden border-t border-line">
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="grid md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 md:gap-8">
+          <div>
+            <a href="#top" className="inline-flex items-center gap-3 group">
+              {/* TODO: agregar /public/brand/logo-z.svg */}
+              <Image
+                src="/brand/logo-z.svg"
+                alt="Zecamo Studios"
+                width={48}
+                height={48}
+                style={{
+                  mixBlendMode: "screen",
+                  filter: "drop-shadow(0 0 18px rgba(43,91,255,.35))",
+                }}
+              />
+              <span className="font-display font-semibold tracking-tight text-[22px] md:text-[24px] text-white leading-none">
+                zecamo studios
+              </span>
+            </a>
+            <p className="mt-5 text-muted text-[15px] leading-relaxed max-w-sm">
+              Diseñamos, construimos y operamos la capa de IA de tu empresa.
+              IA que trabaja. Resultados que se miden.
+            </p>
+            <a
+              href="#contacto"
+              className="inline-flex items-center gap-2 text-primary text-[14px] font-medium mt-5 hover:text-primary-hover transition"
+            >
+              Agendar llamada <ArrowUpRight size={14} strokeWidth={1.75} />
+            </a>
+          </div>
+
+          <FooterCol
+            title="Servicios"
+            items={[
+              { l: "Automatización IA", h: "#servicios" },
+              { l: "Vibe Coding", h: "#servicios" },
+              { l: "Agentes IA B2B", h: "#servicios" },
+              { l: "Consultoría IA", h: "#servicios" },
+            ]}
+          />
+          <FooterCol
+            title="Estudio"
+            items={[
+              { l: "Método", h: "#metodo" },
+              { l: "Casos", h: "#casos" },
+              { l: "Para quién", h: "#para-quien" },
+              { l: "Contacto", h: "#contacto" },
+            ]}
+          />
+          <FooterCol
+            title="Legal"
+            items={[
+              { l: "Privacidad", h: "/privacy" },
+              { l: "Términos", h: "/terms" },
+              { l: "Cookies", h: "/cookies" },
+            ]}
+          />
+        </div>
+
+        <div
+          className="mt-12 pt-6 border-t border-line/70 text-center font-display text-[15px] md:text-[16px] text-muted"
+          style={{ letterSpacing: ".04em" }}
+        >
+          Construido en <span className="text-primary">Tucumán</span>. Pensado para el mundo.
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-line/70 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="text-[13px] text-muted font-mono">
+            © {year} Zecamo Studios. Todos los derechos reservados.
+          </div>
+          <div className="text-[12px] text-muted/70 font-mono">
+            {/* TODO: completar razón social + CUIT */}
+            <span className="opacity-60">[TODO]</span> Razón Social S.A.S. · CUIT 30-XXXXXXXX-X
+          </div>
+          <div className="text-[12.5px] text-muted/80 italic">
+            Built &amp; operated in Argentina · Remote-first
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+src/components/layout/StickyContactCTA.tsx
+"use client";
+import { useEffect, useState } from "react";
+import { MessageCircle } from "lucide-react";
+
+export default function StickyContactCTA() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const threshold = Math.max(560, window.innerHeight * 0.7);
+      setVisible(window.scrollY > threshold);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <a
+      href="#contacto"
+      aria-label="Hablemos"
+      className={`fixed z-40 bottom-5 right-5 md:bottom-7 md:right-7 inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-5 py-3 md:px-6 md:py-3.5 font-display font-medium text-[14px] md:text-[15px] tracking-tight text-white transition-all duration-300 cta-glow ${
+        visible
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 translate-y-6 pointer-events-none"
+      }`}
+      style={{
+        boxShadow:
+          "0 0 0 1px rgba(255,255,255,.08), 0 18px 50px -15px rgba(43,91,255,.7), 0 0 80px -10px rgba(43,91,255,.55)",
+      }}
+    >
+      <MessageCircle size={16} strokeWidth={2} />
+      <span>Hablemos</span>
+    </a>
+  );
+}
+src/components/sections/Hero.tsx
+"use client";
+import { useEffect, useRef, useState, Fragment } from "react";
+import { ArrowDownRight, Calendar } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import Mesh from "@/components/ui/Mesh";
+import ZWatermark from "@/components/ui/ZWatermark";
+import PrimaryBtn from "@/components/ui/PrimaryBtn";
+import GhostBtn from "@/components/ui/GhostBtn";
+
+type Word = string | { word: string; className?: string };
+
+interface Tagline {
+  id: string;
+  label: string;
+  lines: Word[][];
+}
+
+export const HERO_TAGLINES: Tagline[] = [
+  {
+    id: "1",
+    label: "Punchy",
+    lines: [
+      ["Automatizá", "lo", "que", "te", "frena."],
+      ["Escalá", { word: "lo", className: "text-muted/80" }, "que", "te", { word: "impulsa.", className: "text-primary" }],
+    ],
+  },
+  {
+    id: "2",
+    label: "Métrica",
+    lines: [
+      ["IA", "que", "trabaja."],
+      ["Resultados", "que", "se", { word: "miden.", className: "text-primary" }],
+    ],
+  },
+  {
+    id: "3",
+    label: "Capa IA",
+    lines: [
+      ["Construimos", "la", "capa", "de", "IA"],
+      ["que", "tu", "empresa", { word: "todavía no tiene.", className: "text-primary" }],
+    ],
+  },
+];
+
+interface HeroWordsProps { taglineId?: string; }
+
+// TODO: migrar a Framer Motion (motion.span con variants + staggerChildren)
+function HeroWords({ taglineId = "1" }: HeroWordsProps) {
+  const tagline = HERO_TAGLINES.find((t) => t.id === taglineId) ?? HERO_TAGLINES[0];
+  const [revealed, setRevealed] = useState<number[]>([]);
+
+  useEffect(() => {
+    setRevealed([]);
+    const all = tagline.lines.flat();
+    const timers = all.map((_, i) =>
+      setTimeout(() => setRevealed((r) => [...r, i]), 250 + i * 110),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [taglineId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  let counter = -1;
+  return (
+    <h1
+      className="font-display font-semibold text-ink leading-[0.95] tracking-[-0.02em]"
+      style={{ fontSize: "clamp(2.6rem, 7.5vw, 6.5rem)" }}
+    >
+      {tagline.lines.map((line, li) => (
+        <div key={li} className="block">
+          {line.map((w, wi) => {
+            counter++;
+            const isObj = typeof w === "object";
+            const text = isObj ? w.word : w;
+            const extra = isObj ? w.className ?? "" : "";
+            const ix = counter;
+            return (
+              <Fragment key={wi}>
+                <span className={`word ${revealed.includes(ix) ? "in " : ""}${extra}`}>{text}</span>
+                {wi < line.length - 1 && <span> </span>}
+              </Fragment>
+            );
+          })}
+        </div>
+      ))}
+    </h1>
+  );
+}
+
+interface StatProps { value: string; label: string; tone?: "primary"; }
+function Stat({ value, label, tone }: StatProps) {
+  return (
+    <div className="bg-bg/80 px-6 py-6 md:py-8 flex flex-col gap-1">
+      <div
+        className={`font-display font-semibold tracking-tight text-[28px] md:text-[34px] ${
+          tone === "primary" ? "text-primary" : "text-ink"
+        }`}
+      >
+        {value}
+      </div>
+      <div className="text-[12px] tracking-[.16em] uppercase text-muted font-mono">{label}</div>
+    </div>
+  );
+}
+
+export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
+  const meshRef = useRef<HTMLDivElement>(null);
+
+  // TODO: migrar a Framer Motion (useScroll + useTransform)
+  useEffect(() => {
+    const onScroll = () => {
+      if (!meshRef.current) return;
+      const y = Math.min(window.scrollY, 800);
+      meshRef.current.style.transform = `translate3d(0, ${y * 0.18}px, 0)`;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <section id="top" className="relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32">
+      <div className="absolute inset-0 dot-grid opacity-70" aria-hidden />
+      <div ref={meshRef} className="absolute inset-0">
+        <Mesh variant="hero" />
+      </div>
+      <ZWatermark className="-right-32 top-10 md:top-0 md:-right-20" size={760} opacity={0.06} />
+      <ZWatermark className="-left-40 -bottom-40 hidden md:block" size={560} opacity={0.04} />
+
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8 pt-6">
+        <Reveal>
+          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/40 backdrop-blur-md px-3 py-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+            </span>
+            <span className="text-[12px] tracking-[.18em] uppercase text-muted font-mono">
+              Agencia&nbsp;IA · B2B · Argentina
+            </span>
+          </div>
+        </Reveal>
+
+        <div className="mt-8 md:mt-10">
+          <HeroWords taglineId={taglineId} />
+        </div>
+
+        <Reveal delay={900}>
+          <p className="mt-7 md:mt-9 text-[17px] md:text-[19px] text-muted max-w-2xl leading-relaxed">
+            Diseñamos, construimos y operamos la capa de IA de tu empresa.
+            Automatización con n8n, agentes que trabajan 24/7,
+            vibe coding a velocidad récord y consultoría estratégica.
+          </p>
+        </Reveal>
+
+        <Reveal delay={1050}>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <PrimaryBtn as="a" href="#contacto" className="!px-7 !py-3.5" icon={<Calendar size={16} strokeWidth={1.75} />}>
+              Agendá una llamada
+            </PrimaryBtn>
+            <GhostBtn as="a" href="#servicios" className="!px-7 !py-3.5" icon={<ArrowDownRight size={16} strokeWidth={1.75} />}>
+              Ver servicios
+            </GhostBtn>
+          </div>
+        </Reveal>
+
+        <Reveal delay={1200}>
+          <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-px bg-line/60 rounded-2xl overflow-hidden border border-line">
+            <Stat value="24/7" label="Agentes activos" tone="primary" />
+            <Stat value="< 2 sem" label="Time-to-prototype" />
+            <Stat value="+40h" label="Ahorradas / mes / equipo" />
+            <Stat value="4 verticales" label="Servicios integrados" />
+          </div>
+        </Reveal>
+      </div>
+
+      <Reveal delay={1300} className="relative mt-20 md:mt-28">
+        <div className="text-center text-[11px] tracking-[.28em] uppercase text-muted/70 font-mono mb-6">
+          Stack & integraciones
+        </div>
+        <div
+          className="overflow-hidden relative"
+          style={{
+            maskImage: "linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)",
+            WebkitMaskImage: "linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)",
+          } as React.CSSProperties}
+        >
+          {/* TODO: migrar a Framer Motion (motion.div con animate x infinito) */}
+          <div className="flex marquee-track gap-12 whitespace-nowrap font-display text-[22px] text-muted/80">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-12 pr-12">
+                {[
+                  "n8n", "OpenAI", "Claude", "Supabase", "Vercel", "Next.js",
+                  "WhatsApp Business", "Notion", "Slack", "HubSpot", "PostgreSQL", "Stripe",
+                ].map((l, j) => (
+                  <span key={j} className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/70" />
+                    {l}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+src/components/sections/Services.tsx
+"use client";
+import { useState, KeyboardEvent } from "react";
+import { Workflow, Code2, BotMessageSquare, Compass, ArrowRight, type LucideIcon } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import Mesh from "@/components/ui/Mesh";
+import SectionTitle from "@/components/ui/SectionTitle";
+import ServiceModal, { type ServiceData } from "./ServiceModal";
+
+export const SERVICES: ServiceData[] = [
+  {
+    id: "automatizacion",
+    Icon: Workflow,
+    tag: "01",
+    title: "Automatización con IA",
+    desc: "Workflows en n8n, integraciones y procesos repetitivos que se ejecutan solos. Liberá tiempo de tu equipo.",
+    chips: ["n8n · Make · Zapier", "APIs custom", "RAG sobre tus datos"],
+    modal: {
+      subtitle: "Convertimos tareas repetitivas en workflows que se ejecutan solos.",
+      howItWorks: [
+        "Identificamos los procesos manuales que más tiempo te consumen —envío de emails, carga de datos, seguimiento de leads, notificaciones, reportes— y los convertimos en flujos automáticos que conectan todas tus herramientas. Tu equipo deja de copiar y pegar entre apps y empieza a enfocarse en lo que realmente mueve el negocio.",
+        "Trabajamos con n8n (autohospedado, sin costos mensuales por workflow), Make o Zapier según tu caso. Conectamos cualquier API existente y sumamos capa de IA cuando el proceso necesita decisión, clasificación o generación de contenido.",
+      ],
+      benefits: [
+        "Ahorrá entre 20 y 60 horas mensuales por equipo",
+        "Eliminá errores humanos en tareas repetitivas",
+        "Disponibilidad 24/7 sin agregar costo laboral",
+        "Escalabilidad real: si crecés 10×, el workflow no se cansa",
+        "Visibilidad total: cada paso queda registrado y auditable",
+      ],
+      useCases: [
+        "Centralizar leads de Instagram, WhatsApp y formularios en una sola base",
+        "Generar reportes diarios automáticos con datos cruzados",
+        "Clasificar y responder consultas iniciales con IA",
+        "Onboarding automatizado de clientes nuevos",
+        "Sincronización entre CRM, hojas de cálculo y herramientas internas",
+      ],
+      stack: ["n8n", "Make", "Zapier", "OpenAI", "Claude", "APIs custom", "Webhooks", "RAG"],
+    },
+  },
+  {
+    id: "vibe",
+    Icon: Code2,
+    tag: "02",
+    title: "Vibe Coding",
+    desc: "Desarrollo de software a velocidad IA. Webs, SaaS, dashboards en tiempo récord.",
+    chips: ["Next.js · React · TS", "Supabase · Postgres", "Deploy en Vercel"],
+    modal: {
+      subtitle: "Desarrollo de software a velocidad IA, sin sacrificar calidad.",
+      howItWorks: [
+        "Vibe coding es desarrollo profesional asistido por IA. Combinamos herramientas como Claude Code, Cursor y nuestro Método Zecamo para construir landings, SaaS, dashboards y herramientas internas en una fracción del tiempo tradicional.",
+        "No es «hacer apps con prompts»: es desarrollo serio con TypeScript, arquitectura escalable, documentación obligatoria, compliance legal y deploy a producción. La diferencia está en la velocidad de iteración.",
+      ],
+      benefits: [
+        "De idea a prototipo funcional en menos de 2 semanas",
+        "Stack moderno: Next.js, TypeScript, Supabase, Tailwind",
+        "Código documentado siguiendo el Método Zecamo (no caja negra)",
+        "Iteración rápida: cambios visibles el mismo día",
+        "Mantenimiento simple: tu equipo puede tocar el código sin nosotros",
+      ],
+      useCases: [
+        "Landing pages que convierten (como esta misma)",
+        "Dashboards internos con métricas en tiempo real",
+        "Herramientas internas custom (CRM mini, gestión de stock, etc.)",
+        "MVPs para validar ideas antes de invertir grande",
+        "Migración de procesos en Excel a apps web",
+      ],
+      stack: ["Next.js 15", "TypeScript", "React", "Tailwind", "Supabase", "PostgreSQL", "Vercel", "Claude Code"],
+    },
+  },
+  {
+    id: "agentes",
+    Icon: BotMessageSquare,
+    tag: "03",
+    title: "Agentes IA B2B",
+    desc: "Agentes conversacionales y de tareas que trabajan 24/7 en WhatsApp, email y web. Atienden, califican y operan.",
+    chips: ["WhatsApp Business", "Voice + Chat", "Tool-use real"],
+    modal: {
+      subtitle: "Agentes conversacionales que trabajan, no solo responden.",
+      howItWorks: [
+        "Construimos agentes que conversan con tus clientes en WhatsApp, email o web, pero que además ejecutan tareas reales: consultan tu calendario, registran leads en tu sistema, generan presupuestos, buscan en tu base de datos, mandan notificaciones.",
+        "Usamos modelos de última generación (Claude, GPT, Gemini) con tool-use real, memoria persistente y conexión a tus herramientas. No son chatbots tontos con respuestas pregrabadas: son agentes que deciden y actúan.",
+      ],
+      benefits: [
+        "Atención 24/7 sin contratar más personal",
+        "Reducción del 60–80% en tiempo de respuesta inicial",
+        "Captura de leads sin perder ninguno por tardanza",
+        "Calificación automática: el agente filtra antes de pasarte el lead",
+        "Aprende y mejora con cada conversación",
+      ],
+      useCases: [
+        "Bot de reservas en WhatsApp (como el de Finca Cajal)",
+        "Asistente de ventas que califica y agenda demos",
+        "Soporte técnico de primer nivel con escalado a humano",
+        "Agente que consulta stock, precios y arma pedidos",
+        "Onboarding interactivo para clientes nuevos",
+      ],
+      stack: ["Claude API", "OpenAI", "WhatsApp Business", "n8n", "Supabase", "Vector DB", "Tool-use"],
+    },
+  },
+  {
+    id: "consultoria",
+    Icon: Compass,
+    tag: "04",
+    title: "Consultoría IA",
+    desc: "Auditoría, estrategia y capacitación para implementar IA en tu empresa sin tirarla por la ventana en 3 meses.",
+    chips: ["Roadmap 90 días", "Capacitación a equipos", "Gobierno & costos"],
+    modal: {
+      subtitle: "Estrategia, auditoría y capacitación para implementar IA sin perder plata.",
+      howItWorks: [
+        "Muchas empresas se entusiasman con la IA, gastan en herramientas que no usan, contratan cursos genéricos y terminan más frustradas que antes. Nosotros venimos primero, auditamos, te decimos qué SÍ y qué NO conviene, y te dejamos un roadmap concreto de 90 días.",
+        "Si te conviene implementar, lo hacemos juntos. Si no, te lo decimos también. La consultoría incluye capacitación a tu equipo para que la IA sea una herramienta, no una dependencia.",
+      ],
+      benefits: [
+        "Roadmap claro de 90 días con prioridades y costos",
+        "Auditoría de procesos: dónde la IA mete diferencia real",
+        "Capacitación práctica a tu equipo (no teoría)",
+        "Gobierno de costos: evitar gastos descontrolados en tokens",
+        "Decisiones basadas en datos, no en hype",
+      ],
+      useCases: [
+        "Empresas que probaron ChatGPT y quieren ir más allá",
+        "Equipos que necesitan aprender a trabajar con IA día a día",
+        "Founders que quieren saber qué priorizar",
+        "Organizaciones grandes con políticas de uso de IA",
+        "Diagnóstico antes de contratar a una agencia (sí, te decimos si te conviene Zecamo o no)",
+      ],
+      stack: ["Diagnóstico", "Workshops", "Documentación", "Métricas", "Frameworks"],
+    },
+  },
+];
+
+interface ServiceCardProps {
+  s: ServiceData;
+  i: number;
+  onOpen: (s: ServiceData) => void;
+}
+
+function ServiceCard({ s, i, onOpen }: ServiceCardProps) {
+  const [hover, setHover] = useState(false);
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onOpen(s);
+    }
+  };
+  const Icon = s.Icon;
+  return (
+    <Reveal
+      delay={i * 90}
+      className="grad-border h-full p-7 md:p-8 group cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-[20px]"
+    >
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => onOpen(s)}
+        onKeyDown={onKey}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          boxShadow: hover
+            ? "0 0 0 1px rgba(43,91,255,.5), 0 30px 80px -30px rgba(43,91,255,.45), 0 0 80px -20px rgba(43,91,255,.25)"
+            : "0 1px 0 0 rgba(255,255,255,.04) inset",
+          transition: "box-shadow .3s ease, transform .3s ease",
+          transform: hover ? "translateY(-4px)" : "none",
+        }}
+      >
+        <div className="relative flex items-center justify-between mb-8">
+          <div
+            className="w-12 h-12 rounded-xl bg-primary-dark/60 border border-primary/30 text-primary flex items-center justify-center"
+            style={{ boxShadow: "0 0 30px -5px rgba(43,91,255,.45) inset" }}
+          >
+            <Icon size={22} strokeWidth={1.75} />
+          </div>
+          <span className="font-mono text-[12px] tracking-[.2em] text-muted/70">{s.tag} / 04</span>
+        </div>
+
+        <h3 className="font-display font-semibold text-[24px] md:text-[26px] tracking-tight leading-tight">
+          {s.title}
+        </h3>
+        <p className="mt-3 text-[15px] text-muted leading-relaxed">{s.desc}</p>
+
+        <div className="mt-7 pt-6 border-t border-line/70 flex flex-wrap gap-x-3 gap-y-2">
+          {s.chips.map((b, bi) => (
+            <span
+              key={bi}
+              className="text-[12px] font-mono tracking-wide text-muted/90 inline-flex items-center gap-1.5"
+            >
+              <span className="w-1 h-1 rounded-full bg-primary" /> {b}
+            </span>
+          ))}
+        </div>
+
+        <div
+          className={`mt-6 flex items-center gap-2 text-[13px] font-medium transition-colors ${
+            hover ? "text-primary" : "text-muted"
+          }`}
+        >
+          <span>Conocé más</span>
+          <ArrowRight size={14} strokeWidth={2} />
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+export default function Services() {
+  const [active, setActive] = useState<ServiceData | null>(null);
+
+  return (
+    <section id="servicios" className="relative py-24 md:py-36">
+      <Mesh variant="soft" />
+      <div className="absolute inset-0 line-grid opacity-50" aria-hidden />
+
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
+          <SectionTitle
+            eyebrow="Servicios · 04"
+            title={
+              <>
+                Cuatro maneras de meter IA
+                <br className="hidden md:block" /> donde realmente{" "}
+                <span className="text-primary">mueve la aguja</span>.
+              </>
+            }
+          />
+          <Reveal delay={200}>
+            <p className="text-muted max-w-sm text-[15px]">
+              No vendemos &ldquo;transformación digital&rdquo; genérica. Construimos piezas
+              concretas que devuelven horas, ingresos o claridad.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5">
+          {SERVICES.map((s, i) => (
+            <ServiceCard key={s.id} s={s} i={i} onOpen={setActive} />
+          ))}
+        </div>
+      </div>
+
+      <ServiceModal service={active} onClose={() => setActive(null)} />
+    </section>
+  );
+}
+src/components/sections/ServiceModal.tsx
+"use client";
+import { ArrowRight, Check, type LucideIcon } from "lucide-react";
+import Modal, { ModalSection } from "@/components/ui/Modal";
+import PrimaryBtn from "@/components/ui/PrimaryBtn";
+import GhostBtn from "@/components/ui/GhostBtn";
+
+export interface ServiceData {
+  id: string;
+  Icon: LucideIcon;
+  tag: string;
+  title: string;
+  desc: string;
+  chips: string[];
+  modal: {
+    subtitle: string;
+    howItWorks: string[];
+    benefits: string[];
+    useCases: string[];
+    stack: string[];
+  };
+}
+
+interface ServiceModalProps {
+  service: ServiceData | null;
+  onClose: () => void;
+}
+
+export default function ServiceModal({ service, onClose }: ServiceModalProps) {
+  const handleCTA = () => {
+    if (!service) return;
+    onClose();
+    setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent("zcm:select-service", {
+          detail: { id: service.id, title: service.title },
+        }),
+      );
+      document.getElementById("contacto")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 320);
+  };
+
+  const Icon = service?.Icon;
+  return (
+    <Modal
+      open={!!service}
+      onClose={onClose}
+      ariaLabel={service ? `Servicio: ${service.title}` : "Servicio"}
+    >
+      {service && Icon && (
+        <div className="px-6 md:px-10 pt-10 md:pt-12 pb-8 md:pb-10">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/[.08] px-3 py-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <span className="font-mono text-[11px] tracking-[.18em] uppercase text-primary">
+              Servicio · {service.tag}
+            </span>
+          </div>
+
+          <div className="mt-5 flex items-start gap-4">
+            <div
+              className="w-14 h-14 rounded-xl bg-primary-dark/60 border border-primary/30 text-primary flex items-center justify-center shrink-0"
+              style={{ boxShadow: "0 0 30px -5px rgba(43,91,255,.45) inset" }}
+            >
+              <Icon size={26} strokeWidth={1.75} />
+            </div>
+            <div>
+              <h2
+                className="font-display font-semibold tracking-tight leading-[1.05]"
+                style={{ fontSize: "clamp(1.9rem, 4.6vw, 3rem)" }}
+              >
+                {service.title}
+              </h2>
+              <p className="mt-2 text-[16.5px] md:text-[17.5px] text-muted leading-relaxed max-w-2xl">
+                {service.modal.subtitle}
+              </p>
+            </div>
+          </div>
+
+          <ModalSection title="¿Cómo funciona?">
+            <div className="flex flex-col gap-4 max-w-[68ch]">
+              {service.modal.howItWorks.map((p, i) => (
+                <p key={i} className="text-muted text-[15.5px] leading-relaxed">
+                  {p}
+                </p>
+              ))}
+            </div>
+          </ModalSection>
+
+          <ModalSection title="Beneficios">
+            <ul className="grid md:grid-cols-2 gap-x-6 gap-y-3">
+              {service.modal.benefits.map((b, i) => (
+                <li key={i} className="flex items-start gap-3 text-[14.5px] text-ink/95 leading-relaxed">
+                  <span
+                    className="mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 border border-primary/40 text-primary shrink-0"
+                    style={{ boxShadow: "0 0 10px rgba(43,91,255,.35)" }}
+                  >
+                    <Check size={11} strokeWidth={3} />
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </ModalSection>
+
+          <ModalSection title="Casos de uso reales">
+            <ul className="space-y-2.5">
+              {service.modal.useCases.map((u, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-[14.5px] text-ink/90 leading-relaxed">
+                  <span
+                    className="mt-[8px] inline-block w-1.5 h-1.5 rounded-full bg-primary shrink-0"
+                    style={{ boxShadow: "0 0 8px rgba(43,91,255,.55)" }}
+                  />
+                  <span>{u}</span>
+                </li>
+              ))}
+            </ul>
+          </ModalSection>
+
+          <ModalSection title="Stack & herramientas">
+            <div className="flex flex-wrap gap-2">
+              {service.modal.stack.map((t, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg/40 px-3 py-1.5 text-[12.5px] text-ink/90 font-mono"
+                >
+                  <span className="w-1 h-1 rounded-full bg-primary" /> {t}
+                </span>
+              ))}
+            </div>
+          </ModalSection>
+
+          <div className="mt-10 flex flex-col sm:flex-row gap-3">
+            <PrimaryBtn onClick={handleCTA} className="!px-6 !py-3" icon={<ArrowRight size={14} strokeWidth={2} />}>
+              Hablemos de {service.title}
+            </PrimaryBtn>
+            <GhostBtn onClick={onClose} className="!px-6 !py-3">
+              Cerrar
+            </GhostBtn>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+src/components/sections/ForWho.tsx
+"use client";
+import { useState } from "react";
+import { TrendingUp, MessageCircle, Rocket, type LucideIcon } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import Mesh from "@/components/ui/Mesh";
+import SectionTitle from "@/components/ui/SectionTitle";
+
+interface Audience {
+  Icon: LucideIcon;
+  title: string;
+  intro: string;
+  signals: string[];
+}
+
+const AUDIENCE: Audience[] = [
+  {
+    Icon: TrendingUp,
+    title: "Empresas en crecimiento",
+    intro: "Equipos que escalan más rápido de lo que pueden contratar.",
+    signals: [
+      "Procesos manuales que ya no escalan",
+      "Equipo saturado con tareas repetitivas",
+      "Datos dispersos en planillas y herramientas",
+    ],
+  },
+  {
+    Icon: MessageCircle,
+    title: "Negocios con flujo de clientes",
+    intro: "Empresas que reciben muchas consultas y quieren responder 24/7.",
+    signals: [
+      "WhatsApp / email desbordados",
+      "Pérdida de leads por respuesta tardía",
+      "Calificación manual de prospectos",
+    ],
+  },
+  {
+    Icon: Rocket,
+    title: "Founders & equipos producto",
+    intro: "Equipos que necesitan construir software rápido sin un dev senior fijo.",
+    signals: [
+      "MVPs, prototipos, herramientas internas",
+      "Dashboards y paneles a medida",
+      "Integraciones entre sistemas existentes",
+    ],
+  },
+];
+
+function AudienceCard({ a, i }: { a: Audience; i: number }) {
+  const [hover, setHover] = useState(false);
+  const Icon = a.Icon;
+  return (
+    <Reveal delay={i * 100} className="grad-border p-7 md:p-8 h-full">
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          boxShadow: hover
+            ? "0 0 0 1px rgba(43,91,255,.5), 0 30px 80px -30px rgba(43,91,255,.45), 0 0 80px -20px rgba(43,91,255,.22)"
+            : "0 1px 0 0 rgba(255,255,255,.04) inset",
+          transition: "box-shadow .3s ease, transform .3s ease",
+          transform: hover ? "translateY(-3px)" : "none",
+        }}
+      >
+        <div className="flex items-center gap-3 mb-6">
+          <div
+            className="w-11 h-11 rounded-xl bg-primary-dark/60 border border-primary/30 text-primary flex items-center justify-center"
+            style={{ boxShadow: "0 0 26px -5px rgba(43,91,255,.4) inset" }}
+          >
+            <Icon size={20} strokeWidth={1.75} />
+          </div>
+          <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">
+            Perfil 0{i + 1}
+          </span>
+        </div>
+
+        <h3 className="font-display font-semibold text-[22px] md:text-[23px] tracking-tight leading-snug">
+          {a.title}
+        </h3>
+        <p className="mt-2 text-muted text-[14.5px] leading-relaxed">{a.intro}</p>
+
+        <ul className="mt-6 pt-5 border-t border-line/70 space-y-3">
+          {a.signals.map((sig, si) => (
+            <li key={si} className="flex items-start gap-2.5 text-[14px] text-ink/90">
+              <span
+                className="mt-[7px] inline-block w-1.5 h-1.5 rounded-full bg-primary shrink-0"
+                style={{ boxShadow: "0 0 8px rgba(43,91,255,.6)" }}
+              />
+              <span>{sig}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Reveal>
+  );
+}
+
+export default function ForWho() {
+  return (
+    <section id="para-quien" className="relative py-24 md:py-32 overflow-hidden">
+      <Mesh variant="soft" />
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
+          <SectionTitle
+            eyebrow="Para quién · 03 perfiles"
+            title={
+              <>
+                ¿Te reconocés <span className="text-primary">acá</span>?
+              </>
+            }
+          />
+          <Reveal delay={150}>
+            <p className="text-muted max-w-sm text-[15px]">
+              Si al menos una de estas tres descripciones te suena, vale la pena que hablemos.
+            </p>
+          </Reveal>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {AUDIENCE.map((a, i) => (
+            <AudienceCard key={a.title} a={a} i={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+src/components/sections/Cases.tsx
+"use client";
+import { useState, KeyboardEvent } from "react";
+import Image from "next/image";
+import { ArrowRight, Plus } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import Mesh from "@/components/ui/Mesh";
+import SectionTitle from "@/components/ui/SectionTitle";
+import CaseModal, { type Project } from "./CaseModal";
+
+export const PROJECTS: Project[] = [
+  {
+    id: "level",
+    category: "Streetwear · Drop",
+    longTag: "Streetwear · E-commerce + Backoffice",
+    name: "LEVEL",
+    desc: "Drop limitado con 13 piezas y reservas por WhatsApp. Identidad bold, tap-to-flip en cada producto, conversión directa sin checkout.",
+    subtitle: "Drop limitado con sitio público bold y dashboard interno de gestión.",
+    chips: ["Next.js", "Mobile-first", "WhatsApp Flow"],
+    fullStack: ["Next.js 15", "React", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
+    challenge:
+      "LEVEL necesitaba un sitio que reflejara la identidad bold de la marca y un canal directo de reservas por WhatsApp. Pero también un backoffice robusto para que el equipo pudiera operar productos, precios y métricas sin depender de un dev cada vez que hay un cambio.",
+    built: {
+      publico: [
+        "Landing del Drop 00 con tap-to-flip en cada producto (frente / dorso)",
+        "Stock en tiempo real visible en cada talle",
+        "Reserva directa por WhatsApp con producto y talle prearmados",
+        "Mobile-first con animaciones de scroll y micro-interacciones",
+        "Identidad oscura, tipografía bold, fotografía de producto integrada",
+      ],
+      backoffice: [
+        "Dashboard de finanzas con métricas en tiempo real",
+        "Gestión de productos: agregar nuevos, editar info, dar de baja",
+        "Control de precios y stock por talle desde un panel",
+        "Tracking de reservas entrantes por WhatsApp",
+        "Métricas: ventas, ingresos, productos más reservados",
+      ],
+    },
+    url: "https://www.levelstudios.site/",
+    domain: "levelstudios.site",
+    image: "/cases/level.png",
+    alt: "LEVEL Studios — preview",
+  },
+  {
+    id: "finca",
+    category: "Eventos · Reservas",
+    longTag: "Eventos · Reservas + Dashboard end-to-end",
+    name: "Finca Cajal",
+    desc: "Predio de eventos y fútbol en Tafí Viejo. Sitio completo con galería, reseñas reales integradas desde Google y formulario de reservas.",
+    subtitle: "Predio de eventos con sitio público y dashboard interno completo para operar todo el negocio.",
+    chips: ["Web institucional", "Reseñas Google", "WhatsApp"],
+    fullStack: ["Next.js", "Supabase", "PostgreSQL", "WhatsApp", "Google Maps", "Vercel"],
+    challenge:
+      "Finca Cajal recibía consultas constantes por WhatsApp y formularios pero no tenía forma de centralizar leads, gestionar reservas, controlar el calendario ni ver las finanzas del negocio. Construimos el sistema operativo completo del local.",
+    built: {
+      publico: [
+        "Web institucional completa con galería, video y reseñas reales integradas desde Google",
+        "Formulario de reservas con captura de fecha, cantidad de invitados y tipo de evento",
+        "Integración con WhatsApp directo para consultas rápidas",
+        "Mapa con ubicación, accesos y secciones de servicios",
+      ],
+      backoffice: [
+        "Centralización de leads: cada formulario llega automáticamente al dashboard",
+        "Gestión de eventos: calendario con disponibilidad, reservas confirmadas, depósitos",
+        "Panel de finanzas: ingresos por evento, balance mensual, proyecciones",
+        "Seguimiento individual de cada lead: estado, último contacto, conversión a reserva",
+        "Vista 360° del negocio desde un solo lugar",
+      ],
+    },
+    url: "https://www.fincacajal.com.ar/",
+    domain: "fincacajal.com.ar",
+    image: "/cases/finca-cajal.png",
+    alt: "Finca Cajal — preview",
+  },
+  {
+    id: "suplementos",
+    category: "E-commerce · Suplementos",
+    longTag: "E-commerce · Suplementos + Panel de operaciones",
+    name: "Suplementos Tucumán",
+    desc: "Catálogo de suplementos deportivos con flujo de pedido por WhatsApp. Optimizado para conversión mobile y SEO local.",
+    subtitle: "E-commerce de suplementos con flujo de pedido por WhatsApp y panel completo para operar las ventas.",
+    chips: ["E-commerce", "Catálogo dinámico", "SEO local"],
+    fullStack: ["Next.js", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
+    challenge:
+      "El cliente vendía suplementos por Instagram y WhatsApp pero perdía tiempo respondiendo precios y stock todo el día. Necesitaba un catálogo online con flujo de pedido directo y un backoffice para operar las ventas sin tocar código.",
+    built: {
+      publico: [
+        "Catálogo de suplementos con filtros por categoría",
+        "Carrito con productos seleccionados",
+        "Checkout directo a WhatsApp con pedido prearmado (producto, cantidad, precio)",
+        "Optimizado para conversión mobile (donde compra el target)",
+        "SEO local para Tucumán",
+      ],
+      backoffice: [
+        "Gestión de productos: alta, edición, baja, precios",
+        "Control de stock por producto",
+        "Tracking de clicks al carrito (engagement real, no solo views)",
+        "Tracking de pedidos enviados por WhatsApp",
+        "Aprobación / gestión de ventas",
+        "Métricas: productos más vistos, más vendidos, tasa de conversión",
+      ],
+    },
+    url: "https://suplementos-tucuman.vercel.app/",
+    domain: "suplementos-tucuman.vercel.app",
+    image: "/cases/suplementos.png",
+    alt: "Suplementos Tucumán — preview",
+  },
+];
+
+export function BrowserMockup({
+  src, alt, domain, hover, large = false,
+}: {
+  src: string; alt: string; domain: string; hover: boolean; large?: boolean;
+}) {
+  return (
+    <div
+      className="relative rounded-xl overflow-hidden border border-line bg-bg/60"
+      style={{
+        boxShadow: hover
+          ? "0 0 0 1px rgba(43,91,255,.55), 0 30px 80px -25px rgba(43,91,255,.5), 0 0 80px -10px rgba(43,91,255,.35)"
+          : "0 1px 0 0 rgba(255,255,255,.04) inset, 0 24px 50px -25px rgba(0,0,0,.5)",
+        transition: "box-shadow .35s ease",
+      }}
+    >
+      <div className="flex items-center gap-2 px-3 py-2 bg-surface/80 border-b border-line/80 backdrop-blur-sm">
+        <span className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]/80" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]/80" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]/80" />
+        </span>
+        <div
+          className={`ml-2 flex-1 h-6 rounded-md border border-line/80 flex items-center justify-center text-[11px] font-mono tracking-tight transition-colors ${
+            hover ? "text-primary bg-primary/[.08]" : "text-muted/80 bg-bg/40"
+          }`}
+        >
+          <span className="opacity-70 mr-1">↳</span> {domain}
+        </div>
+        <span className="w-6 h-6 hidden md:block" />
+      </div>
+
+      <div className="relative" style={{ aspectRatio: large ? "16 / 9" : "16 / 10" }}>
+        {/* TODO: agregar /public/cases/<id>.png para cada proyecto */}
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(min-width: 768px) 33vw, 100vw"
+          className="absolute inset-0 object-cover object-top"
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: hover
+              ? "linear-gradient(180deg, rgba(10,15,31,0) 65%, rgba(10,15,31,.3) 100%)"
+              : "linear-gradient(180deg, rgba(10,15,31,0) 55%, rgba(10,15,31,.5) 100%)",
+            transition: "background .35s ease",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+interface ProjectCardProps { p: Project; i: number; onOpen: () => void; }
+
+function ProjectCard({ p, i, onOpen }: ProjectCardProps) {
+  const [hover, setHover] = useState(false);
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onOpen();
+    }
+  };
+
+  return (
+    <Reveal
+      delay={i * 100}
+      className="grad-border h-full p-5 md:p-6 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-[20px]"
+    >
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label={`Ver caso completo: ${p.name}`}
+        onClick={onOpen}
+        onKeyDown={onKey}
+        className="flex flex-col gap-5 h-full"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          boxShadow: hover
+            ? "0 0 0 1px rgba(43,91,255,.6), 0 30px 80px -30px rgba(43,91,255,.5), 0 0 70px -20px rgba(43,91,255,.25)"
+            : "0 1px 0 0 rgba(255,255,255,.04) inset",
+          transition: "box-shadow .3s ease, transform .3s ease",
+          transform: hover ? "translateY(-4px)" : "none",
+        }}
+      >
+        <div className="relative">
+          <BrowserMockup src={p.image} alt={p.alt} domain={p.domain} hover={hover} />
+
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none rounded-xl ${
+              hover ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(43,91,255,.20) 0%, rgba(10,15,31,0) 65%)",
+            }}
+          >
+            <div
+              className="w-14 h-14 rounded-full bg-primary/90 border border-white/15 flex items-center justify-center"
+              style={{
+                boxShadow:
+                  "0 0 0 8px rgba(43,91,255,.12), 0 0 50px -5px rgba(43,91,255,.7)",
+              }}
+            >
+              <Plus size={22} strokeWidth={2.25} className="text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 flex-1">
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-line bg-bg/40 px-2.5 py-1">
+            <span className="w-1 h-1 rounded-full bg-primary" />
+            <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">
+              {p.category}
+            </span>
+          </div>
+
+          <h3 className="font-display font-semibold text-[24px] md:text-[26px] tracking-tight leading-tight">
+            {p.name}
+          </h3>
+          <p className="text-muted text-[14.5px] leading-relaxed">{p.desc}</p>
+
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {p.chips.map((c, ci) => (
+              <span
+                key={ci}
+                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/60 px-2.5 py-1 text-[11.5px] text-muted font-mono"
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-auto pt-4 border-t border-line/70 flex items-center justify-between">
+            <span className="text-[11.5px] font-mono tracking-[.18em] uppercase text-muted/70">
+              Caso 0{i + 1}
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 text-[13.5px] font-medium transition-colors ${
+                hover ? "text-primary" : "text-muted"
+              }`}
+            >
+              Ver caso completo
+              <ArrowRight size={14} strokeWidth={2} />
+            </span>
+          </div>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+export default function Cases() {
+  const [activeIndex, setActiveIndex] = useState(-1);
+
+  return (
+    <section id="casos" className="relative py-24 md:py-32">
+      <div className="absolute inset-0 line-grid opacity-40" aria-hidden />
+      <Mesh variant="soft" />
+
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+          <SectionTitle
+            eyebrow="Casos · ZCM-04"
+            title={
+              <>
+                Trabajos <span className="text-primary">recientes</span>.
+              </>
+            }
+            kicker="Tres clientes, tres industrias. Una sola obsesión: que el sitio venda, no que solo se vea."
+          />
+          <Reveal delay={150}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/40 backdrop-blur-md px-3 py-1.5 self-start md:self-end">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              <span className="text-[12px] tracking-[.18em] uppercase text-muted font-mono">
+                3 sitios en vivo
+              </span>
+            </div>
+          </Reveal>
+        </div>
+
+        <Reveal delay={200} className="mb-12">
+          <div className="inline-flex items-center gap-3 rounded-full border border-primary/30 bg-primary/[.05] px-4 py-2">
+            <span
+              className="w-1.5 h-1.5 rounded-full bg-primary"
+              style={{ boxShadow: "0 0 10px rgba(43,91,255,.7)" }}
+            />
+            <span className="font-mono text-[11.5px] md:text-[12px] tracking-[.22em] uppercase text-muted">
+              No hacemos solo sitios. <span className="text-ink">Construimos operaciones.</span>
+            </span>
+          </div>
+        </Reveal>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {PROJECTS.map((p, i) => (
+            <ProjectCard key={p.id} p={p} i={i} onOpen={() => setActiveIndex(i)} />
+          ))}
+        </div>
+      </div>
+
+      <CaseModal
+        projects={PROJECTS}
+        activeIndex={activeIndex}
+        onClose={() => setActiveIndex(-1)}
+        onChange={setActiveIndex}
+      />
+    </section>
+  );
+}
+src/components/sections/CaseModal.tsx
+"use client";
+import { useState } from "react";
+import { ArrowUpRight } from "lucide-react";
+import Modal, { ModalSection } from "@/components/ui/Modal";
+import PrimaryBtn from "@/components/ui/PrimaryBtn";
+import { BrowserMockup } from "./Cases";
+
+export interface Project {
+  id: string;
+  category: string;
+  longTag: string;
+  name: string;
+  desc: string;
+  subtitle: string;
+  chips: string[];
+  fullStack: string[];
+  challenge: string;
+  built: { publico: string[]; backoffice: string[] };
+  url: string;
+  domain: string;
+  image: string;
+  alt: string;
+}
+
+interface CaseModalProps {
+  projects: Project[];
+  activeIndex: number;
+  onClose: () => void;
+  onChange: (i: number) => void;
+}
+
+function SubBuilt({
+  title, items, highlight = false,
+}: { title: string; items: string[]; highlight?: boolean }) {
+  return (
+    <div
+      className={`rounded-2xl p-5 md:p-6 border ${
+        highlight ? "border-primary/40 bg-primary/[.06]" : "border-line/80 bg-bg/40"
+      }`}
+      style={highlight ? { boxShadow: "0 0 30px -10px rgba(43,91,255,.25) inset" } : {}}
+    >
+      <div className="font-display text-[16px] tracking-tight font-semibold text-primary mb-3">
+        {title}
+      </div>
+      <ul className="space-y-2.5">
+        {items.map((it, i) => (
+          <li key={i} className="flex items-start gap-2.5 text-[14px] text-ink/90 leading-relaxed">
+            <span
+              className="mt-[7px] inline-block w-1.5 h-1.5 rounded-full bg-primary shrink-0"
+              style={{ boxShadow: "0 0 8px rgba(43,91,255,.55)" }}
+            />
+            <span>{it}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function CaseContent({ p }: { p: Project }) {
+  return (
+    <div className="px-6 md:px-10 pt-10 md:pt-12 pb-8 md:pb-10">
+      <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/[.08] px-3 py-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+        <span className="font-mono text-[11px] tracking-[.18em] uppercase text-primary">
+          {p.longTag}
+        </span>
+      </div>
+
+      <h2
+        className="mt-5 font-display font-semibold tracking-tight leading-[1.02]"
+        style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)" }}
+      >
+        {p.name}
+      </h2>
+      <p className="mt-3 text-[17px] md:text-[18px] text-muted leading-relaxed max-w-2xl">
+        {p.subtitle}
+      </p>
+
+      <div className="mt-8">
+        <BrowserMockup src={p.image} alt={p.alt} domain={p.domain} hover large />
+      </div>
+
+      <ModalSection title="El desafío">
+        <p className="text-muted text-[15.5px] leading-relaxed max-w-[68ch]">{p.challenge}</p>
+      </ModalSection>
+
+      <ModalSection title="Lo que construimos">
+        <div className="grid md:grid-cols-2 gap-5 md:gap-6">
+          <SubBuilt title="Sitio público" items={p.built.publico} />
+          <SubBuilt title="Backoffice / Panel interno" items={p.built.backoffice} highlight />
+        </div>
+      </ModalSection>
+
+      <ModalSection title="Stack">
+        <div className="flex flex-wrap gap-2">
+          {p.fullStack.map((s, si) => (
+            <span
+              key={si}
+              className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg/40 px-3 py-1.5 text-[12.5px] text-ink/90 font-mono"
+            >
+              <span className="w-1 h-1 rounded-full bg-primary" /> {s}
+            </span>
+          ))}
+        </div>
+      </ModalSection>
+
+      <div className="mt-10 flex flex-col sm:flex-row gap-3">
+        <PrimaryBtn
+          as="a"
+          href={p.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="!px-6 !py-3"
+          icon={<ArrowUpRight size={14} strokeWidth={2} />}
+        >
+          Ver sitio en vivo
+        </PrimaryBtn>
+      </div>
+    </div>
+  );
+}
+
+export default function CaseModal({
+  projects, activeIndex, onClose, onChange,
+}: CaseModalProps) {
+  const open = activeIndex >= 0;
+  const [fading, setFading] = useState(false);
+  const count = projects.length;
+  const p = open ? projects[activeIndex] : null;
+
+  const goto = (i: number) => {
+    const next = ((i % count) + count) % count;
+    if (next === activeIndex) return;
+    setFading(true);
+    setTimeout(() => {
+      onChange(next);
+      requestAnimationFrame(() => requestAnimationFrame(() => setFading(false)));
+    }, 180);
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      ariaLabel={p ? `Caso: ${p.name}` : "Caso"}
+      hasNav
+      count={count}
+      activeIndex={activeIndex < 0 ? 0 : activeIndex}
+      onPrev={() => goto(activeIndex - 1)}
+      onNext={() => goto(activeIndex + 1)}
+      onJump={goto}
+    >
+      <div className="transition-opacity duration-200" style={{ opacity: fading ? 0 : 1 }}>
+        {p && <CaseContent p={p} />}
+      </div>
+    </Modal>
+  );
+}
+src/components/sections/Method.tsx
+import Image from "next/image";
+import Reveal from "@/components/ui/Reveal";
+import SectionTitle from "@/components/ui/SectionTitle";
+
+interface Step { n: string; title: string; desc: string; }
+
+const STEPS: Step[] = [
+  { n: "01", title: "Diagnosticamos", desc: "Mapeamos tus procesos y encontramos dónde la IA mete diferencia real." },
+  { n: "02", title: "Construimos",    desc: "Diseñamos, codeamos y deployamos la solución. Sprints cortos, sin sorpresas." },
+  { n: "03", title: "Operamos",       desc: "Monitoreamos, optimizamos y escalamos según uso real." },
+];
+
+function StepCompact({ s, i }: { s: Step; i: number }) {
+  return (
+    <Reveal delay={i * 100} className="relative">
+      <div
+        className="absolute -top-4 -left-3 w-[120px] h-[120px] opacity-[.08] pointer-events-none select-none"
+        aria-hidden
+      >
+        {/* TODO: agregar /public/brand/logo-z.svg */}
+        <Image
+          src="/brand/logo-z.svg"
+          alt=""
+          width={120}
+          height={120}
+          style={{ width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "screen" }}
+        />
+      </div>
+
+      <div className="relative">
+        <div
+          className="font-display font-semibold text-primary tracking-tight leading-none"
+          style={{ fontSize: "clamp(3.2rem, 6vw, 5rem)" }}
+        >
+          {s.n}
+        </div>
+        <h3 className="mt-4 font-display font-semibold text-[22px] md:text-[24px] tracking-tight">
+          {s.title}
+        </h3>
+        <p className="mt-2 text-muted text-[15px] leading-relaxed max-w-[36ch]">{s.desc}</p>
+      </div>
+    </Reveal>
+  );
+}
+
+export default function Method() {
+  return (
+    <section id="metodo" className="relative py-20 md:py-24 overflow-hidden">
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <SectionTitle
+          eyebrow="Método · ZCM-03"
+          title={
+            <>
+              Diagnosticamos · Construimos · <span className="text-primary">Operamos</span>.
+            </>
+          }
+        />
+
+        <div className="mt-12 md:mt-14 grid md:grid-cols-3 gap-x-8 gap-y-10 md:gap-x-12">
+          {STEPS.map((s, i) => (
+            <StepCompact key={s.n} s={s} i={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+src/components/sections/Contact.tsx
+"use client";
+import { useEffect, useState, FormEvent } from "react";
+import {
+  ArrowUpRight, Workflow, Code2, BotMessageSquare, Compass, HelpCircle,
+  SendHorizontal, RotateCcw, Linkedin, Instagram, Github, Twitter,
+  Check, type LucideIcon,
+} from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import Mesh from "@/components/ui/Mesh";
+import ZWatermark from "@/components/ui/ZWatermark";
+import SectionTitle from "@/components/ui/SectionTitle";
+import PrimaryBtn from "@/components/ui/PrimaryBtn";
+
+interface ServiceOption {
+  id: "automatizacion" | "vibe" | "agentes" | "consultoria" | "otra";
+  label: string;
+  Icon: LucideIcon;
+}
+
+const SERVICE_OPTIONS: ServiceOption[] = [
+  { id: "automatizacion", label: "Automatización con IA", Icon: Workflow },
+  { id: "vibe",           label: "Vibe Coding",            Icon: Code2 },
+  { id: "agentes",        label: "Agentes IA B2B",         Icon: BotMessageSquare },
+  { id: "consultoria",    label: "Consultoría IA",         Icon: Compass },
+  { id: "otra",           label: "No estoy seguro / Otra consulta", Icon: HelpCircle },
+];
+
+interface FormState {
+  nombre: string;
+  email: string;
+  empresa: string;
+  servicio: string;
+  mensaje: string;
+  consent: boolean;
+}
+
+type FormErrors = Partial<Record<keyof FormState, string>>;
+type FormStatus = "idle" | "loading" | "success";
+
+export default function Contact() {
+  const [form, setForm] = useState<FormState>({
+    nombre: "", email: "", empresa: "", servicio: "", mensaje: "", consent: false,
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [status, setStatus] = useState<FormStatus>("idle");
+
+  const set = <K extends keyof FormState>(k: K, v: FormState[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
+
+  // Listener global del modal de servicios → preselecciona y prerellena.
+  useEffect(() => {
+    interface SelectDetail { id?: string; title?: string; }
+    const onSelect = (e: Event) => {
+      const ce = e as CustomEvent<SelectDetail>;
+      const id = ce.detail?.id;
+      const title = ce.detail?.title;
+      if (!id) return;
+      setForm((f) => ({
+        ...f,
+        servicio: id,
+        mensaje: f.mensaje.trim().length > 0 ? f.mensaje : `Me interesa ${title}. Mi caso es...`,
+      }));
+      setErrors((prev) => ({ ...prev, servicio: undefined }));
+    };
+    window.addEventListener("zcm:select-service", onSelect);
+    return () => window.removeEventListener("zcm:select-service", onSelect);
+  }, []);
+
+  const validate = (): FormErrors => {
+    const e: FormErrors = {};
+    if (!form.nombre.trim()) e.nombre = "Decinos cómo te llamás";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Email inválido";
+    if (!form.empresa.trim()) e.empresa = "¿De qué empresa?";
+    if (!form.servicio) e.servicio = "Elegí una opción";
+    if (!form.mensaje.trim() || form.mensaje.trim().length < 10)
+      e.mensaje = "Contanos un poco más (10+ caracteres)";
+    if (!form.consent) e.consent = "Necesitamos tu consentimiento";
+    return e;
+  };
+
+  const onSubmit = (ev: FormEvent) => {
+    ev.preventDefault();
+    const e = validate();
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    setStatus("loading");
+    // TODO: reemplazar con fetch a tu endpoint (e.g. /api/contact).
+    setTimeout(() => setStatus("success"), 1300);
+  };
+
+  const onReset = () => {
+    setForm({ nombre: "", email: "", empresa: "", servicio: "", mensaje: "", consent: false });
+    setErrors({});
+    setStatus("idle");
+  };
+
+  const socials = [
+    { Icon: Linkedin, label: "LinkedIn", href: "#" },
+    { Icon: Instagram, label: "Instagram", href: "#" },
+    { Icon: Github, label: "GitHub", href: "#" },
+    { Icon: Twitter, label: "X", href: "#" },
+  ];
+
+  return (
+    <section id="contacto" className="relative py-24 md:py-36 overflow-hidden">
+      <Mesh variant="soft" />
+      <ZWatermark className="-right-40 -top-20 hidden md:block" size={520} opacity={0.05} />
+
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="grid md:grid-cols-[1fr_1.2fr] gap-8 md:gap-14 items-start">
+          <div>
+            <SectionTitle
+              eyebrow="Contacto · 24h"
+              title={<>Hablemos de <span className="text-primary">tu próximo</span> proyecto.</>}
+              kicker="Te respondemos en menos de 24h hábiles. Si tu caso es claro, en la primera llamada salimos con una propuesta concreta."
+            />
+
+            <Reveal delay={200} className="mt-10 grad-border p-6">
+              <div className="text-[12px] tracking-[.2em] uppercase font-mono text-muted mb-3">
+                ¿Preferís email directo?
+              </div>
+              <a
+                href="mailto:hola@zecamostudios.com"
+                className="font-display text-[20px] md:text-[22px] tracking-tight text-ink hover:text-primary transition inline-flex items-center gap-2"
+              >
+                hola@zecamostudios.com
+                <ArrowUpRight size={16} strokeWidth={1.75} />
+              </a>
+
+              <div className="mt-6 pt-6 border-t border-line/80">
+                <div className="text-[12px] tracking-[.2em] uppercase font-mono text-muted mb-3">
+                  Encontranos en
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {socials.map(({ Icon, label, href }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-line bg-bg/40 hover:border-primary/60 hover:text-white text-muted text-[13px] transition"
+                    >
+                      <Icon size={14} strokeWidth={1.75} />
+                      <span>{label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-line/80 grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-[12px] tracking-[.2em] uppercase font-mono text-muted">Base</div>
+                  <div className="text-[15px] text-ink mt-1">Argentina · Remote-first</div>
+                </div>
+                <div>
+                  <div className="text-[12px] tracking-[.2em] uppercase font-mono text-muted">Idiomas</div>
+                  <div className="text-[15px] text-ink mt-1">ES · EN</div>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+
+          <Reveal delay={100} className="relative">
+            <div
+              className="grad-border grad-border-strong p-7 md:p-9 backdrop-blur-xl"
+              style={{ background: "linear-gradient(180deg, rgba(15,23,48,.85), rgba(15,23,48,.55))" }}
+            >
+              {status === "success" ? (
+                <SuccessBlock onReset={onReset} />
+              ) : (
+                <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display font-semibold text-[22px] tracking-tight">
+                      Contanos qué necesitás
+                    </h3>
+                    <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">
+                      / form
+                    </span>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Field label="Nombre" id="nombre" value={form.nombre}
+                           onChange={(v) => set("nombre", v)} error={errors.nombre}
+                           placeholder="Tu nombre" />
+                    <Field label="Email" id="email" type="email" value={form.email}
+                           onChange={(v) => set("email", v)} error={errors.email}
+                           placeholder="vos@empresa.com" />
+                  </div>
+                  <Field label="Empresa" id="empresa" value={form.empresa}
+                         onChange={(v) => set("empresa", v)} error={errors.empresa}
+                         placeholder="Nombre de tu empresa" />
+
+                  <ServiceRadio
+                    value={form.servicio}
+                    onChange={(id) => {
+                      set("servicio", id);
+                      setErrors((e) => ({ ...e, servicio: undefined }));
+                    }}
+                    error={errors.servicio}
+                  />
+
+                  <Field label="Mensaje" id="mensaje" textarea value={form.mensaje}
+                         onChange={(v) => set("mensaje", v)} error={errors.mensaje}
+                         placeholder="Contanos en qué estás pensando, qué problema querés resolver y tu timeline ideal." />
+
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <span
+                      className={`relative mt-1 inline-flex w-[18px] h-[18px] rounded-[5px] border ${
+                        form.consent ? "bg-primary border-primary" : "border-line bg-bg/40"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        checked={form.consent}
+                        onChange={(e) => set("consent", e.target.checked)}
+                      />
+                      {form.consent && (
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 m-auto text-white" fill="none" stroke="currentColor" strokeWidth={3}>
+                          <path d="M5 12l4 4L19 6" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="text-[13.5px] text-muted leading-relaxed">
+                      Acepto que Zecamo Studios procese mis datos para responder a esta consulta.{" "}
+                      <a href="/privacy" className="text-primary underline-offset-4 hover:underline">
+                        Política de privacidad
+                      </a>.
+                    </span>
+                  </label>
+                  {errors.consent && (
+                    <div className="text-[12.5px] text-red-400 -mt-2">{errors.consent}</div>
+                  )}
+
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-2">
+                    <div className="text-[12.5px] text-muted font-mono">
+                      Respuesta &lt; 24h hábiles
+                    </div>
+                    <PrimaryBtn
+                      type="submit"
+                      className={`!px-8 !py-3.5 ${status === "loading" ? "opacity-80 cursor-wait" : ""}`}
+                      icon={
+                        status === "loading" ? (
+                          <span className="inline-block w-4 h-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <SendHorizontal size={16} strokeWidth={1.75} />
+                        )
+                      }
+                    >
+                      {status === "loading" ? "Enviando…" : "Enviar mensaje"}
+                    </PrimaryBtn>
+                  </div>
+                </form>
+              )}
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+interface ServiceRadioProps {
+  value: string;
+  onChange: (id: string) => void;
+  error?: string;
+}
+
+function ServiceRadio({ value, onChange, error }: ServiceRadioProps) {
+  const main = SERVICE_OPTIONS.slice(0, 4);
+  const other = SERVICE_OPTIONS[4];
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-[12px] tracking-[.18em] uppercase font-mono text-muted">
+        ¿En qué te podemos ayudar?
+      </label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        {main.map((o) => (
+          <RadioCard
+            key={o.id}
+            option={o}
+            active={value === o.id}
+            onSelect={() => onChange(o.id)}
+          />
+        ))}
+      </div>
+      <div className="mt-0.5">
+        <RadioCard
+          option={other}
+          active={value === other.id}
+          onSelect={() => onChange(other.id)}
+        />
+      </div>
+      {error && <div className="text-[12.5px] text-red-400">{error}</div>}
+    </div>
+  );
+}
+
+function RadioCard({
+  option, active, onSelect,
+}: { option: ServiceOption; active: boolean; onSelect: () => void }) {
+  const Icon = option.Icon;
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={active}
+      className={`relative text-left rounded-xl border px-3.5 py-3 transition-all flex items-center gap-3 ${
+        active
+          ? "border-primary bg-primary/[.08] text-white"
+          : "border-line bg-bg/40 text-ink/90 hover:border-primary/50 hover:bg-bg/60"
+      }`}
+      style={
+        active
+          ? {
+              boxShadow:
+                "0 0 0 1px rgba(43,91,255,.35), 0 10px 30px -10px rgba(43,91,255,.4), inset 0 0 40px -10px rgba(43,91,255,.35)",
+            }
+          : {}
+      }
+    >
+      <span
+        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+          active
+            ? "bg-primary/20 border border-primary/50 text-primary"
+            : "bg-bg/60 border border-line text-muted"
+        }`}
+      >
+        <Icon size={16} strokeWidth={1.85} />
+      </span>
+      <span className="text-[14px] font-medium leading-snug">{option.label}</span>
+      <span
+        className={`absolute top-2 right-2 inline-flex items-center justify-center w-5 h-5 rounded-full transition-all ${
+          active ? "bg-primary text-white scale-100" : "scale-0"
+        }`}
+      >
+        <Check size={11} strokeWidth={3} />
+      </span>
+    </button>
+  );
+}
+
+interface FieldProps {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  placeholder?: string;
+  type?: string;
+  textarea?: boolean;
+}
+
+function Field({
+  label, id, value, onChange, error, placeholder,
+  type = "text", textarea = false,
+}: FieldProps) {
+  const baseProps = {
+    id, name: id, placeholder,
+    value,
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => onChange(e.target.value),
+    className: `field ${error ? "!border-red-500/60 !shadow-[0_0_0_4px_rgba(239,68,68,.12)]" : ""}`,
+  };
+  return (
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="text-[12px] tracking-[.18em] uppercase font-mono text-muted">
+        {label}
+      </label>
+      {textarea ? (
+        <textarea {...baseProps} rows={5} style={{ resize: "vertical", minHeight: 120 }} />
+      ) : (
+        <input {...baseProps} type={type} />
+      )}
+      {error && <div className="text-[12.5px] text-red-400">{error}</div>}
+    </div>
+  );
+}
+
+function SuccessBlock({ onReset }: { onReset: () => void }) {
+  return (
+    <div className="text-center py-6">
+      <div
+        className="relative mx-auto w-16 h-16 rounded-full bg-primary/15 border border-primary/40 flex items-center justify-center mb-5"
+        style={{ boxShadow: "0 0 40px -5px rgba(43,91,255,.5)" }}
+      >
+        <Check size={28} strokeWidth={2.5} className="text-primary" />
+      </div>
+      <h3 className="font-display font-semibold text-[24px] tracking-tight">Mensaje enviado.</h3>
+      <p className="text-muted mt-2 max-w-md mx-auto">
+        Lo recibimos. Te respondemos en menos de 24h hábiles desde{" "}
+        <span className="text-ink">hola@zecamostudios.com</span>.
+      </p>
+      <button
+        onClick={onReset}
+        className="mt-6 inline-flex items-center gap-2 text-primary text-[14px] font-medium hover:text-primary-hover transition"
+      >
+        <RotateCcw size={14} strokeWidth={1.75} /> Enviar otro mensaje
+      </button>
+    </div>
+  );
+}
+Notas de integración
+1. Dependencias mínimas (package.json):
+
+npm i next@^15 react@^18 react-dom@^18 lucide-react
+npm i -D typescript @types/node @types/react @types/react-dom tailwindcss@^4 @tailwindcss/postcss
+# Cuando migres animaciones:
+npm i framer-motion
+2. Tailwind v4 se configura solo desde CSS (@theme en globals.css). No hace falta tailwind.config.ts. Asegurate de tener:
+
+// postcss.config.mjs
+export default { plugins: { "@tailwindcss/postcss": {} } };
+3. Assets a colocar en /public/:
+
+public/
+├── brand/
+│   ├── logo-z.svg       ← versión simplificada, fondo transparente
+│   └── logo-full.svg    ← versión con texto, fondo transparente
+├── cases/
+│   ├── level.png
+│   ├── finca-cajal.png
+│   └── suplementos.png
+├── favicon.ico
+└── og.png               ← 1200×630
+4. tsconfig debe tener el alias @/*:
+
+{
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  }
+}
+5. Eventos globales: zcm:select-service se dispara desde ServiceModal y se escucha en Contact. El cleanup está en el useEffect return — sin memory leaks en HMR.
+
+6. Migración a Framer Motion (marcado con // TODO): hay 5 hotspots — Reveal, Mesh blobs, hero word-by-word, hero parallax, y marquee. Todo lo demás (modal animation, hover lifts, glow transitions) ya funciona con CSS y no necesita migrar.
+
+7. Lo que NO incluí (siguiendo tu lista de archivos):
+
+Resultados — la sacaste del orden final.
+TweaksDrawer — era para el preview interactivo, no para producción.
+Componente Icon custom — todo migrado a imports directos de lucide-react.

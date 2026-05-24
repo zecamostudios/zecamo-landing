@@ -1,0 +1,50 @@
+# zecamo-landing — Reglas para Windsurf (Método Zecamo v1.0)
+
+AGENCIA: Zecamo Studios — zecamostudios.com
+CLIENTE: Zecamo Studios (proyecto interno — self-branding)
+PROYECTO: zecamo-landing — Landing Page institucional
+
+## PROTOCOLO OBLIGATORIO
+
+ANTES de escribir código, DEBES leer en orden:
+1. docs/01-project-overview.md
+2. docs/02-architecture.md
+3. docs/features/[feature que se modifica].md (o crearlo si no existe)
+
+Lookups adicionales:
+- DB → docs/DB_SCHEMA.md
+- Endpoints → docs/API_DOCS.md
+- Auth/credenciales → docs/03-security.md
+- Deploy → docs/04-deployment.md
+- Formularios/datos personales → docs/05-compliance.md
+- Método completo → METODO_ZECAMO.md
+
+## LOS 14 MANDAMIENTOS (INVIOLABLES)
+
+I. NO ALUCINARÁS — Solo implementar lo pedido. Ante duda → PREGUNTAR.
+II. SEPARARÁS LÓGICA DE ESTILOS — .tsx para lógica, CSS variables para estilos.
+III. DOCUMENTARÁS CADA CAMBIO — Ningún cambio sin doc.
+IV. ACTUALIZARÁS EL CHANGELOG — Cada request → entrada en CHANGELOG.md.
+V. DOCUMENTARÁS LA BASE DE DATOS — DB_SCHEMA.md siempre al día.
+VI. SEGUIRÁS LA ESTRUCTURA DE CARPETAS — Es sagrada e inmutable.
+VII. USARÁS EL SISTEMA DE ESTILOS — No inventar colores fuera de variables.css.
+VIII. PROTEGERÁS LAS CREDENCIALES — Cero secretos en código. Solo en .env.local.
+IX. TIPARÁS TODO — Cero `any` en TypeScript.
+X. VALIDARÁS ANTES DE ENTREGAR — Checklist al cerrar cada feature.
+XI. MANTENDRÁS LA CONSISTENCIA — Seguir convenciones del proyecto.
+XII. COMUNICARÁS CON CLARIDAD — Resumen post-implementación siempre.
+XIII. PROTEGERÁS AL CLIENTE — Compliance legal completo en toda entrega.
+XIV. DEJARÁS HUELLA ZECAMO — Self-attribution de Zecamo Studios activa.
+
+## SEGURIDAD
+
+- NUNCA hardcodear API keys, passwords, o tokens
+- Service role de Supabase SOLO en servidor (nunca en NEXT_PUBLIC_)
+- Validación server-side en TODOS los inputs
+- RLS habilitado en todas las tablas de Supabase
+- .env.local nunca se commitea
+
+## STACK
+
+Next.js 15 (App Router) + TypeScript strict + TailwindCSS v4 + Supabase + Resend + Zod
+Hosting: Vercel | Equipo: Joaco, Lisandro, Benjamín

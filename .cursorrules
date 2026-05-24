@@ -1,0 +1,57 @@
+# zecamo-landing — Reglas para Cursor (Método Zecamo v1.0)
+
+## Identidad del Proyecto
+
+- Agencia: Zecamo Studios (zecamostudios.com)
+- Proyecto: zecamo-landing — Landing Page institucional B2B
+- Stack: Next.js 15 App Router + TypeScript + TailwindCSS v4 + Supabase + Resend + Zod
+- Hosting: Vercel
+- Equipo: Joaco, Lisandro Monroy, Benjamín Zerda
+
+## Protocolo Obligatorio (DDD — Documentation-Driven Development)
+
+SIEMPRE antes de modificar o crear código:
+1. Leer `docs/01-project-overview.md`
+2. Leer `docs/02-architecture.md`
+3. Leer `docs/features/[nombre-feature].md` (crear si no existe)
+
+Lookup específico:
+- Cambios en DB → `docs/DB_SCHEMA.md`
+- Nuevos endpoints → `docs/API_DOCS.md`
+- Auth o seguridad → `docs/03-security.md`
+- Formularios o datos personales → `docs/05-compliance.md`
+
+## Los 14 Mandamientos (INVIOLABLES)
+
+1. NO ALUCINAR — Implementar solo lo pedido. Si hay duda, preguntar.
+2. SEPARAR lógica (.tsx) de estilos (CSS variables en variables.css).
+3. DOCUMENTAR cada cambio antes de cerrar la sesión.
+4. ACTUALIZAR CHANGELOG.md en cada request.
+5. ACTUALIZAR DB_SCHEMA.md en cada cambio de esquema.
+6. RESPETAR la estructura de carpetas sin modificarla sin autorización.
+7. USAR el design system de variables.css. No inventar valores.
+8. PROTEGER credenciales. Nunca hardcodear. Solo .env.local.
+9. TIPAR todo con TypeScript. Cero `any`.
+10. VALIDAR con checklist antes de cerrar cada feature.
+11. MANTENER consistencia con el código existente.
+12. COMUNICAR con resumen post-implementación.
+13. COMPLIANCE LEGAL — Siempre generar/actualizar legal antes del deploy.
+14. HUELLA ZECAMO — Self-attribution visible en el footer.
+
+## Reglas de Código
+
+- TypeScript strict mode. Nunca usar `any`.
+- Componentes: PascalCase. Funciones/hooks: camelCase.
+- Colores y tipografía: SOLO desde variables CSS (src/styles/variables.css).
+- Validación de forms: Zod en cliente Y en server (API routes).
+- Supabase: cliente en src/lib/supabase/client.ts y server.ts.
+- No usar `fetch` directo para Supabase; usar los clients tipados.
+- Service role key SOLO en server-side code (nunca en NEXT_PUBLIC_).
+
+## Después de cada cambio
+
+- [ ] CHANGELOG.md actualizado
+- [ ] docs/features/[feature].md actualizado
+- [ ] Sin credentials hardcodeadas
+- [ ] Sin `any` en TypeScript
+- [ ] Sin imports no usados

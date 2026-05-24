@@ -1,0 +1,17 @@
+{
+  "name": "Zecamo Studios",
+  "short_name": "Zecamo",
+  "description": "IA que trabaja. Resultados que se miden.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0F1F",
+  "theme_color": "#2B5BFF",
+  "icons": [
+    {
+      "src": "/brand/logo-z.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

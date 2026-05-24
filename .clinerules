@@ -1,0 +1,43 @@
+# zecamo-landing — Reglas para Cline (Método Zecamo v1.0)
+
+## Proyecto
+zecamo-landing — Landing Page institucional de Zecamo Studios
+Agencia/Cliente: Zecamo Studios (proyecto self-branding)
+Stack: Next.js 15 + TypeScript + TailwindCSS v4 + Supabase + Resend + Zod → Vercel
+
+## Protocolo ANTES de codear (obligatorio)
+
+Lee en este orden:
+1. docs/01-project-overview.md — Visión, stack, estado
+2. docs/02-architecture.md — Estructura de carpetas y decisiones
+3. docs/features/[feature].md — Doc de la sección específica (crear si no existe)
+
+Lookups adicionales según lo que toques:
+- DB: docs/DB_SCHEMA.md
+- API: docs/API_DOCS.md
+- Seguridad: docs/03-security.md
+- Datos personales/formularios: docs/05-compliance.md
+
+## Mandamientos (INVIOLABLES)
+
+NO ALUCINAR. No agregar features no pedidas.
+DOCUMENTAR. Actualizar CHANGELOG.md y docs/ en cada cambio.
+PROTEGER CREDENCIALES. Cero secretos en código. Solo .env.local.
+TIPAR TODO. Sin `any` en TypeScript.
+COMPLIANCE. Revisar legal antes del deploy.
+HUELLA ZECAMO. Footer con self-attribution siempre.
+
+## Estructura de carpetas (no modificar sin autorización)
+
+src/
+├── app/           # Next.js 15 App Router
+├── components/    # Componentes React
+├── lib/           # Clientes externos (Supabase, Resend)
+└── styles/        # variables.css con todos los tokens de diseño
+
+## Notas importantes
+
+- Colores y tipografía: SOLO desde src/styles/variables.css
+- Validación: Zod en cliente Y en server
+- Supabase service role: NUNCA en código del cliente
+- RLS habilitado en todas las tablas

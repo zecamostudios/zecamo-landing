@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Brand colors */
+  --color-bg: #0A0F1F;
+  --color-surface: #0F1730;
+  --color-surface2: #131C3A;
+  --color-primary: #2B5BFF;
+  --color-primary-hover: #4F7BFF;
+  --color-primary-dark: #0A1A4F;
+  --color-ink: #FFFFFF;
+  --color-muted: #93A4D1;
+  --color-line: #1A2547;
+
+  /* Typography */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Shadows */
+  --shadow-glow: 0 0 0 1px rgba(43,91,255,.35), 0 10px 40px -10px rgba(43,91,255,.55), 0 0 60px -10px rgba(43,91,255,.35);
+  --shadow-glow-sm: 0 0 0 1px rgba(43,91,255,.30), 0 6px 24px -8px rgba(43,91,255,.45);
+  --shadow-card: 0 1px 0 0 rgba(255,255,255,.04) inset, 0 30px 60px -30px rgba(0,0,0,.5);
+}
+
+:root { color-scheme: dark; }
+html, body { background: var(--color-bg); color: var(--color-ink); }
+body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--color-primary); color: #fff; }
+
+.dot-grid {
+  background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.line-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.grad-border { position: relative; background: var(--color-surface); border-radius: 20px; }
+.grad-border::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+  background: linear-gradient(140deg, rgba(43,91,255,.6), rgba(43,91,255,.05) 40%, rgba(43,91,255,0) 70%, rgba(79,123,255,.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+.grad-border-strong::before {
+  background: linear-gradient(140deg, rgba(43,91,255,.9), rgba(43,91,255,.1) 40%, rgba(79,123,255,.55));
+}
+
+.blob {
+  position: absolute; border-radius: 9999px; filter: blur(120px);
+  opacity: .55; pointer-events: none; mix-blend-mode: screen;
+}
+/* TODO: migrar a Framer Motion (motion.div con animate loops) */
+@keyframes float1 { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(60px,-40px,0) scale(1.1); } }
+@keyframes float2 { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-80px,50px,0) scale(1.15); } }
+@keyframes float3 { 0%,100% { transform: translate3d(0,0,0) scale(1.05); } 50% { transform: translate3d(40px,60px,0) scale(.95); } }
+.b-anim-1 { animation: float1 14s ease-in-out infinite; }
+.b-anim-2 { animation: float2 18s ease-in-out infinite; }
+.b-anim-3 { animation: float3 22s ease-in-out infinite; }
+
+.cta-glow { position: relative; }
+.cta-glow::after {
+  content: ""; position: absolute; inset: -4px; border-radius: inherit;
+  background: radial-gradient(closest-side, rgba(43,91,255,.55), transparent 70%);
+  filter: blur(14px); z-index: -1; opacity: .9; transition: opacity .25s ease;
+}
+.cta-glow:hover::after { opacity: 1; }
+
+/* TODO: migrar a Framer Motion (whileInView) */
+.reveal {
+  opacity: 0; transform: translate3d(0,24px,0);
+  transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1);
+}
+.reveal.in { opacity: 1; transform: none; }
+
+.word {
+  display: inline-block; opacity: 0; transform: translate3d(0,28px,0); filter: blur(8px);
+  transition: opacity .7s ease, transform .7s ease, filter .7s ease;
+}
+.word.in { opacity: 1; transform: none; filter: blur(0); }
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 40s linear infinite; }
+
+@keyframes arrowPulse {
+  0%, 100% { transform: translate(0, 0); opacity: 1; }
+  50% { transform: translate(6px, 0); opacity: 0.5; }
+}
+@keyframes arrowPulseDown {
+  0%, 100% { transform: translate(0, 0); opacity: 1; }
+  50% { transform: translate(0, 6px); opacity: 0.5; }
+}
+.arrow-pulse { animation: arrowPulse 1.8s ease-in-out infinite; }
+.arrow-pulse-down { animation: arrowPulseDown 1.8s ease-in-out infinite; }
+
+.field {
+  width: 100%; background: rgba(15,23,48,.55); border: 1px solid var(--color-line);
+  border-radius: 14px; padding: 14px 16px; color: var(--color-ink); font-size: 15px;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  backdrop-filter: blur(10px);
+}
+.field::placeholder { color: #5b6da0; }
+.field:focus {
+  outline: none; border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(43,91,255,.18);
+  background: rgba(15,23,48,.85);
+}

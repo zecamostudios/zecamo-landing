@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- TODO: reemplazar con logo real de Zecamo Studios -->
+  <rect width="64" height="64" rx="12" fill="#2B5BFF" fill-opacity="0.15"/>
+  <path d="M14 18h36L14 46h36" stroke="#2B5BFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,35 @@
+# zecamo-landing — Configuración para Aider (Método Zecamo v1.0)
+
+# Modelo recomendado
+model: claude-sonnet-4-6
+
+# Archivos que Aider debe leer siempre al inicio de la sesión
+read:
+  - docs/01-project-overview.md
+  - docs/02-architecture.md
+  - METODO_ZECAMO.md
+
+# Archivos nunca editables directamente (solo via instrucción explícita)
+no-auto-commits: false
+
+# Mensaje inicial personalizado para Aider
+# (Aider lo incluye como contexto del sistema)
+system-prompt: |
+  Sos un asistente de desarrollo para el proyecto zecamo-landing.
+
+  ANTES de cualquier cambio:
+  1. Leer docs/01-project-overview.md
+  2. Leer docs/02-architecture.md
+  3. Leer docs/features/[feature].md correspondiente
+
+  REGLAS INVIOLABLES:
+  - No agregar features no pedidas (Mandamiento I)
+  - No hardcodear credenciales (Mandamiento VIII)
+  - No usar `any` en TypeScript (Mandamiento IX)
+  - Actualizar CHANGELOG.md en cada cambio (Mandamiento IV)
+  - Colores y tipografía solo desde src/styles/variables.css
+  - Validación Zod en cliente Y server
+  - Supabase service role solo en server-side
+
+  Stack: Next.js 15 App Router + TypeScript + TailwindCSS v4 + Supabase + Resend + Zod
+  Agencia: Zecamo Studios — Proyecto: Landing Page institucional (self-branding)

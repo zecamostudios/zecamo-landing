@@ -1,0 +1,157 @@
+/* ============================================================
+   ZECAMO STUDIOS — Design System (CSS Custom Properties)
+   zecamo-landing v0.1.0
+
+   REGLA: Todos los valores de diseño (colores, tipografía,
+   spacing, etc.) deben venir de estas variables. Nunca usar
+   valores hardcodeados en Tailwind ni en CSS.
+   ============================================================ */
+
+@layer base {
+  :root {
+    /* ── COLORES DE MARCA ───────────────────────────────────── */
+    --color-primary:           #2B5BFF;  /* Azul eléctrico Zecamo — CTAs, links, highlights */
+    --color-secondary:         #0A1A4F;  /* Azul marino medio — fondos alternativos */
+    --color-accent:            #4F7BFF;  /* Hover, focus, estados interactivos */
+
+    /* ── FONDOS ─────────────────────────────────────────────── */
+    --color-bg-base:           #0A0F1F;  /* Fondo principal — azul marino muy oscuro */
+    --color-bg-surface:        #0D1526;  /* Cards, secciones con contraste suave */
+    --color-bg-elevated:       #111B35;  /* Hover states, elementos elevados */
+    --color-bg-overlay:        rgba(10, 15, 31, 0.85); /* Overlays y modales */
+
+    /* ── TEXTO ──────────────────────────────────────────────── */
+    --color-text-primary:      #FFFFFF;  /* Texto principal */
+    --color-text-secondary:    #93A4D1;  /* Texto de apoyo, descripciones */
+    --color-text-muted:        #5A6A8A;  /* Placeholders, etiquetas pequeñas */
+    --color-text-inverse:      #0A0F1F;  /* Texto sobre fondos claros (si aplica) */
+
+    /* ── BORDES ─────────────────────────────────────────────── */
+    --color-border-subtle:     #1C2B50;  /* Bordes muy suaves */
+    --color-border-default:    #243460;  /* Bordes estándar */
+    --color-border-strong:     #2B5BFF;  /* Bordes de focus / primarios */
+
+    /* ── ESTADOS ────────────────────────────────────────────── */
+    --color-success:           #22C55E;
+    --color-warning:           #F59E0B;
+    --color-error:             #EF4444;
+    --color-info:              #3B82F6;
+
+    /* ── GRADIENTES ─────────────────────────────────────────── */
+    --gradient-primary:        linear-gradient(135deg, #2B5BFF 0%, #0A1A4F 100%);
+    --gradient-hero:           linear-gradient(180deg, #0A0F1F 0%, #0D1526 50%, #0A0F1F 100%);
+    --gradient-glow:           radial-gradient(ellipse at center, rgba(43, 91, 255, 0.15) 0%, transparent 70%);
+    --gradient-card:           linear-gradient(135deg, rgba(17, 27, 53, 0.8) 0%, rgba(13, 21, 38, 0.8) 100%);
+
+    /* ── TIPOGRAFÍA — FAMILIAS ──────────────────────────────── */
+    --font-sans:               'Geist', 'Inter', system-ui, sans-serif;
+    --font-display:            'Space Grotesk', 'Geist', system-ui, sans-serif;
+    --font-mono:               'Geist Mono', 'Fira Code', monospace;
+
+    /* ── TIPOGRAFÍA — ESCALA ────────────────────────────────── */
+    /* Display — para hero y section headlines grandes */
+    --text-display-xl:         clamp(3rem, 6vw + 1rem, 6rem);    /* ~96px desktop */
+    --text-display-lg:         clamp(2.5rem, 5vw + 0.75rem, 4.5rem); /* ~72px */
+    --text-display-md:         clamp(2rem, 4vw + 0.5rem, 3.5rem);    /* ~56px */
+
+    /* Headings — para section titles */
+    --text-heading-xl:         clamp(1.75rem, 3vw + 0.5rem, 2.5rem);  /* ~40px */
+    --text-heading-lg:         clamp(1.5rem, 2.5vw + 0.25rem, 2rem);  /* ~32px */
+    --text-heading-md:         clamp(1.25rem, 2vw + 0.125rem, 1.5rem); /* ~24px */
+
+    /* Body — texto corrido */
+    --text-body-lg:            1.125rem; /* 18px */
+    --text-body-md:            1rem;     /* 16px */
+    --text-body-sm:            0.875rem; /* 14px */
+
+    /* Labels — etiquetas, badges, botones */
+    --text-label-lg:           0.875rem; /* 14px */
+    --text-label-md:           0.75rem;  /* 12px */
+    --text-label-sm:           0.6875rem; /* 11px */
+
+    /* ── SPACING ────────────────────────────────────────────── */
+    --spacing-section-y:       clamp(4rem, 8vw, 8rem);  /* Padding vertical de secciones */
+    --spacing-section-x:       clamp(1.5rem, 5vw, 6rem); /* Padding horizontal de secciones */
+    --spacing-container-max:   80rem;  /* 1280px — max-width del contenido */
+    --spacing-gutter:          clamp(1rem, 3vw, 2rem);  /* Gutter entre columnas */
+
+    /* ── BORDER RADIUS ──────────────────────────────────────── */
+    --radius-sm:               0.25rem;  /* 4px */
+    --radius-md:               0.5rem;   /* 8px */
+    --radius-lg:               0.75rem;  /* 12px */
+    --radius-xl:               1rem;     /* 16px */
+    --radius-2xl:              1.5rem;   /* 24px */
+    --radius-full:             9999px;   /* Pills / badges */
+
+    /* ── SOMBRAS ────────────────────────────────────────────── */
+    --shadow-glow-primary:     0 0 40px rgba(43, 91, 255, 0.3), 0 0 80px rgba(43, 91, 255, 0.1);
+    --shadow-glow-subtle:      0 0 20px rgba(43, 91, 255, 0.15);
+    --shadow-card:             0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+    --shadow-card-hover:       0 4px 16px rgba(0, 0, 0, 0.5), 0 0 24px rgba(43, 91, 255, 0.2);
+    --shadow-button:           0 2px 8px rgba(43, 91, 255, 0.4);
+
+    /* ── TRANSICIONES ───────────────────────────────────────── */
+    --transition-fast:         150ms;
+    --transition-base:         250ms;
+    --transition-slow:         400ms;
+    --transition-easing:       cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ── Z-INDEX ────────────────────────────────────────────── */
+    --z-dropdown:              1000;
+    --z-sticky:                1100;
+    --z-overlay:               1200;
+    --z-modal:                 1300;
+    --z-toast:                 1400;
+  }
+}
+
+/* ── RESET Y BASE ─────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── UTILIDADES GLOBALES ──────────────────────────────────── */
+
+.section-padding {
+  padding-top: var(--spacing-section-y);
+  padding-bottom: var(--spacing-section-y);
+  padding-left: var(--spacing-section-x);
+  padding-right: var(--spacing-section-x);
+}
+
+.container {
+  max-width: var(--spacing-container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-section-x);
+  padding-right: var(--spacing-section-x);
+}
+
+/* Focus visible accesible */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Selección de texto */
+::selection {
+  background-color: rgba(43, 91, 255, 0.3);
+  color: var(--color-text-primary);
+}
