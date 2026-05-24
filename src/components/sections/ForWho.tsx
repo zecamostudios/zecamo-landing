@@ -49,10 +49,11 @@ function AudienceCard({ a, i }: { a: Audience; i: number }) {
   const [hover, setHover] = useState(false);
   const Icon = a.Icon;
   return (
-    <Reveal delay={i * 100} className="grad-border p-7 md:p-10 h-full overflow-hidden">
+    <Reveal delay={i * 100} className="grad-border h-full overflow-hidden">
       <div
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        className="p-7 md:p-10 h-full"
         style={{
           borderRadius: 20,
           boxShadow: hover
