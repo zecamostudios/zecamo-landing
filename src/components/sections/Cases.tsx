@@ -39,8 +39,8 @@ export const PROJECTS: Project[] = [
     domain: "levelstudios.site",
     image: "/cases/level.png",
     alt: "LEVEL Studios — preview",
-    imagePosition: "right center",
-    imageZoom: 1,
+    imagePosition: "top",
+    imageZoom: 1.15,
   },
   {
     id: "finca",
