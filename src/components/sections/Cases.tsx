@@ -151,10 +151,10 @@ export function BrowserMockup({
           aspectRatio: "16 / 10",
           backgroundImage: `url(${src})`,
           backgroundSize: "cover",
-          backgroundPosition: "center top",
+          backgroundPosition: objectPosition,
           backgroundRepeat: "no-repeat",
           backgroundColor: "var(--color-bg)",
-          transform: `scale(${hover ? 1.02 : 1})`,
+          transform: `scale(${hover ? imageZoom * 1.02 : imageZoom})`,
           transition: "transform 500ms ease",
           transformOrigin: "center center",
         }}

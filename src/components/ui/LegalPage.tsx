@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,12 +13,12 @@ export default function LegalPage({ eyebrow, content, backLinks }: LegalPageProp
   return (
     <main className="min-h-screen bg-bg py-24 px-5 md:px-8">
       <div className="max-w-3xl mx-auto">
-        <a
+        <Link
           href="/"
           className="inline-flex items-center gap-2 text-muted hover:text-primary transition text-[14px] mb-10"
         >
           <ArrowLeft size={14} strokeWidth={2} /> Volver al inicio
-        </a>
+        </Link>
 
         <div className="font-mono text-[11px] tracking-[.22em] uppercase text-muted mb-8">
           Legal · {eyebrow}

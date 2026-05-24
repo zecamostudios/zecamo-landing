@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, KeyboardEvent } from "react";
 import {
-  Workflow, Code2, BotMessageSquare, Compass, Lightbulb, ArrowRight, type LucideIcon,
+  Workflow, Code2, BotMessageSquare, Compass, Lightbulb, ArrowRight,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import Mesh from "@/components/ui/Mesh";
