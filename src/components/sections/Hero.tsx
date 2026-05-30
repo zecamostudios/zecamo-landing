@@ -143,9 +143,8 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
 
         <Reveal delay={900}>
           <p className="mt-7 md:mt-9 text-[17px] md:text-[19px] text-muted max-w-2xl leading-relaxed">
-            Diagnosticamos, construimos y operamos la capa de IA de tu empresa.
-            Automatización con n8n, agentes que trabajan 24/7,
-            vibe coding a velocidad récord y consultoría estratégica.
+            Construimos la capa de IA de tu empresa. Desde el diagnóstico hasta los agentes
+            que trabajan mientras dormís.
           </p>
         </Reveal>
 
@@ -165,7 +164,7 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
             <Stat value="24/7" label="Agentes activos" tone="primary" />
             <Stat value="< 2 sem" label="Time-to-prototype" />
             <Stat value="+40h" label="Ahorradas / mes / equipo" />
-            <Stat value="4 verticales" label="Servicios integrados" />
+            <Stat value="6 verticales" label="Servicios integrados" />
           </div>
         </Reveal>
       </div>
@@ -187,7 +186,8 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
               <div key={i} className="flex items-center gap-12 pr-12">
                 {[
                   "n8n", "OpenAI", "Claude", "Supabase", "Vercel", "Next.js",
-                  "WhatsApp Business", "Notion", "Slack", "HubSpot", "PostgreSQL", "Stripe",
+                  "WhatsApp Business", "Notion", "Slack", "PostgreSQL", "Stripe",
+                  "Make", "Zapier", "Airtable",
                 ].map((l, j) => (
                   <span key={j} className="flex items-center gap-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/70" />

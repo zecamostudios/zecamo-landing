@@ -2,6 +2,7 @@
 import { useEffect, useState, KeyboardEvent } from "react";
 import {
   Workflow, Code2, BotMessageSquare, Compass, Lightbulb, ArrowRight,
+  LayoutDashboard, Share2, BarChart3,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import Mesh from "@/components/ui/Mesh";
@@ -147,11 +148,101 @@ export const SERVICES: ServiceData[] = [
     },
   },
   {
+    id: "dashboards",
+    Icon: LayoutDashboard,
+    tag: "04",
+    title: "Dashboards & CRM a medida",
+    desc: "Paneles internos con todo lo que necesita tu negocio: clientes, leads, finanzas, proyectos y métricas en tiempo real. Sin depender de un dev para cada cambio.",
+    chips: ["CRM custom", "Métricas en tiempo real", "Supabase + Next.js"],
+    modal: {
+      subtitle: "Paneles internos que te dan visibilidad total de tu negocio en tiempo real.",
+      howItWorks: [
+        "Las planillas de Excel y los dashboards genéricos no escalan con tu negocio. Construimos CRMs y paneles internos hechos exactamente para lo que necesitás: tus procesos, tus métricas, tu lógica de negocio.",
+        "Cada dashboard incluye autenticación, roles de usuario, datos en tiempo real con Supabase y la posibilidad de que tu equipo opere sin depender de un dev para cada cambio.",
+      ],
+      benefits: [
+        "Visibilidad total de tu negocio desde un solo lugar",
+        "Datos en tiempo real: sin refreshes manuales",
+        "Sin dependencia de un dev para cambios operativos",
+        "CRM a medida de tu proceso de ventas real",
+        "Roles y permisos para cada integrante del equipo",
+      ],
+      useCases: [
+        "CRM de ventas con pipeline, leads y seguimiento",
+        "Panel de finanzas: ingresos, egresos y proyecciones",
+        "Gestión de stock y control de pedidos",
+        "Dashboard de métricas del negocio en tiempo real",
+        "Herramientas internas de gestión de proyectos o tareas",
+      ],
+      stack: ["Next.js", "Supabase", "PostgreSQL", "TailwindCSS", "Vercel", "Auth"],
+    },
+  },
+  {
+    id: "integraciones",
+    Icon: Share2,
+    tag: "05",
+    title: "Integraciones entre sistemas",
+    desc: "Conectamos WhatsApp, Instagram, formularios, CRMs y cualquier herramienta que ya uses. Un lead que entra por cualquier canal llega solo a donde tiene que estar.",
+    chips: ["Webhooks", "APIs", "n8n + Make"],
+    modal: {
+      subtitle: "Un lead que entra por WhatsApp llega solo a tu CRM, tu agenda y tu notificación.",
+      howItWorks: [
+        "Cada empresa tiene un ecosistema de herramientas diferente. El problema es que no hablan entre sí. Un lead llega por Instagram, se responde por WhatsApp, se anota en una planilla y se olvida en el CRM. Eso se termina.",
+        "Conectamos todas tus herramientas con webhooks, APIs y flujos de n8n o Make. El resultado: tus datos fluyen solos, sin copiar y pegar entre apps.",
+      ],
+      benefits: [
+        "Cero duplicación manual de datos entre herramientas",
+        "Leads de cualquier canal caen en el mismo lugar",
+        "Notificaciones en tiempo real en WhatsApp o Slack",
+        "Sincronización bidireccional entre sistemas",
+        "Flujos auditables: cada operación queda registrada",
+      ],
+      useCases: [
+        "Instagram Lead Ads → CRM → WhatsApp de bienvenida",
+        "Formulario web → Supabase → notificación Telegram",
+        "WooCommerce ↔ sistema de stock ↔ contabilidad",
+        "Agenda ↔ WhatsApp Bot ↔ confirmación automática",
+        "Múltiples canales → una única bandeja de entrada",
+      ],
+      stack: ["n8n", "Make", "Webhooks", "REST APIs", "WhatsApp API", "Supabase"],
+    },
+  },
+  {
+    id: "reportes",
+    Icon: BarChart3,
+    tag: "06",
+    title: "Reportes automáticos",
+    desc: "Cada semana o mes, el dueño recibe en WhatsApp o email un resumen de sus métricas clave: ventas, leads, conversión y más. Sin pedirle nada a nadie.",
+    chips: ["n8n", "WhatsApp · Email", "Datos en tiempo real"],
+    modal: {
+      subtitle: "Tus métricas clave, en tu WhatsApp, sin que tengas que pedirle nada a nadie.",
+      howItWorks: [
+        "Los dueños de negocios no tienen tiempo de entrar a cada plataforma para ver cómo va el mes. Diseñamos reportes automáticos que consolidan datos de múltiples fuentes y los entregan donde ya estás: WhatsApp, email o Telegram.",
+        "Cada reporte es personalizado a tu negocio: qué métricas importan, con qué frecuencia, en qué formato.",
+      ],
+      benefits: [
+        "Decisiones basadas en datos, no en intuición",
+        "Sin entrar a múltiples plataformas para ver el estado",
+        "Recibís el reporte cuando y donde querés",
+        "Detectás problemas antes de que se vuelvan crisis",
+        "Todo el equipo habla el mismo idioma de métricas",
+      ],
+      useCases: [
+        "Reporte semanal de ventas en WhatsApp cada lunes a las 8am",
+        "Resumen mensual con leads, conversión y facturación",
+        "Alertas automáticas cuando una métrica baja del umbral",
+        "Reporte de performance de campañas publicitarias",
+        "Estado de stock crítico en tiempo real",
+      ],
+      stack: ["n8n", "Make", "WhatsApp API", "Resend", "Supabase", "Google Sheets"],
+    },
+  },
+  {
     id: "consultoria",
     Icon: Lightbulb,
-    tag: "04",
+    tag: "07",
     title: "Consultoría IA",
-    desc: "Auditoría, estrategia y capacitación para implementar IA en tu empresa sin tirarla por la ventana en 3 meses.",
+    desc: "Estrategia, auditoría y capacitación para implementar IA sin tirar plata. Te decimos qué sí conviene, qué no, y cómo hacerlo sostenible.",
     chips: ["Roadmap 90 días", "Capacitación a equipos", "Gobierno & costos"],
     modal: {
       subtitle: "Estrategia, auditoría y capacitación para implementar IA sin perder plata.",
@@ -316,7 +407,7 @@ function ServiceCard({ s, i, onOpen }: ServiceCardProps) {
           >
             <Icon size={22} strokeWidth={1.75} className="text-primary" />
           </div>
-          <span className="font-mono text-[11px] tracking-[.2em] text-muted/60">{s.tag} / 04</span>
+          <span className="font-mono text-[11px] tracking-[.2em] text-muted/60">{s.tag} / 07</span>
         </div>
 
         <h3 className="font-display font-semibold text-[20px] md:text-[22px] tracking-tight leading-tight">
@@ -369,7 +460,7 @@ export default function Services() {
       <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
           <SectionTitle
-            eyebrow="Servicios · 05"
+            eyebrow="Servicios · 08"
             title={
               <>
                 Primero, ordenamos.
@@ -391,8 +482,8 @@ export default function Services() {
           <FeaturedServiceCard s={featured} onOpen={() => setActive(featured)} />
         </div>
 
-        {/* Regular: 4 services in 2x2 grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
+        {/* Regular: 7 services in 3-col grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
           {regular.map((s, i) => (
             <ServiceCard key={s.id} s={s} i={i} onOpen={setActive} />
           ))}

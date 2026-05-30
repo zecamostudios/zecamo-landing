@@ -3,7 +3,7 @@ import { useEffect, useState, FormEvent } from "react";
 import {
   ArrowUpRight, Workflow, Code2, BotMessageSquare, Compass, HelpCircle, Lightbulb,
   SendHorizontal, RotateCcw, Globe, Camera, X,
-  Check, type LucideIcon,
+  Check, LayoutDashboard, Share2, BarChart3, type LucideIcon,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import Mesh from "@/components/ui/Mesh";
@@ -12,19 +12,22 @@ import SectionTitle from "@/components/ui/SectionTitle";
 import PrimaryBtn from "@/components/ui/PrimaryBtn";
 
 interface ServiceOption {
-  id: "diagnostico" | "automatizacion" | "vibe" | "agentes" | "consultoria" | "otra";
+  id: "diagnostico" | "automatizacion" | "vibe" | "agentes" | "dashboards" | "integraciones" | "reportes" | "consultoria" | "otra";
   label: string;
   Icon: LucideIcon;
   featured?: boolean;
 }
 
 const SERVICE_OPTIONS: ServiceOption[] = [
-  { id: "diagnostico",   label: "Diagnóstico Zecamo",               Icon: Compass, featured: true },
-  { id: "automatizacion", label: "Automatización con IA",          Icon: Workflow },
-  { id: "vibe",           label: "Vibe Coding",                    Icon: Code2 },
-  { id: "agentes",        label: "Agentes IA B2B",                 Icon: BotMessageSquare },
-  { id: "consultoria",    label: "Consultoría IA",                 Icon: Lightbulb },
-  { id: "otra",           label: "No estoy seguro / Otra consulta", Icon: HelpCircle },
+  { id: "diagnostico",    label: "Diagnóstico Zecamo",               Icon: Compass, featured: true },
+  { id: "automatizacion", label: "Automatización con IA",            Icon: Workflow },
+  { id: "vibe",           label: "Vibe Coding",                      Icon: Code2 },
+  { id: "agentes",        label: "Agentes IA B2B",                   Icon: BotMessageSquare },
+  { id: "dashboards",     label: "Dashboards & CRM a medida",        Icon: LayoutDashboard },
+  { id: "integraciones",  label: "Integraciones entre sistemas",     Icon: Share2 },
+  { id: "reportes",       label: "Reportes automáticos",             Icon: BarChart3 },
+  { id: "consultoria",    label: "Consultoría IA",                   Icon: Lightbulb },
+  { id: "otra",           label: "No estoy seguro / Otra consulta",  Icon: HelpCircle },
 ];
 
 interface FormState {
@@ -309,8 +312,8 @@ interface ServiceRadioProps {
 
 function ServiceRadio({ value, onChange, error }: ServiceRadioProps) {
   const featured = SERVICE_OPTIONS[0]; // Diagnóstico
-  const main = SERVICE_OPTIONS.slice(1, 5); // Automatización, Vibe, Agentes, Consultoría
-  const other = SERVICE_OPTIONS[5]; // No estoy seguro
+  const main = SERVICE_OPTIONS.slice(1, 8); // 01–07
+  const other = SERVICE_OPTIONS[8]; // No estoy seguro
   return (
     <div className="flex flex-col gap-2.5">
       <label className="text-[12px] tracking-[.18em] uppercase font-mono text-muted">
@@ -323,8 +326,8 @@ function ServiceRadio({ value, onChange, error }: ServiceRadioProps) {
         onSelect={() => onChange(featured.id)}
         featured
       />
-      {/* 2x2 grid for regular services */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      {/* 2-col grid for regular services */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {main.map((o) => (
           <RadioCard
             key={o.id}

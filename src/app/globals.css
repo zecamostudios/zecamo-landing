@@ -3,18 +3,18 @@
 
 @theme {
   /* Brand colors */
-  --color-bg: #0A0F1F;
-  --color-surface: #0F1730;
-  --color-surface2: #131C3A;
+  --color-bg: #090909;
+  --color-surface: #111111;
+  --color-surface2: #181818;
   --color-primary: #2B5BFF;
   --color-primary-hover: #4F7BFF;
-  --color-primary-dark: #0A1A4F;
+  --color-primary-dark: #0d1e5a;
   --color-ink: #FFFFFF;
-  --color-muted: #93A4D1;
-  --color-line: #1A2547;
+  --color-muted: #8A8FA8;
+  --color-line: #1E1E2A;
 
   /* Typography */
-  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 

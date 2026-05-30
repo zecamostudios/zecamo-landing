@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Syne, Inter } from "next/font/google";
 import "./globals.css";
 import CursorBlob from "@/components/ui/CursorBlob";
 
-const spaceGrotesk = Space_Grotesk({
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-syne",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -19,11 +19,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Zecamo Studios — IA que trabaja. Resultados que se miden.",
+    default: "Zecamo Studios — Automatizá lo que te frena. Escalá lo que te impulsa.",
     template: "%s | Zecamo Studios",
   },
   description:
-    "Agencia B2B argentina de automatización con IA, vibe coding, agentes IA y consultoría. Sitios que venden. Operaciones que escalan. Construido en Tucumán, pensado para el mundo.",
+    "Construimos la capa de IA de tu empresa. Desde el diagnóstico hasta los agentes que trabajan mientras dormís. Automatización, vibe coding, agentes IA y consultoría B2B. Tucumán, Argentina.",
   metadataBase: new URL("https://zecamostudios.com"),
   keywords: [
     "agencia IA argentina",
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   alternates: { canonical: "https://zecamostudios.com" },
   openGraph: {
-    title: "Zecamo Studios — IA que trabaja. Resultados que se miden.",
-    description: "Sitios que venden. Operaciones que escalan. Agencia B2B de automatización con IA, Tucumán.",
+    title: "Zecamo Studios — Automatizá lo que te frena. Escalá lo que te impulsa.",
+    description: "Construimos la capa de IA de tu empresa. Automatización, agentes IA, vibe coding. Tucumán, Argentina.",
     url: "https://zecamostudios.com",
     siteName: "Zecamo Studios",
     locale: "es_AR",
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zecamo Studios — IA que trabaja. Resultados que se miden.",
-    description: "Sitios que venden. Operaciones que escalan.",
+    title: "Zecamo Studios — Automatizá lo que te frena. Escalá lo que te impulsa.",
+    description: "Construimos la capa de IA de tu empresa. Automatización, agentes IA, vibe coding.",
     images: ["/opengraph-image"],
   },
   icons: {
@@ -71,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${spaceGrotesk.variable} ${inter.variable}`}>
+    <html lang="es" className={`${syne.variable} ${inter.variable}`}>
       <body className="bg-bg text-ink font-body antialiased">
         <CursorBlob />
         {children}
