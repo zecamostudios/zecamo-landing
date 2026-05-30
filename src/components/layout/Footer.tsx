@@ -93,6 +93,7 @@ export default function Footer() {
             </a>
             <p className="mt-5 text-muted text-[15px] leading-relaxed max-w-sm">
               Diseñamos, construimos y operamos la capa de IA de tu empresa.
+              IA que trabaja. Resultados que se miden.
             </p>
             <div className="mt-6 flex items-center gap-2">
               {socials.map((s) => (
@@ -104,14 +105,12 @@ export default function Footer() {
           <FooterCol
             title="Servicios"
             items={[
-              { l: "Diagnóstico Zecamo", h: "#servicios" },
               { l: "Automatización con IA", h: "#servicios" },
               { l: "Vibe Coding", h: "#servicios" },
               { l: "Agentes IA B2B", h: "#servicios" },
               { l: "Dashboards & CRM", h: "#servicios" },
               { l: "Integraciones", h: "#servicios" },
               { l: "Reportes automáticos", h: "#servicios" },
-              { l: "Consultoría IA", h: "#servicios" },
             ]}
           />
           <FooterCol

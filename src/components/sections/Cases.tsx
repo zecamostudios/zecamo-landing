@@ -13,7 +13,7 @@ export const PROJECTS: Project[] = [
     category: "Streetwear · Drop",
     longTag: "Streetwear · E-commerce + Backoffice",
     name: "LEVEL",
-    desc: "Drop limitado con 13 piezas y reservas por WhatsApp. Identidad bold, tap-to-flip en cada producto, conversión directa sin checkout.",
+    desc: "Drop limitado con reservas por WhatsApp, stock en tiempo real, tap-to-flip en cada producto y backoffice completo para que el equipo opere sin tocar código.",
     subtitle: "Drop limitado con sitio público bold y dashboard interno de gestión.",
     chips: ["Next.js", "Mobile-first", "WhatsApp Flow"],
     fullStack: ["Next.js 15", "React", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
@@ -47,7 +47,7 @@ export const PROJECTS: Project[] = [
     category: "Eventos · Reservas",
     longTag: "Eventos · Reservas + Dashboard end-to-end",
     name: "Finca Cajal",
-    desc: "Predio de eventos y fútbol en Tafí Viejo. Sitio completo con galería, reseñas reales integradas desde Google y formulario de reservas.",
+    desc: "Predio de eventos en Tafí Viejo. Sitio institucional, formulario de reservas, reseñas reales de Google integradas y dashboard interno para gestionar leads, calendario y finanzas.",
     subtitle: "Predio de eventos con sitio público y dashboard interno completo para operar todo el negocio.",
     chips: ["Web institucional", "Reseñas Google", "WhatsApp"],
     fullStack: ["Next.js", "Supabase", "PostgreSQL", "WhatsApp", "Google Maps", "Vercel"],
@@ -80,7 +80,7 @@ export const PROJECTS: Project[] = [
     category: "E-commerce · Suplementos",
     longTag: "E-commerce · Suplementos + Panel de operaciones",
     name: "Suplementos Tucumán",
-    desc: "Catálogo de suplementos deportivos con flujo de pedido por WhatsApp. Optimizado para conversión mobile y SEO local.",
+    desc: "Catálogo con checkout directo a WhatsApp, control de stock, tracking de pedidos y panel de operaciones. De Instagram-y-WhatsApp a sistema real.",
     subtitle: "E-commerce de suplementos con flujo de pedido por WhatsApp y panel completo para operar las ventas.",
     chips: ["E-commerce", "Catálogo dinámico", "SEO local"],
     fullStack: ["Next.js", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
@@ -311,7 +311,7 @@ export default function Cases() {
                 Trabajos <span className="text-primary">recientes</span>.
               </>
             }
-            kicker="Tres clientes, tres industrias. Una sola obsesión: que el sitio venda, no que solo se vea."
+            kicker="Tres clientes, tres industrias. Una obsesión: que el sistema trabaje, no solo se vea bien."
           />
           <Reveal delay={150}>
             <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/40 backdrop-blur-md px-3 py-1.5 self-start md:self-end">

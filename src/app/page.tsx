@@ -6,7 +6,6 @@ import Services from "@/components/sections/Services";
 import HowWeWork from "@/components/sections/HowWeWork";
 import ForWho from "@/components/sections/ForWho";
 import Cases from "@/components/sections/Cases";
-import Method from "@/components/sections/Method";
 import Contact from "@/components/sections/Contact";
 
 export default function Page() {
@@ -19,7 +18,6 @@ export default function Page() {
         <HowWeWork />
         <ForWho />
         <Cases />
-        <Method />
         <Contact />
       </main>
       <Footer />

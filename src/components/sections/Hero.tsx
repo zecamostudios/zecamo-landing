@@ -163,8 +163,8 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
           <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-px bg-line/60 rounded-2xl overflow-hidden border border-line">
             <Stat value="24/7" label="Agentes activos" tone="primary" />
             <Stat value="< 2 sem" label="Time-to-prototype" />
-            <Stat value="+40h" label="Ahorradas / mes / equipo" />
-            <Stat value="6 verticales" label="Servicios integrados" />
+            <Stat value="3 proyectos" label="En producción" />
+            <Stat value="7 servicios" label="Integrados" />
           </div>
         </Reveal>
       </div>

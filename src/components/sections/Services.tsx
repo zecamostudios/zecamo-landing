@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, KeyboardEvent } from "react";
 import {
-  Workflow, Code2, BotMessageSquare, Compass, Lightbulb, ArrowRight,
+  Workflow, Code2, BotMessageSquare, Compass, ArrowRight,
   LayoutDashboard, Share2, BarChart3,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
@@ -237,36 +237,6 @@ export const SERVICES: ServiceData[] = [
       stack: ["n8n", "Make", "WhatsApp API", "Resend", "Supabase", "Google Sheets"],
     },
   },
-  {
-    id: "consultoria",
-    Icon: Lightbulb,
-    tag: "07",
-    title: "Consultoría IA",
-    desc: "Estrategia, auditoría y capacitación para implementar IA sin tirar plata. Te decimos qué sí conviene, qué no, y cómo hacerlo sostenible.",
-    chips: ["Roadmap 90 días", "Capacitación a equipos", "Gobierno & costos"],
-    modal: {
-      subtitle: "Estrategia, auditoría y capacitación para implementar IA sin perder plata.",
-      howItWorks: [
-        "Muchas empresas se entusiasman con la IA, gastan en herramientas que no usan, contratan cursos genéricos y terminan más frustradas que antes. Nosotros venimos primero, auditamos, te decimos qué SÍ y qué NO conviene, y te dejamos un roadmap concreto de 90 días.",
-        "Si te conviene implementar, lo hacemos juntos. Si no, te lo decimos también. La consultoría incluye capacitación a tu equipo para que la IA sea una herramienta, no una dependencia.",
-      ],
-      benefits: [
-        "Roadmap claro de 90 días con prioridades y costos",
-        "Auditoría de procesos: dónde la IA mete diferencia real",
-        "Capacitación práctica a tu equipo (no teoría)",
-        "Gobierno de costos: evitar gastos descontrolados en tokens",
-        "Decisiones basadas en datos, no en hype",
-      ],
-      useCases: [
-        "Empresas que probaron ChatGPT y quieren ir más allá",
-        "Equipos que necesitan aprender a trabajar con IA día a día",
-        "Founders que quieren saber qué priorizar",
-        "Organizaciones grandes con políticas de uso de IA",
-        "Diagnóstico antes de contratar a una agencia (sí, te decimos si te conviene Zecamo o no)",
-      ],
-      stack: ["Diagnóstico", "Workshops", "Documentación", "Métricas", "Frameworks"],
-    },
-  },
 ];
 
 interface ServiceCardProps {
@@ -407,7 +377,7 @@ function ServiceCard({ s, i, onOpen }: ServiceCardProps) {
           >
             <Icon size={22} strokeWidth={1.75} className="text-primary" />
           </div>
-          <span className="font-mono text-[11px] tracking-[.2em] text-muted/60">{s.tag} / 07</span>
+          <span className="font-mono text-[11px] tracking-[.2em] text-muted/60">{s.tag} / 06</span>
         </div>
 
         <h3 className="font-display font-semibold text-[20px] md:text-[22px] tracking-tight leading-tight">
@@ -460,7 +430,7 @@ export default function Services() {
       <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
           <SectionTitle
-            eyebrow="Servicios · 08"
+            eyebrow="Servicios · 07"
             title={
               <>
                 Primero, ordenamos.

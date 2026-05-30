@@ -17,7 +17,7 @@ const PHASES = [
     num: "02",
     Icon: Rocket,
     title: "Implementación",
-    desc: "Ejecutamos el roadmap. Automatización, agentes IA, vibe coding o consultoría — según lo que tu negocio necesite.",
+    desc: "Ejecutamos el roadmap. Automatización, agentes IA, vibe coding o dashboards — según lo que tu negocio necesite.",
     tags: ["Sprints cortos", "Stack moderno", "Operamos post-deploy"],
   },
 ] as const;

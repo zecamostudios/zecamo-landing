@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, FormEvent } from "react";
 import {
-  ArrowUpRight, Workflow, Code2, BotMessageSquare, Compass, HelpCircle, Lightbulb,
+  ArrowUpRight, Workflow, Code2, BotMessageSquare, Compass, HelpCircle,
   SendHorizontal, RotateCcw, Globe, Camera, X,
   Check, LayoutDashboard, Share2, BarChart3, type LucideIcon,
 } from "lucide-react";
@@ -12,7 +12,7 @@ import SectionTitle from "@/components/ui/SectionTitle";
 import PrimaryBtn from "@/components/ui/PrimaryBtn";
 
 interface ServiceOption {
-  id: "diagnostico" | "automatizacion" | "vibe" | "agentes" | "dashboards" | "integraciones" | "reportes" | "consultoria" | "otra";
+  id: "diagnostico" | "automatizacion" | "vibe" | "agentes" | "dashboards" | "integraciones" | "reportes" | "otra";
   label: string;
   Icon: LucideIcon;
   featured?: boolean;
@@ -26,7 +26,6 @@ const SERVICE_OPTIONS: ServiceOption[] = [
   { id: "dashboards",     label: "Dashboards & CRM a medida",        Icon: LayoutDashboard },
   { id: "integraciones",  label: "Integraciones entre sistemas",     Icon: Share2 },
   { id: "reportes",       label: "Reportes automáticos",             Icon: BarChart3 },
-  { id: "consultoria",    label: "Consultoría IA",                   Icon: Lightbulb },
   { id: "otra",           label: "No estoy seguro / Otra consulta",  Icon: HelpCircle },
 ];
 
@@ -312,8 +311,8 @@ interface ServiceRadioProps {
 
 function ServiceRadio({ value, onChange, error }: ServiceRadioProps) {
   const featured = SERVICE_OPTIONS[0]; // Diagnóstico
-  const main = SERVICE_OPTIONS.slice(1, 8); // 01–07
-  const other = SERVICE_OPTIONS[8]; // No estoy seguro
+  const main = SERVICE_OPTIONS.slice(1, 7); // 01–06
+  const other = SERVICE_OPTIONS[7]; // No estoy seguro
   return (
     <div className="flex flex-col gap-2.5">
       <label className="text-[12px] tracking-[.18em] uppercase font-mono text-muted">
