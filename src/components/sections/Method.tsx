@@ -6,7 +6,7 @@ interface Step { n: string; title: string; desc: string; }
 
 const STEPS: Step[] = [
   { n: "01", title: "Diagnosticamos", desc: "Mapeamos tus procesos y encontramos dónde la IA mete diferencia real." },
-  { n: "02", title: "Construimos",    desc: "Diseñamos, codeamos y deployamos la solución. Sprints cortos, sin sorpresas." },
+  { n: "02", title: "Construimos",    desc: "Diseñamos, construimos y ponemos online la solución. Entregas rápidas, sin sorpresas." },
   { n: "03", title: "Operamos",       desc: "Monitoreamos, optimizamos y escalamos según uso real." },
 ];
 

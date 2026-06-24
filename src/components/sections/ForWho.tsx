@@ -35,12 +35,12 @@ const AUDIENCE: Audience[] = [
   },
   {
     Icon: Rocket,
-    title: "Founders & equipos producto",
-    intro: "Equipos que necesitan construir software rápido sin un dev senior fijo.",
+    title: "Negocios que quieren su web o sistema",
+    intro: "Emprendimientos y empresas que necesitan una web o una herramienta a medida, sin armar un equipo técnico propio.",
     signals: [
-      "MVPs, prototipos, herramientas internas",
-      "Dashboards y paneles a medida",
-      "Integraciones entre sistemas existentes",
+      "Una web o tienda online profesional",
+      "Paneles internos para ver y gestionar todo",
+      "Conectar las herramientas que ya usan",
     ],
   },
 ];

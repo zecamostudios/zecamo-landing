@@ -92,8 +92,8 @@ export default function Footer() {
               </span>
             </a>
             <p className="mt-5 text-muted text-[15px] leading-relaxed max-w-sm">
-              Diseñamos, construimos y operamos la capa de IA de tu empresa.
-              IA que trabaja. Resultados que se miden.
+              Diseñamos, construimos y operamos las herramientas digitales de tu empresa.
+              Tecnología que trabaja. Resultados que se miden.
             </p>
             <div className="mt-6 flex items-center gap-2">
               {socials.map((s) => (
@@ -106,7 +106,7 @@ export default function Footer() {
             title="Servicios"
             items={[
               { l: "Automatización con IA", h: "#servicios" },
-              { l: "Vibe Coding", h: "#servicios" },
+              { l: "Webs y software a medida", h: "#servicios" },
               { l: "Agentes IA B2B", h: "#servicios" },
               { l: "Dashboards & CRM", h: "#servicios" },
               { l: "Integraciones", h: "#servicios" },
@@ -137,6 +137,10 @@ export default function Footer() {
           style={{ letterSpacing: ".04em" }}
         >
           Construido en <span className="text-primary">Tucumán</span>. Pensado para el mundo.
+        </div>
+
+        <div className="mt-4 text-center text-[11px] text-muted/45 font-mono tracking-wide">
+          Potenciado con tecnología de última generación · IA · n8n · Supabase
         </div>
 
         <div className="mt-6 pt-6 border-t border-line/70 flex flex-col md:flex-row md:items-center md:justify-between gap-4">

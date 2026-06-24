@@ -16,14 +16,14 @@ export const SERVICES: ServiceData[] = [
     tag: "00",
     title: "Diagnóstico Zecamo",
     desc: "Mapeamos tu negocio, encontramos oportunidades reales de IA, evaluamos riesgos y te entregamos un roadmap accionable de 90 días. Antes de automatizar, ordenamos.",
-    chips: ["Auditoría · BPMN", "Roadmap por fases", "Bonificable 100%"],
+    chips: ["Sabés dónde estás parado", "Plan claro de 90 días", "Bonificable 100%"],
     featured: true,
     modal: {
       subtitle: "Por dónde empezamos. Antes de automatizar, ordenamos.",
       ctaLabel: "Hablemos del Diagnóstico",
       howItWorks: [
         "El error más común en proyectos de IA: implementar sin entender el proceso. Eso genera automatizaciones inútiles, dependencias, riesgos y dinero mal invertido.",
-        "Nuestro Diagnóstico arranca al revés: primero analizamos las áreas clave de tu negocio (marketing, ventas, delivery, administración), mapeamos los procesos reales con BPMN, detectamos oportunidades de IA y automatización, evaluamos riesgos de ciberseguridad, y te entregamos un roadmap claro y accionable. Recién después, si te conviene, implementamos.",
+        "Nuestro Diagnóstico arranca al revés: primero analizamos las áreas clave de tu negocio (marketing, ventas, atención al cliente, administración), dibujamos cómo funcionan hoy tus procesos, detectamos dónde la IA y la automatización meten diferencia real, revisamos los riesgos de seguridad, y te entregamos un plan claro y accionable. Recién después, si te conviene, implementamos.",
       ],
       benefits: [
         "Entendés tu empresa mejor que antes",
@@ -35,7 +35,7 @@ export const SERVICES: ServiceData[] = [
       ],
       useCases: [
         "Auditoría de las áreas críticas de tu negocio",
-        "Dibujo de procesos reales con BPMN (Miro)",
+        "Dibujo claro de cómo funcionan hoy tus procesos",
         "Detección de oportunidades de optimización + IA",
         "Análisis del stack tecnológico actual",
         "Revisión de riesgos de ciberseguridad",
@@ -62,13 +62,13 @@ export const SERVICES: ServiceData[] = [
     Icon: Workflow,
     tag: "01",
     title: "Automatización con IA",
-    desc: "Workflows en n8n, integraciones y procesos repetitivos que se ejecutan solos. Liberá tiempo de tu equipo.",
-    chips: ["n8n · Make · Zapier", "APIs custom", "RAG sobre tus datos"],
+    desc: "Las tareas repetitivas que te comen el día pasan a hacerse solas. Tu equipo recupera tiempo para lo que de verdad mueve la aguja.",
+    chips: ["Ahorrá +40h al mes", "Cero errores manuales", "Funciona 24/7"],
     modal: {
       subtitle: "Convertimos tareas repetitivas en workflows que se ejecutan solos.",
       howItWorks: [
         "Identificamos los procesos manuales que más tiempo te consumen —envío de emails, carga de datos, seguimiento de leads, notificaciones, reportes— y los convertimos en flujos automáticos que conectan todas tus herramientas. Tu equipo deja de copiar y pegar entre apps y empieza a enfocarse en lo que realmente mueve el negocio.",
-        "Trabajamos con n8n (autohospedado, sin costos mensuales por workflow), Make o Zapier según tu caso. Conectamos cualquier API existente y sumamos capa de IA cuando el proceso necesita decisión, clasificación o generación de contenido.",
+        "Conectamos las herramientas que ya usás para que la información fluya sola, sin costos ocultos por cada proceso. Y sumamos inteligencia artificial cuando hace falta decidir, clasificar o redactar algo automáticamente.",
       ],
       benefits: [
         "Ahorrá entre 20 y 60 horas mensuales por equipo",
@@ -91,28 +91,28 @@ export const SERVICES: ServiceData[] = [
     id: "vibe",
     Icon: Code2,
     tag: "02",
-    title: "Vibe Coding",
-    desc: "Desarrollo de software a velocidad IA. Webs, SaaS, dashboards en tiempo récord.",
-    chips: ["Next.js · React · TS", "Supabase · Postgres", "Deploy en Vercel"],
+    title: "Webs y software a medida",
+    desc: "Webs, tiendas online y sistemas internos hechos a tu medida. Profesionales, rápidos y pensados para vender.",
+    chips: ["De idea a online en 2 semanas", "Diseño profesional", "100% tuyo, sin ataduras"],
     modal: {
-      subtitle: "Desarrollo de software a velocidad IA, sin sacrificar calidad.",
+      subtitle: "Software hecho a tu medida, en tiempo récord y sin perder calidad.",
       howItWorks: [
-        "Vibe coding es desarrollo profesional asistido por IA. Combinamos herramientas como Claude Code, Cursor y nuestro Método Zecamo para construir landings, SaaS, dashboards y herramientas internas en una fracción del tiempo tradicional.",
-        "No es «hacer apps con prompts»: es desarrollo serio con TypeScript, arquitectura escalable, documentación obligatoria, compliance legal y deploy a producción. La diferencia está en la velocidad de iteración.",
+        "Usamos inteligencia artificial para construir tu web, tienda o sistema interno en una fracción del tiempo que tarda el desarrollo tradicional. Menos espera, menos costo, mismo resultado profesional.",
+        "No son páginas armadas a las apuradas: es software serio, documentado, legalmente en regla y pensado para escalar con tu negocio. La diferencia está en lo rápido que lo tenés funcionando.",
       ],
       benefits: [
-        "De idea a prototipo funcional en menos de 2 semanas",
-        "Stack moderno: Next.js, TypeScript, Supabase, Tailwind",
-        "Código documentado siguiendo el Método Zecamo (no caja negra)",
-        "Iteración rápida: cambios visibles el mismo día",
-        "Mantenimiento simple: tu equipo puede tocar el código sin nosotros",
+        "De idea a algo funcionando en menos de 2 semanas",
+        "Tecnología actual: rápida, segura y escalable",
+        "Todo documentado: no es una caja negra",
+        "Cambios visibles el mismo día",
+        "Fácil de mantener y hacer crecer con el tiempo",
       ],
       useCases: [
-        "Landing pages que convierten (como esta misma)",
-        "Dashboards internos con métricas en tiempo real",
-        "Herramientas internas custom (CRM mini, gestión de stock, etc.)",
-        "MVPs para validar ideas antes de invertir grande",
-        "Migración de procesos en Excel a apps web",
+        "Webs y landings que convierten (como esta misma)",
+        "Paneles internos con tus números en tiempo real",
+        "Herramientas a medida (mini-CRM, control de stock, etc.)",
+        "Versiones iniciales para validar una idea antes de invertir grande",
+        "Pasar tus planillas de Excel a un sistema web de verdad",
       ],
       stack: ["Next.js 15", "TypeScript", "React", "Tailwind", "Supabase", "PostgreSQL", "Vercel", "Claude Code"],
     },
@@ -123,12 +123,12 @@ export const SERVICES: ServiceData[] = [
     tag: "03",
     title: "Agentes IA B2B",
     desc: "Agentes conversacionales y de tareas que trabajan 24/7 en WhatsApp, email y web. Atienden, califican y operan.",
-    chips: ["WhatsApp Business", "Voice + Chat", "Tool-use real"],
+    chips: ["Atiende por WhatsApp", "No se le escapa un cliente", "Responde al instante"],
     modal: {
       subtitle: "Agentes conversacionales que trabajan, no solo responden.",
       howItWorks: [
         "Construimos agentes que conversan con tus clientes en WhatsApp, email o web, pero que además ejecutan tareas reales: consultan tu calendario, registran leads en tu sistema, generan presupuestos, buscan en tu base de datos, mandan notificaciones.",
-        "Usamos modelos de última generación (Claude, GPT, Gemini) con tool-use real, memoria persistente y conexión a tus herramientas. No son chatbots tontos con respuestas pregrabadas: son agentes que deciden y actúan.",
+        "Usamos la inteligencia artificial más avanzada del momento, con memoria y conexión real a tus herramientas. No son chatbots con respuestas pregrabadas: son asistentes que deciden y resuelven de verdad.",
       ],
       benefits: [
         "Atención 24/7 sin contratar más personal",
@@ -153,12 +153,12 @@ export const SERVICES: ServiceData[] = [
     tag: "04",
     title: "Dashboards & CRM a medida",
     desc: "Paneles internos con todo lo que necesita tu negocio: clientes, leads, finanzas, proyectos y métricas en tiempo real. Sin depender de un dev para cada cambio.",
-    chips: ["CRM custom", "Métricas en tiempo real", "Supabase + Next.js"],
+    chips: ["Todo en una pantalla", "Datos en tiempo real", "Sin depender de un dev"],
     modal: {
       subtitle: "Paneles internos que te dan visibilidad total de tu negocio en tiempo real.",
       howItWorks: [
         "Las planillas de Excel y los dashboards genéricos no escalan con tu negocio. Construimos CRMs y paneles internos hechos exactamente para lo que necesitás: tus procesos, tus métricas, tu lógica de negocio.",
-        "Cada dashboard incluye autenticación, roles de usuario, datos en tiempo real con Supabase y la posibilidad de que tu equipo opere sin depender de un dev para cada cambio.",
+        "Cada panel incluye acceso seguro, permisos por persona, datos en tiempo real y la posibilidad de que tu equipo lo opere sin depender de nosotros para cada cambio.",
       ],
       benefits: [
         "Visibilidad total de tu negocio desde un solo lugar",
@@ -183,12 +183,12 @@ export const SERVICES: ServiceData[] = [
     tag: "05",
     title: "Integraciones entre sistemas",
     desc: "Conectamos WhatsApp, Instagram, formularios, CRMs y cualquier herramienta que ya uses. Un lead que entra por cualquier canal llega solo a donde tiene que estar.",
-    chips: ["Webhooks", "APIs", "n8n + Make"],
+    chips: ["Tus apps conectadas", "Cero copiar y pegar", "Ningún lead se pierde"],
     modal: {
       subtitle: "Un lead que entra por WhatsApp llega solo a tu CRM, tu agenda y tu notificación.",
       howItWorks: [
         "Cada empresa tiene un ecosistema de herramientas diferente. El problema es que no hablan entre sí. Un lead llega por Instagram, se responde por WhatsApp, se anota en una planilla y se olvida en el CRM. Eso se termina.",
-        "Conectamos todas tus herramientas con webhooks, APIs y flujos de n8n o Make. El resultado: tus datos fluyen solos, sin copiar y pegar entre apps.",
+        "Conectamos todas tus herramientas para que hablen entre sí. El resultado: tus datos fluyen solos, sin que nadie tenga que copiar y pegar entre apps.",
       ],
       benefits: [
         "Cero duplicación manual de datos entre herramientas",
@@ -199,7 +199,7 @@ export const SERVICES: ServiceData[] = [
       ],
       useCases: [
         "Instagram Lead Ads → CRM → WhatsApp de bienvenida",
-        "Formulario web → Supabase → notificación Telegram",
+        "Formulario de la web → tu base de datos → aviso al instante",
         "WooCommerce ↔ sistema de stock ↔ contabilidad",
         "Agenda ↔ WhatsApp Bot ↔ confirmación automática",
         "Múltiples canales → una única bandeja de entrada",
@@ -213,7 +213,7 @@ export const SERVICES: ServiceData[] = [
     tag: "06",
     title: "Reportes automáticos",
     desc: "Cada semana o mes, el dueño recibe en WhatsApp o email un resumen de sus métricas clave: ventas, leads, conversión y más. Sin pedirle nada a nadie.",
-    chips: ["n8n", "WhatsApp · Email", "Datos en tiempo real"],
+    chips: ["Llega a tu WhatsApp", "Cada semana o mes", "Sin pedirle a nadie"],
     modal: {
       subtitle: "Tus métricas clave, en tu WhatsApp, sin que tengas que pedirle nada a nadie.",
       howItWorks: [

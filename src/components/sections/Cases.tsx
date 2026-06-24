@@ -15,7 +15,7 @@ export const PROJECTS: Project[] = [
     name: "LEVEL",
     desc: "Drop limitado con reservas por WhatsApp, stock en tiempo real, tap-to-flip en cada producto y backoffice completo para que el equipo opere sin tocar código.",
     subtitle: "Drop limitado con sitio público bold y dashboard interno de gestión.",
-    chips: ["Next.js", "Mobile-first", "WhatsApp Flow"],
+    chips: ["Reservas por WhatsApp", "Stock en vivo", "Panel de gestión"],
     fullStack: ["Next.js 15", "React", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
     challenge:
       "LEVEL necesitaba un sitio que reflejara la identidad bold de la marca y un canal directo de reservas por WhatsApp. Pero también un backoffice robusto para que el equipo pudiera operar productos, precios y métricas sin depender de un dev cada vez que hay un cambio.",
@@ -49,7 +49,7 @@ export const PROJECTS: Project[] = [
     name: "Finca Cajal",
     desc: "Predio de eventos en Tafí Viejo. Sitio institucional, formulario de reservas, reseñas reales de Google integradas y dashboard interno para gestionar leads, calendario y finanzas.",
     subtitle: "Predio de eventos con sitio público y dashboard interno completo para operar todo el negocio.",
-    chips: ["Web institucional", "Reseñas Google", "WhatsApp"],
+    chips: ["Web + reservas", "Reseñas reales", "Dashboard interno"],
     fullStack: ["Next.js", "Supabase", "PostgreSQL", "WhatsApp", "Google Maps", "Vercel"],
     challenge:
       "Finca Cajal recibía consultas constantes por WhatsApp y formularios pero no tenía forma de centralizar leads, gestionar reservas, controlar el calendario ni ver las finanzas del negocio. Construimos el sistema operativo completo del local.",
@@ -82,7 +82,7 @@ export const PROJECTS: Project[] = [
     name: "Suplementos Tucumán",
     desc: "Catálogo con checkout directo a WhatsApp, control de stock, tracking de pedidos y panel de operaciones. De Instagram-y-WhatsApp a sistema real.",
     subtitle: "E-commerce de suplementos con flujo de pedido por WhatsApp y panel completo para operar las ventas.",
-    chips: ["E-commerce", "Catálogo dinámico", "SEO local"],
+    chips: ["Tienda online", "Pedidos por WhatsApp", "Panel de ventas"],
     fullStack: ["Next.js", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
     challenge:
       "El cliente vendía suplementos por Instagram y WhatsApp pero perdía tiempo respondiendo precios y stock todo el día. Necesitaba un catálogo online con flujo de pedido directo y un backoffice para operar las ventas sin tocar código.",

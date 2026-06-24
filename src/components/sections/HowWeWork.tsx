@@ -10,15 +10,15 @@ const PHASES = [
     num: "01",
     Icon: Compass,
     title: "Diagnóstico",
-    desc: "Mapeamos tu negocio, encontramos oportunidades reales y evaluamos riesgos. Entregable: roadmap de 90 días accionable.",
-    tags: ["1-4 semanas", "BPMN", "Roadmap"],
+    desc: "Mapeamos tu negocio, encontramos oportunidades reales y evaluamos riesgos. Te entregamos un plan de 90 días, claro y accionable.",
+    tags: ["1-4 semanas", "Diagnóstico claro", "Plan de 90 días"],
   },
   {
     num: "02",
     Icon: Rocket,
     title: "Implementación",
-    desc: "Ejecutamos el roadmap. Automatización, agentes IA, vibe coding o dashboards — según lo que tu negocio necesite.",
-    tags: ["Sprints cortos", "Stack moderno", "Operamos post-deploy"],
+    desc: "Ejecutamos el plan. Automatizaciones, asistentes con IA, webs o paneles a medida — según lo que tu negocio necesite.",
+    tags: ["Entregas rápidas", "Sin sorpresas", "Te acompañamos después"],
   },
 ] as const;
 

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | Zecamo Studios",
   },
   description:
-    "Construimos la capa de IA de tu empresa. Desde el diagnóstico hasta los agentes que trabajan mientras dormís. Automatización, vibe coding, agentes IA y consultoría B2B. Tucumán, Argentina.",
+    "Webs, sistemas y automatizaciones que le sacan trabajo a tu equipo y te traen más clientes. Le sacamos el trabajo repetitivo a tu negocio para que crezcas. Tucumán, Argentina.",
   metadataBase: new URL("https://zecamostudios.com"),
   keywords: [
     "agencia IA argentina",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://zecamostudios.com" },
   openGraph: {
     title: "Zecamo Studios — Automatizá lo que te frena. Escalá lo que te impulsa.",
-    description: "Construimos la capa de IA de tu empresa. Automatización, agentes IA, vibe coding. Tucumán, Argentina.",
+    description: "Webs, sistemas y automatizaciones que le sacan trabajo a tu equipo y te traen más clientes. Tucumán, Argentina.",
     url: "https://zecamostudios.com",
     siteName: "Zecamo Studios",
     locale: "es_AR",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Zecamo Studios — Automatizá lo que te frena. Escalá lo que te impulsa.",
-    description: "Construimos la capa de IA de tu empresa. Automatización, agentes IA, vibe coding.",
+    description: "Webs, sistemas y automatizaciones que le sacan trabajo a tu equipo y te traen más clientes.",
     images: ["/opengraph-image"],
   },
   icons: {

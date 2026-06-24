@@ -156,19 +156,6 @@ export default function ServiceModal({ service, onClose }: ServiceModalProps) {
             </div>
           )}
 
-          <ModalSection title="Stack & herramientas">
-            <div className="flex flex-wrap gap-2">
-              {service.modal.stack.map((t, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg/40 px-3 py-1.5 text-[12.5px] text-ink/90 font-mono"
-                >
-                  <span className="w-1 h-1 rounded-full bg-primary" /> {t}
-                </span>
-              ))}
-            </div>
-          </ModalSection>
-
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
             <PrimaryBtn onClick={handleCTA} className="!px-6 !py-3" icon={<ArrowRight size={14} strokeWidth={2} />}>
               {service.modal.ctaLabel ?? `Hablemos de ${service.title}`}

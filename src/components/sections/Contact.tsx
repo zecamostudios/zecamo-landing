@@ -21,7 +21,7 @@ interface ServiceOption {
 const SERVICE_OPTIONS: ServiceOption[] = [
   { id: "diagnostico",    label: "Diagnóstico Zecamo",               Icon: Compass, featured: true },
   { id: "automatizacion", label: "Automatización con IA",            Icon: Workflow },
-  { id: "vibe",           label: "Vibe Coding",                      Icon: Code2 },
+  { id: "vibe",           label: "Webs y software a medida",         Icon: Code2 },
   { id: "agentes",        label: "Agentes IA B2B",                   Icon: BotMessageSquare },
   { id: "dashboards",     label: "Dashboards & CRM a medida",        Icon: LayoutDashboard },
   { id: "integraciones",  label: "Integraciones entre sistemas",     Icon: Share2 },

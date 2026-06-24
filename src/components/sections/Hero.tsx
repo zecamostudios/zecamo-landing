@@ -34,10 +34,10 @@ export const HERO_TAGLINES: Tagline[] = [
   },
   {
     id: "3",
-    label: "Capa IA",
+    label: "Resultado",
     lines: [
-      ["Construimos", "la", "capa", "de", "IA"],
-      ["que", "tu", "empresa", { word: "todavía no tiene.", className: "text-primary" }],
+      ["Tu", "negocio", "trabajando"],
+      ["mientras", "vos", { word: "hacés crecer el resto.", className: "text-primary" }],
     ],
   },
 ];
@@ -143,8 +143,8 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
 
         <Reveal delay={900}>
           <p className="mt-7 md:mt-9 text-[17px] md:text-[19px] text-muted max-w-2xl leading-relaxed">
-            Construimos la capa de IA de tu empresa. Desde el diagnóstico hasta los agentes
-            que trabajan mientras dormís.
+            Webs, sistemas y automatizaciones que le sacan trabajo a tu equipo y te
+            traen más clientes. Desde la primera idea hasta tenerlo funcionando.
           </p>
         </Reveal>
 
@@ -161,17 +161,17 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
 
         <Reveal delay={1200}>
           <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-px bg-line/60 rounded-2xl overflow-hidden border border-line">
-            <Stat value="24/7" label="Agentes activos" tone="primary" />
-            <Stat value="< 2 sem" label="De idea a producción" />
+            <Stat value="24/7" label="Atención automática" tone="primary" />
+            <Stat value="< 2 sem" label="De idea a online" />
             <Stat value="+40h" label="Ahorradas / mes / equipo" />
-            <Stat value="Full-stack" label="IA · Web · Automatización" />
+            <Stat value="100%" label="Hecho a tu medida" />
           </div>
         </Reveal>
       </div>
 
       <Reveal delay={1300} className="relative mt-20 md:mt-28">
         <div className="text-center text-[11px] tracking-[.28em] uppercase text-muted/70 font-mono mb-6">
-          Stack & integraciones
+          Lo que vas a notar
         </div>
         <div
           className="overflow-hidden relative"
@@ -185,9 +185,9 @@ export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
             {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="flex items-center gap-12 pr-12">
                 {[
-                  "n8n", "OpenAI", "Claude", "Supabase", "Vercel", "Next.js",
-                  "WhatsApp Business", "Notion", "Slack", "PostgreSQL", "Stripe",
-                  "Make", "Zapier", "Airtable",
+                  "Menos tareas manuales", "Más clientes", "Atención 24/7",
+                  "Ningún lead perdido", "Decisiones con datos", "Tu equipo enfocado",
+                  "Todo en una pantalla", "Reportes solos", "Respuestas al instante",
                 ].map((l, j) => (
                   <span key={j} className="flex items-center gap-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/70" />
