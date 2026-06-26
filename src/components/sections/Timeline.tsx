@@ -1,7 +1,7 @@
 // src/components/sections/Timeline.tsx
 "use client";
 import { useRef } from "react";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { MessageCircle, Coffee, Handshake, UtensilsCrossed, Lock, Moon } from "lucide-react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Mesh from "@/components/ui/Mesh";
@@ -28,8 +28,12 @@ export default function Timeline() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 70%", "end 80%"],
+    // rango largo = el camino se dibuja lento a medida que scrolleás
+    offset: ["start 90%", "end 35%"],
   });
+  // rail animado para mobile
+  const mobileFill = useTransform(scrollYProgress, [0, 0.9], [0, 1]);
+  const mobileTop = useTransform(scrollYProgress, [0, 0.9], ["0%", "100%"]);
 
   return (
     <section id="dia" className="relative py-16 md:py-24 overflow-hidden">
@@ -46,8 +50,23 @@ export default function Timeline() {
           {/* camino serpenteante (desktop) */}
           <TimelinePath progress={scrollYProgress} stops={STOPS.length} />
 
-          {/* línea recta mobile */}
-          <div className="md:hidden absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-primary/60 to-primary/10" aria-hidden />
+          {/* rail animado mobile: se rellena al scrollear + punto brillante */}
+          <div className="md:hidden absolute left-[18px] top-0 bottom-0 w-[2px]" aria-hidden>
+            <div className="absolute inset-0 rounded-full bg-line" />
+            <motion.div
+              className="absolute inset-x-0 top-0 h-full rounded-full origin-top"
+              style={{
+                scaleY: mobileFill,
+                background: "linear-gradient(#2B5BFF, #7E9BFF)",
+                boxShadow: "0 0 10px rgba(43,91,255,.6)",
+              }} />
+            <motion.div
+              className="absolute -left-[6px] w-3.5 h-3.5 rounded-full bg-white"
+              style={{
+                top: mobileTop, marginTop: -7,
+                boxShadow: "0 0 14px 3px rgba(79,123,255,.9)",
+              }} />
+          </div>
 
           <div className="flex flex-col gap-8 md:gap-14">
             {STOPS.map((s, i) => {

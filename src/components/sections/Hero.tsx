@@ -37,7 +37,7 @@ export default function Hero() {
             </Reveal>
 
             <Reveal delay={80}>
-              <h1 className="mt-7 font-display font-semibold text-ink leading-[0.98] tracking-[-0.02em]"
+              <h1 className="mt-7 font-display font-semibold text-ink leading-[1.06] tracking-[-0.02em] pb-1"
                   style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)" }}>
                 Hacemos que tu negocio<br />
                 <span className="text-primary">trabaje solo.</span>
@@ -65,14 +65,18 @@ export default function Hero() {
             </Reveal>
 
             <Reveal delay={320}>
-              <div className="mt-9 flex items-center gap-3 text-[13px] text-muted">
-                <div className="flex -space-x-2">
-                  {["#2B5BFF", "#4F7BFF", "#7E9BFF"].map((c) => (
-                    <span key={c} className="w-7 h-7 rounded-full border-2 border-bg"
-                      style={{ background: c }} />
+              <div className="mt-10">
+                <div className="text-[11px] tracking-[.22em] uppercase text-muted/70 font-mono mb-3">
+                  +7 negocios ya trabajan así
+                </div>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                  {["LEVEL", "Máximo B", "Roland Cotton", "Finca Cajal"].map((n) => (
+                    <span key={n}
+                      className="font-display font-semibold text-[15px] md:text-[16px] tracking-tight text-muted/55 hover:text-muted transition-colors">
+                      {n}
+                    </span>
                   ))}
                 </div>
-                <span><span className="text-ink font-semibold">+7 negocios</span> ya trabajan así</span>
               </div>
             </Reveal>
           </div>

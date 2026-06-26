@@ -62,6 +62,14 @@ function TrendChart({ play }: { play: boolean }) {
         initial={{ pathLength: 0 }} animate={play ? { pathLength: 1 } : {}}
         transition={{ duration: 1.6, ease: "easeInOut" }}
         style={{ filter: "drop-shadow(0 0 3px rgba(79,123,255,.7))" }} />
+      {/* halo que late (sensación de "en vivo") */}
+      {play && (
+        <motion.circle cx={last.x} cy={last.y} r={3.5} fill="#4F7BFF"
+          style={{ transformBox: "fill-box", transformOrigin: "center" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.5, 0, 0.5], scale: [1, 2.6, 1] }}
+          transition={{ duration: 2.2, repeat: Infinity, delay: 1.6, ease: "easeInOut" }} />
+      )}
       <motion.circle cx={last.x} cy={last.y} r={3.5} fill="#fff" stroke="#4F7BFF" strokeWidth={2}
         vectorEffect="non-scaling-stroke"
         initial={{ opacity: 0, scale: 0 }} animate={play ? { opacity: 1, scale: 1 } : {}}
@@ -69,6 +77,8 @@ function TrendChart({ play }: { play: boolean }) {
     </svg>
   );
 }
+
+const MONTHS = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
 function Donut() {
   const stops = DASHBOARD_SOURCES;
@@ -173,8 +183,14 @@ export default function DashboardMock() {
           {/* graph + donut */}
           <div className="grid lg:grid-cols-[1.5fr_1fr] gap-2">
             <div className="rounded-xl border border-line p-2.5" style={{ background: "var(--color-bg)" }}>
-              <div className="font-mono text-[9.5px] uppercase tracking-wide text-muted mb-1">Ingresos anuales</div>
-              <div className="h-[80px]"><TrendChart play={inView} /></div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-mono text-[9.5px] uppercase tracking-wide text-muted">Ingresos anuales</span>
+                <span className="font-mono text-[9px] text-[#22C55E]">▲ 2026</span>
+              </div>
+              <div className="h-[72px]"><TrendChart play={inView} /></div>
+              <div className="flex justify-between mt-1 font-mono text-[7px] text-muted/45">
+                {MONTHS.map((m, i) => <span key={i}>{m}</span>)}
+              </div>
             </div>
             <div className="rounded-xl border border-line p-2.5" style={{ background: "var(--color-bg)" }}>
               <div className="font-mono text-[9.5px] uppercase tracking-wide text-muted mb-2">Origen de ventas</div>
