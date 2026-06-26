@@ -1,204 +1,114 @@
+// src/components/sections/Hero.tsx
 "use client";
-import { useEffect, useRef, useState, Fragment } from "react";
-import { ArrowDownRight, Calendar } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { MessageCircle, ArrowDownRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import Mesh from "@/components/ui/Mesh";
 import ZWatermark from "@/components/ui/ZWatermark";
 import PrimaryBtn from "@/components/ui/PrimaryBtn";
 import GhostBtn from "@/components/ui/GhostBtn";
+import DashboardMock from "@/components/sections/DashboardMock";
+import { WHATSAPP_URL } from "@/lib/constants";
 
-type Word = string | { word: string; className?: string };
-
-interface Tagline {
-  id: string;
-  label: string;
-  lines: Word[][];
-}
-
-export const HERO_TAGLINES: Tagline[] = [
-  {
-    id: "1",
-    label: "Punchy",
-    lines: [
-      ["Automatizá", "lo", "que", "te", "frena."],
-      ["Escalá", { word: "lo", className: "text-muted/80" }, "que", "te", { word: "impulsa.", className: "text-primary" }],
-    ],
-  },
-  {
-    id: "2",
-    label: "Métrica",
-    lines: [
-      ["IA", "que", "trabaja."],
-      ["Resultados", "que", "se", { word: "miden.", className: "text-primary" }],
-    ],
-  },
-  {
-    id: "3",
-    label: "Resultado",
-    lines: [
-      ["Tu", "negocio", "trabajando"],
-      ["mientras", "vos", { word: "hacés crecer el resto.", className: "text-primary" }],
-    ],
-  },
-];
-
-interface HeroWordsProps { taglineId?: string; }
-
-// TODO: migrar a Framer Motion (motion.span con variants + staggerChildren)
-function HeroWords({ taglineId = "1" }: HeroWordsProps) {
-  const tagline = HERO_TAGLINES.find((t) => t.id === taglineId) ?? HERO_TAGLINES[0];
-  const [revealed, setRevealed] = useState<number[]>([]);
-
-  useEffect(() => {
-    setRevealed([]);
-    const all = tagline.lines.flat();
-    const timers = all.map((_, i) =>
-      setTimeout(() => setRevealed((r) => [...r, i]), 250 + i * 110),
-    );
-    return () => timers.forEach(clearTimeout);
-  }, [taglineId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  let counter = -1;
-  return (
-    <h1
-      className="font-display font-semibold text-ink leading-[0.95] tracking-[-0.02em]"
-      style={{ fontSize: "clamp(2.6rem, 7.5vw, 6.5rem)" }}
-    >
-      {tagline.lines.map((line, li) => (
-        <div key={li} className="block">
-          {line.map((w, wi) => {
-            counter++;
-            const isObj = typeof w === "object";
-            const text = isObj ? w.word : w;
-            const extra = isObj ? w.className ?? "" : "";
-            const ix = counter;
-            return (
-              <Fragment key={wi}>
-                <span className={`word ${revealed.includes(ix) ? "in " : ""}${extra}`}>{text}</span>
-                {wi < line.length - 1 && <span> </span>}
-              </Fragment>
-            );
-          })}
-        </div>
-      ))}
-    </h1>
-  );
-}
-
-interface StatProps { value: string; label: string; tone?: "primary"; }
-function Stat({ value, label, tone }: StatProps) {
-  return (
-    <div className="bg-bg/80 px-6 py-6 md:py-8 flex flex-col gap-1">
-      <div
-        className={`font-display font-semibold tracking-tight text-[28px] md:text-[34px] ${
-          tone === "primary" ? "text-primary" : "text-ink"
-        }`}
-      >
-        {value}
-      </div>
-      <div className="text-[12px] tracking-[.16em] uppercase text-muted font-mono">{label}</div>
-    </div>
-  );
-}
-
-export default function Hero({ taglineId = "1" }: { taglineId?: string }) {
-  const meshRef = useRef<HTMLDivElement>(null);
-
-  // TODO: migrar a Framer Motion (useScroll + useTransform)
-  useEffect(() => {
-    const onScroll = () => {
-      if (!meshRef.current) return;
-      const y = Math.min(window.scrollY, 800);
-      meshRef.current.style.transform = `translate3d(0, ${y * 0.18}px, 0)`;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+export default function Hero() {
+  const reduce = useReducedMotion();
 
   return (
-    <section id="top" className="relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32">
+    <section id="top" className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
       <div className="absolute inset-0 dot-grid opacity-70" aria-hidden />
-      <div ref={meshRef} className="absolute inset-0">
-        <Mesh variant="hero" />
-      </div>
+      <Mesh variant="hero" />
       <ZWatermark className="-right-32 top-10 md:top-0 md:-right-20" size={760} opacity={0.06} />
-      <ZWatermark className="-left-40 -bottom-40 hidden md:block" size={560} opacity={0.04} />
 
-      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8 pt-6">
-        <Reveal>
-          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/40 backdrop-blur-md px-3 py-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-            </span>
-            <span className="text-[12px] tracking-[.18em] uppercase text-muted font-mono">
-              Agencia&nbsp;IA · B2B · Argentina
-            </span>
-          </div>
-        </Reveal>
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+        <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-10 items-center">
 
-        <div className="mt-8 md:mt-10">
-          <HeroWords taglineId={taglineId} />
-        </div>
-
-        <Reveal delay={900}>
-          <p className="mt-7 md:mt-9 text-[17px] md:text-[19px] text-muted max-w-2xl leading-relaxed">
-            Webs, sistemas y automatizaciones que le sacan trabajo a tu equipo y te
-            traen más clientes. Desde la primera idea hasta tenerlo funcionando.
-          </p>
-        </Reveal>
-
-        <Reveal delay={1050}>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <PrimaryBtn as="a" href="#contacto" className="!px-7 !py-3.5" icon={<Calendar size={16} strokeWidth={1.75} />}>
-              Agendá una llamada
-            </PrimaryBtn>
-            <GhostBtn as="a" href="#servicios" className="!px-7 !py-3.5" icon={<ArrowDownRight size={16} strokeWidth={1.75} />}>
-              Ver servicios
-            </GhostBtn>
-          </div>
-        </Reveal>
-
-        <Reveal delay={1200}>
-          <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-px bg-line/60 rounded-2xl overflow-hidden border border-line">
-            <Stat value="24/7" label="Atención automática" tone="primary" />
-            <Stat value="< 2 sem" label="De idea a online" />
-            <Stat value="+40h" label="Ahorradas / mes / equipo" />
-            <Stat value="100%" label="Hecho a tu medida" />
-          </div>
-        </Reveal>
-      </div>
-
-      <Reveal delay={1300} className="relative mt-20 md:mt-28">
-        <div className="text-center text-[11px] tracking-[.28em] uppercase text-muted/70 font-mono mb-6">
-          Lo que vas a notar
-        </div>
-        <div
-          className="overflow-hidden relative"
-          style={{
-            maskImage: "linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)",
-            WebkitMaskImage: "linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)",
-          } as React.CSSProperties}
-        >
-          {/* TODO: migrar a Framer Motion (motion.div con animate x infinito) */}
-          <div className="flex marquee-track gap-12 whitespace-nowrap font-display text-[22px] text-muted/80">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-12 pr-12">
-                {[
-                  "Menos tareas manuales", "Más clientes", "Atención 24/7",
-                  "Ningún lead perdido", "Decisiones con datos", "Tu equipo enfocado",
-                  "Todo en una pantalla", "Reportes solos", "Respuestas al instante",
-                ].map((l, j) => (
-                  <span key={j} className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary/70" />
-                    {l}
-                  </span>
-                ))}
+          {/* ── Columna izquierda: copy ── */}
+          <div>
+            <Reveal>
+              <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/40 backdrop-blur-md px-3 py-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span>
+                <span className="text-[12px] tracking-[.18em] uppercase text-muted font-mono">
+                  Sistemas a medida con IA · B2B
+                </span>
               </div>
-            ))}
+            </Reveal>
+
+            <Reveal delay={80}>
+              <h1 className="mt-7 font-display font-semibold text-ink leading-[0.98] tracking-[-0.02em]"
+                  style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)" }}>
+                Todo tu negocio,<br />
+                <span className="text-primary">en una sola pantalla.</span>
+              </h1>
+            </Reveal>
+
+            <Reveal delay={160}>
+              <p className="mt-6 text-[17px] md:text-[19px] text-muted max-w-xl leading-relaxed">
+                Dejá de saltar entre planillas, WhatsApp y mil pestañas. Centralizamos
+                tu info y te la devolvemos clara, ordenada y en tiempo real.
+              </p>
+            </Reveal>
+
+            <Reveal delay={240}>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <PrimaryBtn as="a" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+                  className="!px-7 !py-3.5" icon={<MessageCircle size={16} strokeWidth={1.75} />}>
+                  Hablá con nosotros
+                </PrimaryBtn>
+                <GhostBtn as="a" href="#dia" className="!px-7 !py-3.5"
+                  icon={<ArrowDownRight size={16} strokeWidth={1.75} />}>
+                  Ver cómo funciona
+                </GhostBtn>
+              </div>
+            </Reveal>
+
+            <Reveal delay={320}>
+              <div className="mt-9 flex items-center gap-3 text-[13px] text-muted">
+                <div className="flex -space-x-2">
+                  {["#2B5BFF", "#4F7BFF", "#7E9BFF"].map((c) => (
+                    <span key={c} className="w-7 h-7 rounded-full border-2 border-bg"
+                      style={{ background: c }} />
+                  ))}
+                </div>
+                <span><span className="text-ink font-semibold">+18 negocios</span> ya trabajan así</span>
+              </div>
+            </Reveal>
           </div>
+
+          {/* ── Columna derecha: dashboard 3D flotante ── */}
+          <div className="relative" style={{ perspective: 1200 }}>
+            {/* glow detrás */}
+            <div className="absolute -inset-6 rounded-[32px] pointer-events-none"
+              style={{ background: "radial-gradient(60% 60% at 60% 30%, rgba(43,91,255,.28), transparent 70%)", filter: "blur(20px)" }} />
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 40, rotateY: -24, rotateX: 10 }}
+              animate={reduce ? {} : { opacity: 1, y: 0, rotateY: -15, rotateX: 6 }}
+              transition={{ duration: 1, ease: [0.2, 0.7, 0.2, 1] }}
+              style={{
+                transformStyle: "preserve-3d",
+                transform: reduce ? undefined : "rotateY(-15deg) rotateX(6deg)",
+                boxShadow: "-18px 30px 60px rgba(0,0,0,.55), 0 0 60px -10px rgba(43,91,255,.35)",
+                borderRadius: 16,
+              }}
+              className="relative">
+              <DashboardMock />
+              {/* badge flotante */}
+              <motion.div
+                initial={reduce ? false : { opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.9, duration: 0.5 }}
+                className="absolute -top-4 -right-3 md:-right-5 rounded-xl border border-[#22C55E]/40 px-3 py-1.5 backdrop-blur-md"
+                style={{ background: "rgba(34,197,94,.12)", boxShadow: "0 8px 24px rgba(0,0,0,.4)", transform: "translateZ(40px)" }}>
+                <div className="text-[10px] text-muted">Ingresos</div>
+                <div className="text-[15px] font-semibold text-[#22C55E] leading-none">+12% ▲</div>
+              </motion.div>
+            </motion.div>
+          </div>
+
         </div>
-      </Reveal>
+      </div>
     </section>
   );
 }
