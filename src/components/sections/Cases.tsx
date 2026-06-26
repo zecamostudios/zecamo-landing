@@ -311,7 +311,7 @@ export default function Cases() {
                 Trabajos <span className="text-primary">recientes</span>.
               </>
             }
-            kicker="Tres clientes, tres industrias. Una obsesión: que el sistema trabaje, no solo se vea bien."
+            kicker="Tres clientes, tres industrias. El sistema trabaja, no solo se ve bien."
           />
           <Reveal delay={150}>
             <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/40 backdrop-blur-md px-3 py-1.5 self-start md:self-end">
@@ -326,19 +326,7 @@ export default function Cases() {
           </Reveal>
         </div>
 
-        <Reveal delay={200} className="mb-12">
-          <div className="inline-flex items-center gap-3 rounded-full border border-primary/30 bg-primary/[.05] px-4 py-2">
-            <span
-              className="w-1.5 h-1.5 rounded-full bg-primary"
-              style={{ boxShadow: "0 0 10px rgba(43,91,255,.7)" }}
-            />
-            <span className="font-mono text-[11.5px] md:text-[12px] tracking-[.22em] uppercase text-muted">
-              No hacemos solo sitios. <span className="text-ink">Construimos operaciones.</span>
-            </span>
-          </div>
-        </Reveal>
-
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-3 gap-5 mt-12">
           {PROJECTS.map((p, i) => (
             <ProjectCard key={p.id} p={p} i={i} onOpen={() => setActiveIndex(i)} />
           ))}
