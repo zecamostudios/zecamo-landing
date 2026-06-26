@@ -32,7 +32,7 @@ export default function Timeline() {
   });
 
   return (
-    <section id="dia" className="relative py-24 md:py-36 overflow-hidden">
+    <section id="dia" className="relative py-16 md:py-24 overflow-hidden">
       <Mesh variant="soft" />
       <div className="relative max-w-[1100px] mx-auto px-5 md:px-8">
         <SectionTitle
@@ -42,14 +42,14 @@ export default function Timeline() {
           kicker="No te mostramos el sistema funcionando. Te mostramos tu día, mientras el sistema trabaja por detrás."
         />
 
-        <div ref={ref} className="relative mt-16">
+        <div ref={ref} className="relative mt-10 md:mt-12">
           {/* camino serpenteante (desktop) */}
           <TimelinePath progress={scrollYProgress} stops={STOPS.length} />
 
           {/* línea recta mobile */}
           <div className="md:hidden absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-primary/60 to-primary/10" aria-hidden />
 
-          <div className="flex flex-col gap-10 md:gap-20">
+          <div className="flex flex-col gap-8 md:gap-14">
             {STOPS.map((s, i) => {
               const right = i % 2 === 1; // alterna: pares izquierda, impares derecha (desktop)
               const Icon = s.Icon;
@@ -90,7 +90,7 @@ export default function Timeline() {
           </div>
         </div>
 
-        <div className="flex justify-center mt-16">
+        <div className="flex justify-center mt-10 md:mt-12">
           <PrimaryBtn as="a" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
             className="!px-8 !py-4 !text-[16px]" icon={<MessageCircle size={18} strokeWidth={1.75} />}>
             Quiero días así

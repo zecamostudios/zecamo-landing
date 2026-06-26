@@ -293,7 +293,7 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="servicios" className="relative py-24 md:py-36">
+    <section id="servicios" className="relative py-16 md:py-24">
       <Mesh variant="soft" />
       <div className="absolute inset-0 line-grid opacity-50" aria-hidden />
 

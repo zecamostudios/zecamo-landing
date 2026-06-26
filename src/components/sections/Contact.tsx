@@ -15,7 +15,7 @@ const PERKS = [
 
 export default function Contact() {
   return (
-    <section id="contacto" className="relative py-24 md:py-36 overflow-hidden">
+    <section id="contacto" className="relative py-16 md:py-24 overflow-hidden">
       <Mesh variant="soft" />
       <ZWatermark className="-right-40 -top-20 hidden md:block" size={520} opacity={0.05} />
 

@@ -14,7 +14,7 @@ export default function Hero() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="top" className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+    <section id="top" className="relative overflow-hidden pt-32 pb-14 md:pt-40 md:pb-20">
       <div className="absolute inset-0 dot-grid opacity-70" aria-hidden />
       <Mesh variant="hero" />
       <ZWatermark className="-right-32 top-10 md:top-0 md:-right-20" size={760} opacity={0.06} />
@@ -39,15 +39,15 @@ export default function Hero() {
             <Reveal delay={80}>
               <h1 className="mt-7 font-display font-semibold text-ink leading-[0.98] tracking-[-0.02em]"
                   style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)" }}>
-                Todo tu negocio,<br />
-                <span className="text-primary">en una sola pantalla.</span>
+                Hacemos que tu negocio<br />
+                <span className="text-primary">trabaje solo.</span>
               </h1>
             </Reveal>
 
             <Reveal delay={160}>
               <p className="mt-6 text-[17px] md:text-[19px] text-muted max-w-xl leading-relaxed">
-                Dejá de saltar entre planillas, WhatsApp y mil pestañas. Centralizamos
-                tu info y te la devolvemos clara, ordenada y en tiempo real.
+                Diseñamos sistemas y agentes de IA a medida que se encargan del trabajo
+                repetitivo. Vos te dedicás a hacer crecer el resto.
               </p>
             </Reveal>
 
@@ -72,7 +72,7 @@ export default function Hero() {
                       style={{ background: c }} />
                   ))}
                 </div>
-                <span><span className="text-ink font-semibold">+18 negocios</span> ya trabajan así</span>
+                <span><span className="text-ink font-semibold">+7 negocios</span> ya trabajan así</span>
               </div>
             </Reveal>
           </div>

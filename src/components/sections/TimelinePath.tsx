@@ -13,28 +13,26 @@ interface Props {
   stops: number;
 }
 
-const VIEW_W = 100;
-const ROW_H = 100; // alto por parada en unidades de viewBox
-const XS = [22, 78];
+const ROW_H = 100;   // alto por parada en unidades de viewBox
+const AMP = 7;       // amplitud de la onda (suave, no garabato)
+const TAIL = 6;      // cuántos puntos de cola tiene el cometa
 
-// Path serpenteante: alterna X entre 22 y 78, una curva suave por fila
-function buildPath(stops: number): string {
-  let d = `M 50 0`;
+// Espina central con ondas suaves (una curva por fila, tangente vertical en los cruces)
+function buildSpine(stops: number): string {
+  let d = "M 50 0";
   for (let i = 0; i < stops; i++) {
-    const y0 = i * ROW_H;
-    const yMid = y0 + ROW_H / 2;
-    const yEnd = y0 + ROW_H;
-    const x = XS[i % 2];
-    d += ` C 50 ${y0 + ROW_H * 0.3}, ${x} ${y0 + ROW_H * 0.2}, ${x} ${yMid}`;
-    d += ` C ${x} ${yEnd - ROW_H * 0.2}, 50 ${yEnd - ROW_H * 0.3}, 50 ${yEnd}`;
+    const y0 = i * ROW_H, yMid = y0 + 50, yEnd = y0 + ROW_H;
+    const x = 50 + (i % 2 === 0 ? -AMP : AMP);
+    d += ` C 50 ${y0 + 16}, ${x} ${y0 + 30}, ${x} ${yMid}`;
+    d += ` C ${x} ${yEnd - 30}, 50 ${yEnd - 16}, 50 ${yEnd}`;
   }
   return d;
 }
 
 function nodePositions(stops: number) {
   return Array.from({ length: stops }, (_, i) => ({
-    x: XS[i % 2],
-    y: i * ROW_H + ROW_H / 2,
+    x: 50 + (i % 2 === 0 ? -AMP : AMP),
+    y: i * ROW_H + 50,
     at: (i + 0.5) / stops,
   }));
 }
@@ -42,21 +40,29 @@ function nodePositions(stops: number) {
 function TimelineNode({
   x, y, at, progress, reduce,
 }: { x: number; y: number; at: number; progress: MotionValue<number>; reduce: boolean }) {
-  const lit = useTransform(progress, [at - 0.06, at], [0, 1]);
-  const scale = useTransform(lit, [0, 1], [0.6, 1]);
+  const lit = useTransform(progress, [at - 0.05, at, at + 0.02], [0, 1, 1]);
+  const coreScale = useTransform(lit, [0, 1], [0.5, 1]);
+  const coreColor = useTransform(lit, [0, 1], ["#1E1E2A", "#2B5BFF"]);
+  const burstScale = useTransform(lit, [0.6, 1], [0.4, 2.4]);
+  const burstOpacity = useTransform(lit, [0.6, 0.85, 1], [0, 0.5, 0]);
+  const haloOpacity = useTransform(lit, [0, 1], [0, 0.5]);
   return (
     <g>
-      <motion.circle
-        cx={x} cy={y} r={2.6} fill="var(--color-bg)" stroke="#2B5BFF"
-        strokeWidth={0.8} vectorEffect="non-scaling-stroke"
-        style={reduce ? { opacity: 1 } : { scale }}
-        transform-origin={`${x} ${y}`}
-      />
-      <motion.circle
-        cx={x} cy={y} r={2.6} fill="none" stroke="#4F7BFF"
-        strokeWidth={1.2} vectorEffect="non-scaling-stroke" filter="url(#tlglow)"
-        style={reduce ? { opacity: 0.8 } : { opacity: lit }}
-      />
+      {/* anillo de estallido */}
+      {!reduce && (
+        <motion.circle cx={x} cy={y} r={3} fill="none" stroke="#4F7BFF"
+          strokeWidth={1} vectorEffect="non-scaling-stroke"
+          style={{ scale: burstScale, opacity: burstOpacity, transformBox: "fill-box", transformOrigin: "center" }} />
+      )}
+      {/* halo */}
+      <motion.circle cx={x} cy={y} r={4} fill="#2B5BFF" filter="url(#tlglow)"
+        style={{ opacity: reduce ? 0.5 : haloOpacity }} />
+      {/* núcleo */}
+      <motion.circle cx={x} cy={y} r={2.4} stroke="#4F7BFF" strokeWidth={0.8}
+        vectorEffect="non-scaling-stroke"
+        style={reduce
+          ? { fill: "#2B5BFF" }
+          : { fill: coreColor, scale: coreScale, transformBox: "fill-box", transformOrigin: "center" }} />
     </g>
   );
 }
@@ -64,39 +70,51 @@ function TimelineNode({
 export default function TimelinePath({ progress, stops }: Props) {
   const reduce = useReducedMotion() ?? false;
   const pathRef = useRef<SVGPathElement>(null);
-  const [comet, setComet] = useState({ x: 50, y: 0 });
-  const d = buildPath(stops);
+  const [tail, setTail] = useState<{ x: number; y: number }[]>([]);
+  const d = buildSpine(stops);
   const nodes = nodePositions(stops);
   const totalH = stops * ROW_H;
 
-  const pathLength = useTransform(progress, [0, 0.92], [0, 1]);
+  // estela persistente: se dibuja a medida que bajás (queda encendida detrás)
+  const pathLength = useTransform(progress, [0, 0.9], [0, 1]);
 
+  // cometa + cola: muestreo varios puntos detrás de la cabeza
   useMotionValueEvent(progress, "change", (v) => {
     const el = pathRef.current;
     if (!el) return;
     const L = el.getTotalLength();
-    const p = el.getPointAtLength(Math.min(Math.max(v, 0), 1) * L);
-    setComet({ x: p.x, y: p.y });
+    const pts: { x: number; y: number }[] = [];
+    for (let k = 0; k < TAIL; k++) {
+      const t = Math.max(0, Math.min(1, v - k * 0.012));
+      const p = el.getPointAtLength(t * L);
+      pts.push({ x: p.x, y: p.y });
+    }
+    setTail(pts);
   });
 
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
-      viewBox={`0 0 ${VIEW_W} ${totalH}`} preserveAspectRatio="none" aria-hidden>
+      viewBox={`0 0 100 ${totalH}`} preserveAspectRatio="none" aria-hidden>
       <defs>
-        <filter id="tlglow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="1.5" result="b" />
+        <filter id="tlglow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="1.6" result="b" />
           <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
+        <linearGradient id="tlTrail" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#2B5BFF" />
+          <stop offset="100%" stopColor="#7E9BFF" />
+        </linearGradient>
       </defs>
 
-      {/* ruta base tenue */}
-      <path d={d} fill="none" stroke="rgba(43,91,255,.16)" strokeWidth={0.6} vectorEffect="non-scaling-stroke" />
+      {/* ruta base tenue (guía, siempre visible) */}
+      <path d={d} fill="none" stroke="rgba(43,91,255,.14)" strokeWidth={1.2}
+        vectorEffect="non-scaling-stroke" strokeLinecap="round" />
 
-      {/* ruta encendida que se dibuja */}
+      {/* estela encendida que se dibuja con el scroll = el RASTRO */}
       <motion.path
-        ref={pathRef} d={d} fill="none" stroke="#2B5BFF" strokeWidth={0.8}
-        vectorEffect="non-scaling-stroke" filter="url(#tlglow)"
+        ref={pathRef} d={d} fill="none" stroke="url(#tlTrail)" strokeWidth={1.8}
+        strokeLinecap="round" vectorEffect="non-scaling-stroke" filter="url(#tlglow)"
         style={reduce ? { pathLength: 1 } : { pathLength }} />
 
       {/* nodos */}
@@ -104,10 +122,13 @@ export default function TimelinePath({ progress, stops }: Props) {
         <TimelineNode key={i} x={n.x} y={n.y} at={n.at} progress={progress} reduce={reduce} />
       ))}
 
-      {/* cometa */}
-      {!reduce && (
-        <circle cx={comet.x} cy={comet.y} r={1.8} fill="#fff" filter="url(#tlglow)" />
-      )}
+      {/* cola del cometa (se desvanece hacia atrás) */}
+      {!reduce && tail.map((p, k) => (
+        <circle key={k} cx={p.x} cy={p.y} r={2.2 - k * 0.28}
+          fill={k === 0 ? "#fff" : "#7E9BFF"}
+          opacity={1 - k / TAIL}
+          filter={k < 2 ? "url(#tlglow)" : undefined} />
+      ))}
     </svg>
   );
 }

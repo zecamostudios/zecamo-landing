@@ -26,35 +26,46 @@ function CountUp({ kpi, play }: { kpi: Kpi; play: boolean }) {
   return <span ref={ref}>{formatKpi(0, kpi.format)}</span>;
 }
 
-// Gráfico de línea: polyline que se dibuja con pathLength
+// Gráfico de línea: curva suave que se dibuja con pathLength (stroke uniforme)
 function TrendChart({ play }: { play: boolean }) {
   const max = Math.max(...DASHBOARD_TREND);
-  const pts = DASHBOARD_TREND.map((v, i) => {
-    const x = (i / (DASHBOARD_TREND.length - 1)) * 100;
-    const y = 100 - (v / max) * 90 - 5;
-    return `${x},${y}`;
-  }).join(" ");
+  const W = 300, H = 100;
+  const points = DASHBOARD_TREND.map((v, i) => ({
+    x: (i / (DASHBOARD_TREND.length - 1)) * W,
+    y: H - (v / max) * (H - 18) - 9,
+  }));
+  let line = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i], p1 = points[i + 1];
+    const cx = (p0.x + p1.x) / 2;
+    line += ` C ${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
+  }
+  const area = `${line} L ${W} ${H} L 0 ${H} Z`;
+  const last = points[points.length - 1];
   return (
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-full overflow-visible">
       <defs>
         <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(43,91,255,.35)" />
+          <stop offset="0%" stopColor="rgba(43,91,255,.40)" />
           <stop offset="100%" stopColor="rgba(43,91,255,0)" />
         </linearGradient>
       </defs>
-      <motion.polyline
-        points={pts} fill="none" stroke="#4F7BFF" strokeWidth={2}
-        strokeLinecap="round" strokeLinejoin="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={play ? { pathLength: 1, opacity: 1 } : {}}
-        transition={{ duration: 1.6, ease: "easeInOut" }}
-        style={{ filter: "drop-shadow(0 0 4px rgba(43,91,255,.6))" }}
-      />
-      <motion.polygon
-        points={`0,100 ${pts} 100,100`} fill="url(#trendFill)"
+      {[0.33, 0.66].map((g) => (
+        <line key={g} x1={0} x2={W} y1={H * g} y2={H * g}
+          stroke="rgba(255,255,255,.05)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      ))}
+      <motion.path d={area} fill="url(#trendFill)"
         initial={{ opacity: 0 }} animate={play ? { opacity: 1 } : {}}
-        transition={{ duration: 1.2, delay: 0.6 }}
-      />
+        transition={{ duration: 1, delay: 0.5 }} />
+      <motion.path d={line} fill="none" stroke="#4F7BFF" strokeWidth={2.5}
+        strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0 }} animate={play ? { pathLength: 1 } : {}}
+        transition={{ duration: 1.6, ease: "easeInOut" }}
+        style={{ filter: "drop-shadow(0 0 3px rgba(79,123,255,.7))" }} />
+      <motion.circle cx={last.x} cy={last.y} r={3.5} fill="#fff" stroke="#4F7BFF" strokeWidth={2}
+        vectorEffect="non-scaling-stroke"
+        initial={{ opacity: 0, scale: 0 }} animate={play ? { opacity: 1, scale: 1 } : {}}
+        transition={{ delay: 1.5, type: "spring", stiffness: 300 }} />
     </svg>
   );
 }

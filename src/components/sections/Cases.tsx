@@ -298,7 +298,7 @@ export default function Cases() {
   const [activeIndex, setActiveIndex] = useState(-1);
 
   return (
-    <section id="casos" className="relative py-24 md:py-32">
+    <section id="casos" className="relative py-16 md:py-24">
       <div className="absolute inset-0 line-grid opacity-40" aria-hidden />
       <Mesh variant="soft" />
 
