@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import PrimaryBtn from "@/components/ui/PrimaryBtn";
+import { WHATSAPP_URL } from "@/lib/constants";
 
 interface NavLink { href: string; label: string; }
 
 const LINKS: NavLink[] = [
-  { href: "#servicios",  label: "Servicios" },
-  { href: "#para-quien", label: "Para quién" },
-  { href: "#metodo",     label: "Método" },
-  { href: "#casos",      label: "Casos" },
-  { href: "#contacto",   label: "Contacto" },
+  { href: "#dia",       label: "Un día" },
+  { href: "#servicios", label: "Servicios" },
+  { href: "#casos",     label: "Casos" },
+  { href: "#contacto",  label: "Contacto" },
 ];
 
 export default function Navbar() {
@@ -69,7 +69,9 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <PrimaryBtn
               as="a"
-              href="#contacto"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="!px-5 !py-2.5 !text-[14px] ring-1 ring-white/10"
               icon={<ArrowUpRight size={16} strokeWidth={1.75} />}
               style={{
