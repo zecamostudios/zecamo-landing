@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, KeyboardEvent } from "react";
 import {
-  Workflow, Code2, BotMessageSquare, Compass, ArrowRight,
+  Workflow, Code2, BotMessageSquare, Compass,
   LayoutDashboard, Share2, BarChart3,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
@@ -245,161 +245,34 @@ interface ServiceCardProps {
   onOpen: (s: ServiceData) => void;
 }
 
-function FeaturedServiceCard({ s, onOpen }: { s: ServiceData; onOpen: () => void }) {
-  const [hover, setHover] = useState(false);
-  const Icon = s.Icon;
-
-  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); }
-  };
-
-  return (
-    <Reveal delay={0} className="rounded-2xl overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60">
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label={`Ver servicio: ${s.title}`}
-        className="flex flex-col md:flex-row gap-8 md:gap-10 p-7 md:p-10 rounded-2xl overflow-hidden"
-        onClick={onOpen}
-        onKeyDown={onKey}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        style={{
-          background: "var(--color-surface)",
-          borderWidth: 1,
-          borderStyle: "solid",
-          borderColor: hover ? "rgba(43,91,255,.75)" : "rgba(43,91,255,.4)",
-          boxShadow: hover
-            ? "0 12px 50px rgba(43,91,255,.35), 0 4px 20px rgba(0,0,0,.3)"
-            : "0 0 50px -15px rgba(43,91,255,.3), 0 4px 20px rgba(0,0,0,.2)",
-          transform: hover ? "translateY(-4px)" : "none",
-          transition: "border-color .3s ease, box-shadow .3s ease, transform .3s ease",
-        }}
-      >
-        {/* Left: content */}
-        <div className="flex-1 min-w-0">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-3 py-1 mb-5">
-            <span
-              className="w-1.5 h-1.5 rounded-full bg-primary"
-              style={{ boxShadow: "0 0 8px rgba(43,91,255,.8)" }}
-            />
-            <span className="font-mono text-[10.5px] tracking-[.22em] uppercase text-primary">
-              Empezamos acá · 00
-            </span>
-          </div>
-
-          <h3 className="font-display font-semibold text-[26px] md:text-[32px] tracking-tight leading-tight">
-            {s.title}
-          </h3>
-          <p className="mt-3 text-[15.5px] md:text-[16px] text-muted leading-relaxed max-w-xl">
-            {s.desc}
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
-            {s.chips.map((b, bi) => (
-              <span key={bi} className="text-[12px] font-mono tracking-wide text-muted/80 inline-flex items-center gap-1.5">
-                <span className="w-1 h-1 rounded-full bg-primary" /> {b}
-              </span>
-            ))}
-          </div>
-
-          <div
-            className={`mt-7 inline-flex items-center gap-2 text-[14px] font-medium transition-colors ${
-              hover ? "text-primary" : "text-muted"
-            }`}
-          >
-            <span>Conocé el diagnóstico</span>
-            <ArrowRight size={14} strokeWidth={2} />
-          </div>
-        </div>
-
-        {/* Right: icon */}
-        <div className="flex items-center justify-start md:justify-end shrink-0">
-          <div
-            className="w-20 h-20 md:w-28 md:h-28 rounded-2xl flex items-center justify-center"
-            style={{
-              background: hover ? "rgba(43,91,255,.2)" : "rgba(43,91,255,.12)",
-              border: `1px solid ${hover ? "rgba(43,91,255,.5)" : "rgba(43,91,255,.3)"}`,
-              boxShadow: hover
-                ? "0 0 50px -5px rgba(43,91,255,.5) inset"
-                : "0 0 20px -10px rgba(43,91,255,.4) inset",
-              transition: "background .3s ease, border-color .3s ease, box-shadow .3s ease",
-            }}
-          >
-            <Icon size={44} strokeWidth={1.4} className="text-primary" />
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
 function ServiceCard({ s, i, onOpen }: ServiceCardProps) {
   const [hover, setHover] = useState(false);
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onOpen(s);
-    }
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(s); }
   };
   const Icon = s.Icon;
   return (
-    <Reveal delay={i * 80} className="h-full rounded-2xl overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60">
+    <Reveal delay={i * 60} className="h-full rounded-2xl overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60">
       <div
-        role="button"
-        tabIndex={0}
-        aria-label={`Ver servicio: ${s.title}`}
-        className="h-full flex flex-col p-6 md:p-7 rounded-2xl overflow-hidden"
-        onClick={() => onOpen(s)}
-        onKeyDown={onKey}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+        role="button" tabIndex={0} aria-label={`Ver servicio: ${s.title}`}
+        onClick={() => onOpen(s)} onKeyDown={onKey}
+        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+        className="h-full flex items-start gap-4 p-5 rounded-2xl overflow-hidden"
         style={{
           background: "var(--color-surface)",
-          borderWidth: 1,
-          borderStyle: "solid",
-          borderColor: hover ? "rgba(43,91,255,.5)" : "var(--color-line)",
-          boxShadow: hover
-            ? "0 8px 40px rgba(43,91,255,.25), 0 4px 20px rgba(0,0,0,.25)"
-            : "0 4px 20px rgba(0,0,0,.2)",
-          transform: hover ? "translateY(-4px)" : "none",
+          border: `1px solid ${hover ? "rgba(43,91,255,.5)" : "var(--color-line)"}`,
+          boxShadow: hover ? "0 8px 40px rgba(43,91,255,.22)" : "0 4px 20px rgba(0,0,0,.2)",
+          transform: hover ? "translateY(-3px)" : "none",
           transition: "border-color .3s ease, box-shadow .3s ease, transform .3s ease",
         }}
       >
-        <div className="flex items-center justify-between mb-6">
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center"
-            style={{
-              background: hover ? "rgba(43,91,255,.18)" : "rgba(43,91,255,.1)",
-              border: "1px solid rgba(43,91,255,.25)",
-              transition: "background .3s ease",
-            }}
-          >
-            <Icon size={22} strokeWidth={1.75} className="text-primary" />
-          </div>
-          <span className="font-mono text-[11px] tracking-[.2em] text-muted/60">{s.tag} / 06</span>
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+          style={{ background: "rgba(43,91,255,.1)", border: "1px solid rgba(43,91,255,.25)" }}>
+          <Icon size={20} strokeWidth={1.75} className="text-primary" />
         </div>
-
-        <h3 className="font-display font-semibold text-[20px] md:text-[22px] tracking-tight leading-tight">
-          {s.title}
-        </h3>
-        <p className="mt-3 text-[14.5px] text-muted leading-relaxed flex-1">{s.desc}</p>
-
-        <div className="mt-6 pt-5 border-t border-line/60 flex flex-wrap gap-x-3 gap-y-2">
-          {s.chips.map((b, bi) => (
-            <span key={bi} className="text-[12px] font-mono tracking-wide text-muted/80 inline-flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-primary" /> {b}
-            </span>
-          ))}
-        </div>
-
-        <div
-          className={`mt-5 flex items-center gap-2 text-[13px] font-medium transition-colors ${
-            hover ? "text-primary" : "text-muted"
-          }`}
-        >
-          <span>Conocé más</span>
-          <ArrowRight size={14} strokeWidth={2} />
+        <div className="min-w-0">
+          <h3 className="font-display font-semibold text-[17px] tracking-tight leading-snug text-ink">{s.title}</h3>
+          <p className="mt-1 text-[13.5px] text-muted leading-relaxed line-clamp-2">{s.desc}</p>
         </div>
       </div>
     </Reveal>
@@ -408,9 +281,6 @@ function ServiceCard({ s, i, onOpen }: ServiceCardProps) {
 
 export default function Services() {
   const [active, setActive] = useState<ServiceData | null>(null);
-
-  const featured = SERVICES[0];
-  const regular = SERVICES.slice(1);
 
   useEffect(() => {
     const onOpen = (e: Event) => {
@@ -447,14 +317,9 @@ export default function Services() {
           </Reveal>
         </div>
 
-        {/* Featured: Diagnóstico */}
-        <div className="mb-5">
-          <FeaturedServiceCard s={featured} onOpen={() => setActive(featured)} />
-        </div>
-
-        {/* Regular: 7 services in 3-col grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
-          {regular.map((s, i) => (
+        {/* Grid compacto: todos los servicios */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+          {SERVICES.map((s, i) => (
             <ServiceCard key={s.id} s={s} i={i} onOpen={setActive} />
           ))}
         </div>
