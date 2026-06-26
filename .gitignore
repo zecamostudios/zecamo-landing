@@ -42,3 +42,6 @@ next-env.d.ts
 /supabase/.temp/
 
 .vercel
+
+# Brainstorm visual companion
+.superpowers/
