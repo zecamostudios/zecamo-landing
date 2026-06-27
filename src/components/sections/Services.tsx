@@ -301,11 +301,11 @@ export default function Services() {
                   scale: isActive ? 1 : 0.82, opacity: hidden ? 0 : 1, zIndex: 50 - abs,
                 }}
                 transition={{ type: "spring", stiffness: 260, damping: 30 }}
-                className="absolute w-[290px] md:w-[300px] h-[360px] cursor-pointer"
+                className="absolute w-[300px] md:w-[330px] h-[372px] cursor-pointer"
                 style={{ pointerEvents: hidden ? "none" : "auto" }}
                 aria-hidden={hidden}
               >
-                <div className="relative h-full rounded-3xl border p-6 flex flex-col overflow-hidden"
+                <div className="relative h-full rounded-3xl border p-7 flex flex-col overflow-hidden"
                   style={{
                     background: "linear-gradient(165deg, var(--color-surface), var(--color-bg))",
                     borderColor: isActive ? a : "var(--color-line)",
