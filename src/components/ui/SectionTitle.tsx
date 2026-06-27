@@ -31,7 +31,7 @@ export default function SectionTitle({
       )}
       <Reveal delay={60}>
         <h2
-          className="font-display font-semibold tracking-tight text-ink leading-[1.14] pb-2"
+          className="font-display font-semibold tracking-tight text-ink leading-[1.25] pb-2"
           style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.75rem)" }}
         >
           {title}

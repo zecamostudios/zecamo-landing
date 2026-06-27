@@ -154,64 +154,66 @@ export default function Cases() {
           kicker="Cuatro clientes, cuatro industrias. Tocá cada uno y mirá qué construimos."
         />
 
-        {/* selector */}
-        <Reveal>
-          <div className="mt-8 flex flex-wrap gap-2.5">
-            {CASES.map((cc, i) => {
-              const on = i === idx;
-              return (
-                <button key={cc.id} type="button" onClick={() => setIdx(i)}
-                  className={`group inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[14px] font-medium border transition-all ${
-                    on ? "bg-primary/15 border-primary text-ink" : "border-line text-muted hover:text-ink hover:border-primary/50"
-                  }`}
-                  style={on ? { boxShadow: "0 0 24px -8px rgba(43,91,255,.6)" } : undefined}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${on ? "bg-primary" : "bg-muted/40"}`}
-                    style={on ? { boxShadow: "0 0 8px rgba(43,91,255,.8)" } : undefined} />
-                  {cc.name}
-                </button>
-              );
-            })}
+        <div className="mt-10 grid lg:grid-cols-[1.25fr_1fr] gap-10 lg:gap-14 items-center">
+          {/* izquierda: preview + info (cambia con animación) */}
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              <motion.div key={c.id}
+                initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }}
+                transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}>
+                <BrowserMockup src={c.image} alt={c.name} domain={c.domain} hover
+                  objectPosition={c.imagePosition} imageZoom={c.imageZoom} gradient={c.gradient} />
+                <div className="mt-6">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/40 px-2.5 py-1 mb-3">
+                    <span className="w-1 h-1 rounded-full bg-primary" />
+                    <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">{c.category}</span>
+                  </div>
+                  <p className="text-[15px] text-muted leading-relaxed max-w-lg">{c.desc}</p>
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {c.chips.map((chip) => (
+                      <span key={chip} className="inline-flex items-center rounded-full border border-line bg-surface/60 px-2.5 py-1 text-[11.5px] text-muted font-mono">{chip}</span>
+                    ))}
+                  </div>
+                  <div className="mt-5 flex flex-wrap items-center gap-4">
+                    <button type="button" onClick={() => setFicha(true)}
+                      className="inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-5 py-2.5 text-[14px] font-medium text-white transition-colors cta-glow">
+                      Ver ficha completa
+                    </button>
+                    <a href={c.url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[14px] font-medium text-muted hover:text-primary transition-colors">
+                      Ver sitio en vivo <ArrowUpRight size={15} strokeWidth={2} />
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </Reveal>
 
-        {/* detalle activo */}
-        <div className="mt-8 grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-12 items-center">
-          <AnimatePresence mode="wait">
-            <motion.div key={c.id}
-              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}>
-              <BrowserMockup src={c.image} alt={c.name} domain={c.domain} hover
-                objectPosition={c.imagePosition} imageZoom={c.imageZoom} gradient={c.gradient} />
-            </motion.div>
-          </AnimatePresence>
-
-          <AnimatePresence mode="wait">
-            <motion.div key={c.id + "-info"}
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.3 }}>
-              <div className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/40 px-2.5 py-1 mb-3">
-                <span className="w-1 h-1 rounded-full bg-primary" />
-                <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">{c.category}</span>
+          {/* derecha: lista clickeable que se ilumina */}
+          <Reveal>
+            <div className="flex flex-col">
+              {CASES.map((cc, i) => {
+                const on = i === idx;
+                return (
+                  <button key={cc.id} type="button" onClick={() => setIdx(i)}
+                    className="text-left py-4 border-l-2 pl-6 transition-all duration-300 outline-none focus-visible:bg-white/[.02]"
+                    style={{ borderColor: on ? "var(--color-primary)" : "rgba(255,255,255,.06)" }}>
+                    <span className="block font-display font-semibold tracking-tight leading-[1.18] pb-1 transition-colors duration-300"
+                      style={{ fontSize: "clamp(1.5rem, 2.4vw, 2.3rem)", color: on ? "var(--color-ink)" : "rgba(138,143,168,.28)" }}>
+                      {cc.name}
+                    </span>
+                    <span className="block font-mono text-[12px] tracking-[.16em] uppercase mt-0.5 transition-colors duration-300"
+                      style={{ color: on ? "var(--color-muted)" : "transparent" }}>
+                      {cc.category}
+                    </span>
+                  </button>
+                );
+              })}
+              <div className="mt-5 pl-6 font-mono text-[12px] text-muted/60 tabular-nums">
+                {String(idx + 1).padStart(2, "0")} / {String(CASES.length).padStart(2, "0")}
               </div>
-              <h3 className="font-display font-semibold text-[28px] md:text-[34px] tracking-tight text-ink leading-tight">{c.name}</h3>
-              <p className="mt-3 text-[15.5px] text-muted leading-relaxed max-w-lg">{c.desc}</p>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {c.chips.map((chip) => (
-                  <span key={chip} className="inline-flex items-center rounded-full border border-line bg-surface/60 px-2.5 py-1 text-[11.5px] text-muted font-mono">{chip}</span>
-                ))}
-              </div>
-              <div className="mt-6 flex flex-wrap items-center gap-4">
-                <button type="button" onClick={() => setFicha(true)}
-                  className="inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-5 py-2.5 text-[14px] font-medium text-white transition-colors cta-glow">
-                  Ver ficha completa
-                </button>
-                <a href={c.url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[14px] font-medium text-muted hover:text-primary transition-colors">
-                  Ver sitio en vivo <ArrowUpRight size={15} strokeWidth={2} />
-                </a>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          </Reveal>
         </div>
       </div>
 
