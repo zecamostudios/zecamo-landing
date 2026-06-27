@@ -37,7 +37,7 @@ export default function Hero() {
             </Reveal>
 
             <Reveal delay={80}>
-              <h1 className="mt-7 font-display font-semibold text-ink leading-[1.06] tracking-[-0.02em] pb-1"
+              <h1 className="mt-7 font-display font-semibold text-ink leading-[1.16] tracking-[-0.02em] pb-2"
                   style={{ fontSize: "clamp(2.6rem, 6vw, 5rem)" }}>
                 Hacemos que tu negocio<br />
                 <span className="text-primary">trabaje solo.</span>
