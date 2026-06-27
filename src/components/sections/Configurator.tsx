@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Dumbbell, Shirt, PartyPopper, UtensilsCrossed, Briefcase,
-  MessageCircle, Building2, type LucideIcon,
+  MessageCircle, type LucideIcon,
 } from "lucide-react";
 import {
   CalendarClock, Users, CreditCard, Bot, LayoutDashboard, Boxes,
@@ -71,10 +71,10 @@ const R = 172; // radio de la constelación (desktop)
 
 export default function Configurator() {
   const [active, setActive] = useState(0);
-  const [hovered, setHovered] = useState<number | null>(null);
+  const [sel, setSel] = useState(0);
   const rubro = RUBROS[active];
   const n = rubro.modules.length;
-  const caption = hovered !== null ? rubro.modules[hovered] : null;
+  const selModule = rubro.modules[sel] ?? rubro.modules[0];
 
   return (
     <section id="configurador" className="relative py-16 md:py-24 overflow-hidden">
@@ -95,7 +95,7 @@ export default function Configurator() {
               const on = i === active;
               const Icon = r.Icon;
               return (
-                <button key={r.id} type="button" onClick={() => { setActive(i); setHovered(null); }}
+                <button key={r.id} type="button" onClick={() => { setActive(i); setSel(0); }}
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[14px] font-medium border transition-all ${
                     on ? "bg-primary/15 border-primary text-ink" : "border-line text-muted hover:text-ink hover:border-primary/50"
                   }`}
@@ -120,7 +120,7 @@ export default function Configurator() {
                   const y = Math.sin(angle) * R;
                   const deg = (angle * 180) / Math.PI;
                   const Icon = m.Icon;
-                  const isHot = hovered === i;
+                  const isHot = sel === i;
                   return (
                     <div key={m.name}>
                       {/* línea al centro */}
@@ -135,8 +135,8 @@ export default function Configurator() {
                       </div>
                       {/* nodo */}
                       <motion.button type="button"
-                        onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
-                        onClick={() => setHovered(i)}
+                        onMouseEnter={() => setSel(i)}
+                        onClick={() => setSel(i)}
                         className="absolute left-1/2 top-1/2 w-[124px] -ml-[62px] -mt-[34px] rounded-2xl border px-3 py-2.5 text-left backdrop-blur-md"
                         style={{
                           transform: `translate(${x}px, ${y}px)`,
@@ -177,17 +177,23 @@ export default function Configurator() {
             </div>
           </div>
 
-          {/* caption del módulo activo / resumen */}
-          <div className="mx-auto mt-2 max-w-md text-center min-h-[44px]">
+          {/* panel de info del módulo seleccionado (siempre visible) */}
+          <div className="mx-auto mt-3 max-w-lg">
             <AnimatePresence mode="wait">
-              <motion.p key={caption ? caption.name : "default"}
-                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-                className="text-[14px] text-muted">
-                {caption
-                  ? <><span className="text-ink font-semibold">{caption.name}.</span> {caption.desc}</>
-                  : <>Pasá el mouse por cada módulo para ver qué hace. Todos conectados a <Building2 size={13} className="inline -mt-0.5 text-primary" /> <span className="text-ink">tu negocio</span>.</>}
-              </motion.p>
+              <motion.div key={rubro.id + selModule.name}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
+                className="flex items-center gap-3.5 rounded-2xl border border-primary/30 px-5 py-4 backdrop-blur-md"
+                style={{ background: "rgba(43,91,255,.06)" }}>
+                <span className="w-11 h-11 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
+                  <selModule.Icon size={20} strokeWidth={1.75} className="text-primary" />
+                </span>
+                <div className="min-w-0">
+                  <div className="font-display font-semibold text-[15px] text-ink leading-[1.3]">{selModule.name}</div>
+                  <div className="text-[13.5px] text-muted leading-relaxed">{selModule.desc}</div>
+                </div>
+              </motion.div>
             </AnimatePresence>
+            <p className="text-center text-[12px] text-muted/60 mt-3">Pasá por cada módulo para ver qué hace · todos conectados a tu negocio</p>
           </div>
         </div>
 

@@ -8,6 +8,7 @@ const syne = Syne({
   variable: "--font-syne",
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
+  adjustFontFallback: false, // evita el descent-override que recorta las colas (g, j, q)
 });
 
 const inter = Inter({
@@ -15,6 +16,7 @@ const inter = Inter({
   variable: "--font-inter",
   weight: ["400", "500", "600"],
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
