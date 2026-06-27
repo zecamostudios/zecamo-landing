@@ -1,16 +1,18 @@
 // src/components/sections/Cases.tsx
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight, X, Check } from "lucide-react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Mesh from "@/components/ui/Mesh";
+import Reveal from "@/components/ui/Reveal";
 
 interface CaseItem {
   id: string; category: string; name: string; desc: string; chips: string[];
   url: string; domain: string;
   image?: string; imagePosition?: string; imageZoom?: number; gradient?: string;
+  challenge: string; built: string[]; stack: string[];
 }
 
 const CASES: CaseItem[] = [
@@ -20,6 +22,15 @@ const CASES: CaseItem[] = [
     chips: ["Reservas WhatsApp", "Stock en vivo", "Panel de gestión"],
     url: "https://www.levelstudios.site/", domain: "levelstudios.site",
     image: "/cases/level.png", imagePosition: "top", imageZoom: 1.15,
+    challenge: "LEVEL necesitaba un sitio que reflejara su identidad bold y un canal directo de reservas por WhatsApp, más un backoffice para operar productos y precios sin depender de un dev.",
+    built: [
+      "Landing del drop con tap-to-flip en cada producto",
+      "Stock en tiempo real visible por talle",
+      "Reserva directa por WhatsApp con producto y talle prearmados",
+      "Dashboard de finanzas y gestión de productos",
+      "Tracking de reservas entrantes",
+    ],
+    stack: ["Next.js", "React", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
   },
   {
     id: "suplementos", category: "E-commerce · Suplementos", name: "Suplementos Tucumán",
@@ -27,6 +38,15 @@ const CASES: CaseItem[] = [
     chips: ["Tienda online", "Pedidos WhatsApp", "Panel de ventas"],
     url: "https://suplementos-tucuman.vercel.app/", domain: "suplementos-tucuman.vercel.app",
     image: "/cases/suplementos.png", imagePosition: "40% top", imageZoom: 1,
+    challenge: "Vendía por Instagram y WhatsApp pero perdía el día respondiendo precios y stock. Necesitaba un catálogo con pedido directo y un panel para operar las ventas.",
+    built: [
+      "Catálogo con filtros por categoría",
+      "Carrito + checkout a WhatsApp con el pedido prearmado",
+      "Optimizado para conversión mobile",
+      "SEO local para Tucumán",
+      "Panel de productos, stock y métricas de venta",
+    ],
+    stack: ["Next.js", "Tailwind", "Supabase", "WhatsApp API", "Vercel"],
   },
   {
     id: "finca", category: "Eventos · Reservas", name: "Finca Cajal",
@@ -34,6 +54,15 @@ const CASES: CaseItem[] = [
     chips: ["Web + reservas", "Reseñas reales", "Dashboard interno"],
     url: "https://www.fincacajal.com.ar/", domain: "fincacajal.com.ar",
     image: "/cases/finca-cajal.png", imagePosition: "65% top", imageZoom: 1,
+    challenge: "Recibía consultas por WhatsApp y formularios, pero no podía centralizar leads, gestionar reservas, controlar el calendario ni ver las finanzas del negocio.",
+    built: [
+      "Web institucional con galería, video y reseñas reales de Google",
+      "Formulario de reservas (fecha, invitados, tipo de evento)",
+      "Centralización de cada lead en el dashboard",
+      "Calendario de eventos + control de depósitos",
+      "Panel de finanzas por evento",
+    ],
+    stack: ["Next.js", "Supabase", "PostgreSQL", "WhatsApp", "Google Maps", "Vercel"],
   },
   {
     id: "cabanas", category: "Turismo · Alojamiento", name: "Cabañas Las Flores",
@@ -41,10 +70,19 @@ const CASES: CaseItem[] = [
     chips: ["Sitio + reservas", "Dashboard", "Finanzas"],
     url: "https://lasflores-web.vercel.app", domain: "lasflores-web.vercel.app",
     gradient: "linear-gradient(135deg, #14532d 0%, #0d1a14 100%)",
+    challenge: "Necesitaba un sitio de cabañas y, sobre todo, un panel para gestionar reservas y finanzas en un solo lugar, sin planillas sueltas.",
+    built: [
+      "Sitio de cabañas con galería y disponibilidad",
+      "Reservas centralizadas",
+      "Dashboard de gestión del alojamiento",
+      "Módulo de finanzas (ingresos por reserva)",
+      "Operación completa sin depender de Excel",
+    ],
+    stack: ["Next.js", "Supabase", "Tailwind", "Vercel"],
   },
 ];
 
-/* ── chrome de navegador reutilizable ── */
+/* ── chrome de navegador reutilizable (lo usa también el preview) ── */
 export function BrowserMockup({
   src, alt, domain, hover, objectPosition = "center center", imageZoom = 1, gradient,
 }: {
@@ -56,7 +94,7 @@ export function BrowserMockup({
       style={{
         background: "var(--color-bg)",
         boxShadow: hover
-          ? "0 20px 60px -20px rgba(43,91,255,.45), 0 0 60px -10px rgba(43,91,255,.25)"
+          ? "0 24px 70px -20px rgba(43,91,255,.45), 0 0 70px -10px rgba(43,91,255,.25)"
           : "0 1px 0 0 rgba(255,255,255,.04) inset, 0 24px 50px -25px rgba(0,0,0,.5)",
         transition: "box-shadow .35s ease",
       }}>
@@ -99,115 +137,145 @@ export function CaseImageBare({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-/* ── detalle de un caso (visual + info) ── */
-function CaseDetail({ c }: { c: CaseItem }) {
-  return (
-    <div>
-      <BrowserMockup src={c.image} alt={c.name} domain={c.domain} hover
-        objectPosition={c.imagePosition} imageZoom={c.imageZoom} gradient={c.gradient} />
-      <div className="mt-6">
-        <div className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/40 px-2.5 py-1 mb-3">
-          <span className="w-1 h-1 rounded-full bg-primary" />
-          <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">{c.category}</span>
-        </div>
-        <h3 className="font-display font-semibold text-[26px] md:text-[30px] tracking-tight text-ink leading-tight">{c.name}</h3>
-        <p className="mt-2.5 text-[15px] text-muted leading-relaxed max-w-lg">{c.desc}</p>
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {c.chips.map((chip) => (
-            <span key={chip} className="inline-flex items-center rounded-full border border-line bg-surface/60 px-2.5 py-1 text-[11.5px] text-muted font-mono">{chip}</span>
-          ))}
-        </div>
-        <a href={c.url} target="_blank" rel="noopener noreferrer"
-          className="mt-5 inline-flex items-center gap-1.5 text-[14px] font-medium text-primary hover:text-primary-hover transition-colors">
-          Ver sitio en vivo <ArrowUpRight size={15} strokeWidth={2} />
-        </a>
-      </div>
-    </div>
-  );
-}
-
 export default function Cases() {
-  const ref = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const n = CASES.length;
-    setIdx(Math.min(n - 1, Math.max(0, Math.floor(v * n * 0.999))));
-  });
-
-  const jump = (i: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const p = (i + 0.5) / CASES.length;
-    window.scrollTo({ top: el.offsetTop + p * (el.offsetHeight - window.innerHeight), behavior: "smooth" });
-  };
-
-  const active = CASES[idx];
+  const [ficha, setFicha] = useState(false);
+  const c = CASES[idx];
 
   return (
-    <section id="casos" className="relative">
+    <section id="casos" className="relative py-16 md:py-24 overflow-hidden">
       <Mesh variant="soft" />
-      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8 pt-16 md:pt-24">
+      <div className="absolute inset-0 line-grid opacity-30" aria-hidden />
+
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
         <SectionTitle
           eyebrow="Casos · en vivo"
           title={<>Trabajos <span className="text-primary">recientes</span>.</>}
-          kicker="Cuatro clientes, cuatro industrias. El sistema trabaja, no solo se ve bien — bajá y mirá cada uno."
+          kicker="Cuatro clientes, cuatro industrias. Tocá cada uno y mirá qué construimos."
         />
-      </div>
 
-      {/* ── DESKTOP: scroll con panel fijo ── */}
-      <div ref={ref} className="hidden lg:block relative" style={{ height: `${CASES.length * 100}vh` }}>
-        <div className="sticky top-0 h-screen flex items-center">
-          <div className="max-w-[1280px] mx-auto px-8 w-full grid grid-cols-[1.25fr_1fr] gap-14 items-center">
-            {/* izquierda: detalle que cambia */}
-            <div className="relative min-h-[420px]">
-              <AnimatePresence mode="wait">
-                <motion.div key={active.id}
-                  initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -24 }}
-                  transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}>
-                  <CaseDetail c={active} />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* derecha: lista que se ilumina */}
-            <div className="flex flex-col">
-              {CASES.map((c, i) => {
-                const on = i === idx;
-                return (
-                  <button key={c.id} type="button" onClick={() => jump(i)}
-                    className="text-left py-4 border-l-2 pl-6 transition-all duration-300"
-                    style={{ borderColor: on ? "var(--color-primary)" : "rgba(255,255,255,.06)" }}>
-                    <span className="block font-display font-semibold tracking-tight leading-[1.1] transition-colors duration-300"
-                      style={{ fontSize: "clamp(1.6rem, 2.6vw, 2.5rem)", color: on ? "var(--color-ink)" : "rgba(138,143,168,.28)" }}>
-                      {c.name}
-                    </span>
-                    <span className="block font-mono text-[12px] tracking-[.16em] uppercase mt-1 transition-colors duration-300"
-                      style={{ color: on ? "var(--color-muted)" : "transparent" }}>
-                      {c.category}
-                    </span>
-                  </button>
-                );
-              })}
-              <div className="mt-6 pl-6 font-mono text-[12px] text-muted/60 tabular-nums">
-                {String(idx + 1).padStart(2, "0")} / {String(CASES.length).padStart(2, "0")}
-              </div>
-            </div>
+        {/* selector */}
+        <Reveal>
+          <div className="mt-8 flex flex-wrap gap-2.5">
+            {CASES.map((cc, i) => {
+              const on = i === idx;
+              return (
+                <button key={cc.id} type="button" onClick={() => setIdx(i)}
+                  className={`group inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[14px] font-medium border transition-all ${
+                    on ? "bg-primary/15 border-primary text-ink" : "border-line text-muted hover:text-ink hover:border-primary/50"
+                  }`}
+                  style={on ? { boxShadow: "0 0 24px -8px rgba(43,91,255,.6)" } : undefined}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${on ? "bg-primary" : "bg-muted/40"}`}
+                    style={on ? { boxShadow: "0 0 8px rgba(43,91,255,.8)" } : undefined} />
+                  {cc.name}
+                </button>
+              );
+            })}
           </div>
+        </Reveal>
+
+        {/* detalle activo */}
+        <div className="mt-8 grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-12 items-center">
+          <AnimatePresence mode="wait">
+            <motion.div key={c.id}
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }}>
+              <BrowserMockup src={c.image} alt={c.name} domain={c.domain} hover
+                objectPosition={c.imagePosition} imageZoom={c.imageZoom} gradient={c.gradient} />
+            </motion.div>
+          </AnimatePresence>
+
+          <AnimatePresence mode="wait">
+            <motion.div key={c.id + "-info"}
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.3 }}>
+              <div className="inline-flex items-center gap-2 rounded-full border border-line bg-bg/40 px-2.5 py-1 mb-3">
+                <span className="w-1 h-1 rounded-full bg-primary" />
+                <span className="font-mono text-[11px] tracking-[.18em] uppercase text-muted">{c.category}</span>
+              </div>
+              <h3 className="font-display font-semibold text-[28px] md:text-[34px] tracking-tight text-ink leading-tight">{c.name}</h3>
+              <p className="mt-3 text-[15.5px] text-muted leading-relaxed max-w-lg">{c.desc}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {c.chips.map((chip) => (
+                  <span key={chip} className="inline-flex items-center rounded-full border border-line bg-surface/60 px-2.5 py-1 text-[11.5px] text-muted font-mono">{chip}</span>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <button type="button" onClick={() => setFicha(true)}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-5 py-2.5 text-[14px] font-medium text-white transition-colors cta-glow">
+                  Ver ficha completa
+                </button>
+                <a href={c.url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[14px] font-medium text-muted hover:text-primary transition-colors">
+                  Ver sitio en vivo <ArrowUpRight size={15} strokeWidth={2} />
+                </a>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* ── MOBILE: apilado ── */}
-      <div className="lg:hidden max-w-[1280px] mx-auto px-5 pt-10 pb-16 flex flex-col gap-12">
-        {CASES.map((c) => (
-          <motion.div key={c.id}
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-12%" }}
-            transition={{ duration: 0.5 }}>
-            <CaseDetail c={c} />
+      {/* ── ficha completa ── */}
+      <AnimatePresence>
+        {ficha && (
+          <motion.div className="fixed inset-0 z-[1300] overflow-auto"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setFicha(false)} />
+            <div className="relative min-h-full flex items-start md:items-center justify-center p-4 py-10">
+              <motion.div
+                initial={{ scale: 0.96, opacity: 0, y: 16 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.96, opacity: 0, y: 16 }}
+                transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}
+                className="relative w-full max-w-[680px] rounded-2xl border border-line overflow-hidden"
+                style={{ background: "var(--color-surface)", boxShadow: "0 40px 100px -20px rgba(0,0,0,.85)" }}>
+                {/* header */}
+                <div className="relative">
+                  <BrowserMockup src={c.image} alt={c.name} domain={c.domain} hover={false}
+                    objectPosition={c.imagePosition} imageZoom={c.imageZoom} gradient={c.gradient} />
+                  <button onClick={() => setFicha(false)} aria-label="Cerrar"
+                    className="absolute top-3 right-3 w-9 h-9 rounded-full bg-bg/70 border border-line backdrop-blur-md flex items-center justify-center text-muted hover:text-ink transition-colors">
+                    <X size={16} />
+                  </button>
+                </div>
+
+                <div className="p-6 md:p-8">
+                  <div className="font-mono text-[11px] tracking-[.18em] uppercase text-primary mb-1">{c.category}</div>
+                  <h3 className="font-display font-semibold text-[26px] tracking-tight text-ink">{c.name}</h3>
+
+                  <div className="mt-5">
+                    <div className="font-mono text-[11px] tracking-[.2em] uppercase text-muted mb-2">El desafío</div>
+                    <p className="text-[14.5px] text-muted leading-relaxed">{c.challenge}</p>
+                  </div>
+
+                  <div className="mt-5">
+                    <div className="font-mono text-[11px] tracking-[.2em] uppercase text-muted mb-2.5">Qué construimos</div>
+                    <ul className="flex flex-col gap-2">
+                      {c.built.map((b) => (
+                        <li key={b} className="flex items-start gap-2.5 text-[14px] text-ink/90">
+                          <Check size={15} strokeWidth={2.5} className="text-primary mt-0.5 shrink-0" /> {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-5">
+                    <div className="font-mono text-[11px] tracking-[.2em] uppercase text-muted mb-2.5">Stack</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {c.stack.map((t) => (
+                        <span key={t} className="rounded-full border border-line bg-bg/40 px-2.5 py-1 text-[12px] font-mono text-muted">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <a href={c.url} target="_blank" rel="noopener noreferrer"
+                    className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-6 py-3 text-[14.5px] font-medium text-white transition-colors cta-glow">
+                    Ver sitio en vivo <ArrowUpRight size={16} strokeWidth={2} />
+                  </a>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
-        ))}
-      </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

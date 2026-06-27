@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useState, KeyboardEvent } from "react";
+import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import {
   Workflow, Code2, BotMessageSquare, Compass,
-  LayoutDashboard, Share2, BarChart3,
+  LayoutDashboard, Share2, BarChart3, ArrowUpRight,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import Mesh from "@/components/ui/Mesh";
@@ -242,42 +242,85 @@ export const SERVICES: ServiceData[] = [
 interface ServiceCardProps {
   s: ServiceData;
   i: number;
+  featured?: boolean;
+  span?: string;
   onOpen: (s: ServiceData) => void;
 }
 
-function ServiceCard({ s, i, onOpen }: ServiceCardProps) {
-  const [hover, setHover] = useState(false);
+// Bento card con spotlight que sigue el cursor + hover-lift.
+function ServiceCard({ s, i, featured = false, span = "", onOpen }: ServiceCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(s); }
   };
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+  };
   const Icon = s.Icon;
+
   return (
-    <Reveal delay={i * 60} className="h-full rounded-2xl overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60">
+    <Reveal delay={i * 55} className={`h-full ${span}`}>
       <div
+        ref={ref}
         role="button" tabIndex={0} aria-label={`Ver servicio: ${s.title}`}
-        onClick={() => onOpen(s)} onKeyDown={onKey}
-        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        className="h-full flex items-start gap-4 p-5 rounded-2xl overflow-hidden"
-        style={{
-          background: "var(--color-surface)",
-          border: `1px solid ${hover ? "rgba(43,91,255,.5)" : "var(--color-line)"}`,
-          boxShadow: hover ? "0 8px 40px rgba(43,91,255,.22)" : "0 4px 20px rgba(0,0,0,.2)",
-          transform: hover ? "translateY(-3px)" : "none",
-          transition: "border-color .3s ease, box-shadow .3s ease, transform .3s ease",
-        }}
+        onClick={() => onOpen(s)} onKeyDown={onKey} onMouseMove={onMove}
+        className="group relative h-full rounded-2xl border border-line overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_12px_50px_-12px_rgba(43,91,255,.4)]"
+        style={{ background: "var(--color-surface)" }}
       >
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: "rgba(43,91,255,.1)", border: "1px solid rgba(43,91,255,.25)" }}>
-          <Icon size={20} strokeWidth={1.75} className="text-primary" />
-        </div>
-        <div className="min-w-0">
-          <h3 className="font-display font-semibold text-[17px] tracking-tight leading-snug text-ink">{s.title}</h3>
-          <p className="mt-1 text-[13.5px] text-muted leading-relaxed line-clamp-2">{s.desc}</p>
+        {/* spotlight que sigue el mouse */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: "radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(43,91,255,.16), transparent 70%)" }} />
+        {/* línea superior que se enciende */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        <div className={`relative h-full flex flex-col ${featured ? "p-6 md:p-7" : "p-5"}`}>
+          <div className="flex items-start justify-between">
+            <div className={`rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-primary/20 ${featured ? "w-14 h-14" : "w-11 h-11"}`}
+              style={{ background: "rgba(43,91,255,.1)", border: "1px solid rgba(43,91,255,.25)" }}>
+              <Icon size={featured ? 26 : 20} strokeWidth={1.6} className="text-primary" />
+            </div>
+            <ArrowUpRight size={18} strokeWidth={2}
+              className="text-muted/30 -translate-y-1 translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:text-primary transition-all duration-300" />
+          </div>
+
+          {featured && (
+            <span className="mt-4 inline-flex self-start items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] tracking-[.22em] uppercase text-primary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" style={{ boxShadow: "0 0 8px rgba(43,91,255,.8)" }} /> Empezá acá
+            </span>
+          )}
+
+          <h3 className={`font-display font-semibold tracking-tight text-ink leading-snug ${featured ? "text-[24px] md:text-[28px] mt-4" : "text-[17px] mt-4"}`}>
+            {s.title}
+          </h3>
+          <p className={`mt-2 text-muted leading-relaxed ${featured ? "text-[15px] max-w-md" : "text-[13.5px] line-clamp-2"}`}>
+            {s.desc}
+          </p>
+
+          {featured && (
+            <div className="mt-auto pt-5 flex flex-wrap gap-x-4 gap-y-2">
+              {s.chips.map((c) => (
+                <span key={c} className="inline-flex items-center gap-1.5 text-[12px] font-mono tracking-wide text-muted/80">
+                  <span className="w-1 h-1 rounded-full bg-primary" /> {c}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Reveal>
   );
 }
+
+// Distribución bento (lg). El resto cae 1×1.
+const BENTO_SPAN: Record<string, string> = {
+  diagnostico: "sm:col-span-2 lg:col-span-2 lg:row-span-2",
+  vibe: "lg:row-span-2",
+  dashboards: "sm:col-span-2 lg:col-span-2",
+};
 
 export default function Services() {
   const [active, setActive] = useState<ServiceData | null>(null);
@@ -317,10 +360,11 @@ export default function Services() {
           </Reveal>
         </div>
 
-        {/* Grid compacto: todos los servicios */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+        {/* Bento interactivo con spotlight */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-[178px] gap-3 grid-flow-dense">
           {SERVICES.map((s, i) => (
-            <ServiceCard key={s.id} s={s} i={i} onOpen={setActive} />
+            <ServiceCard key={s.id} s={s} i={i}
+              featured={s.id === "diagnostico"} span={BENTO_SPAN[s.id] ?? ""} onOpen={setActive} />
           ))}
         </div>
       </div>
