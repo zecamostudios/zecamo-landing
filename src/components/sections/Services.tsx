@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import {
   Workflow, Code2, BotMessageSquare, Compass,
-  LayoutDashboard, Share2, BarChart3, ArrowUpRight, ChevronLeft, ChevronRight,
+  LayoutDashboard, Share2, BarChart3, ArrowUpRight,
 } from "lucide-react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import ServiceModal, { type ServiceData } from "./ServiceModal";
@@ -250,129 +250,133 @@ const ACCENT: Record<string, string> = {
 };
 const accentOf = (id: string) => ACCENT[id] ?? "#2B5BFF";
 
+const BLOCK_W = 330;
+const BLOCK_H = 62;
+const BLOCK_GAP = 14;
+
+// Una "caja" de la torre.
+function TowerBlock({ s, a, i, placed, isTop, onOpen }: {
+  s: ServiceData; a: string; i: number; placed: boolean; isTop: boolean; onOpen: () => void;
+}) {
+  const Icon = s.Icon;
+  return (
+    <motion.div
+      className="absolute left-0"
+      style={{ bottom: i * (BLOCK_H + BLOCK_GAP), width: BLOCK_W, height: BLOCK_H }}
+      initial={false}
+      animate={placed ? { opacity: 1, y: 0 } : { opacity: 0, y: -44 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
+    >
+      <div
+        onClick={placed ? onOpen : undefined}
+        className="relative h-full rounded-xl border flex items-center gap-3 px-4 transition-[box-shadow,transform] duration-300"
+        style={{
+          background: "linear-gradient(160deg, var(--color-surface2), var(--color-bg))",
+          borderColor: isTop ? a : "var(--color-line)",
+          borderTopColor: `${a}99`,
+          boxShadow: isTop
+            ? `0 0 0 1px ${a}55, 0 26px 55px -18px ${a}88`
+            : "0 16px 34px -22px rgba(0,0,0,.85)",
+          transform: isTop ? "translateZ(28px)" : "translateZ(0)",
+          cursor: placed ? "pointer" : "default",
+        }}
+      >
+        <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+          style={{ background: `${a}22`, border: `1px solid ${a}55` }}>
+          <Icon size={18} strokeWidth={1.7} style={{ color: a }} />
+        </span>
+        <span className="font-display font-semibold text-[14px] text-ink leading-tight truncate flex-1">{s.title}</span>
+        <span className="font-mono text-[11px] tabular-nums" style={{ color: isTop ? a : "var(--color-muted)" }}>
+          {String(i + 1).padStart(2, "0")}
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function Services() {
+  const ref = useRef<HTMLDivElement>(null);
   const [modal, setModal] = useState<ServiceData | null>(null);
-  const [active, setActive] = useState(0);
+  const [idx, setIdx] = useState(0);
   const n = SERVICES.length;
-  const accent = accentOf(SERVICES[active].id);
-  const go = (d: number) => setActive((a) => (a + d + n) % n);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setIdx(Math.min(n - 1, Math.max(0, Math.floor(v * n * 0.999))));
+  });
 
   // Abre el modal desde otras secciones (ej. Contacto)
   useEffect(() => {
     const onOpen = (e: Event) => {
       const ce = e as CustomEvent<{ id: string }>;
-      const idx = SERVICES.findIndex((s) => s.id === ce.detail.id);
-      if (idx >= 0) { setActive(idx); setModal(SERVICES[idx]); }
+      const i = SERVICES.findIndex((s) => s.id === ce.detail.id);
+      if (i >= 0) { setIdx(i); setModal(SERVICES[i]); }
     };
     window.addEventListener("zcm:open-service", onOpen);
     return () => window.removeEventListener("zcm:open-service", onOpen);
   }, []);
 
-  return (
-    <section id="servicios" className="relative py-16 md:py-24 overflow-hidden">
-      <div className="absolute inset-0 line-grid opacity-25" aria-hidden />
-      {/* entorno que cambia con la carta activa */}
-      <motion.div aria-hidden className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] rounded-full blur-[130px] pointer-events-none"
-        animate={{ backgroundColor: `${accent}26` }} transition={{ duration: 0.6 }} />
+  const active = SERVICES[idx];
+  const accent = accentOf(active.id);
 
-      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
+  return (
+    <section id="servicios" className="relative">
+      <div className="relative max-w-[1280px] mx-auto px-5 md:px-8 pt-16 md:pt-24">
         <SectionTitle
           align="center"
           eyebrow="Servicios · 07"
-          title={<>Primero, ordenamos. Después, <span style={{ color: accent }}>ejecutamos</span>.</>}
-          kicker="Elegí una carta y vela a fondo. Empezamos con un diagnóstico, construimos sobre certezas y operamos lo entregado."
+          title={<>Te armamos el sistema, <span style={{ color: accent }}>capa por capa</span>.</>}
+          kicker="Cada pieza se apila sobre la anterior y refuerza el sistema. Bajá y mirá cómo se construye tu solución."
         />
+      </div>
 
-        {/* ── abanico de cartas ── */}
-        <div className="relative mt-10 md:mt-14 h-[400px] flex items-center justify-center select-none" style={{ perspective: 1400 }}>
-          {SERVICES.map((s, i) => {
-            const offset = i - active;
-            const abs = Math.abs(offset);
-            const isActive = offset === 0;
-            const a = accentOf(s.id);
-            const Icon = s.Icon;
-            const hidden = abs > 1;
-            return (
-              <motion.div key={s.id}
-                onClick={() => (isActive ? setModal(s) : setActive(i))}
-                initial={false}
-                animate={{
-                  x: offset * 230, rotate: offset * 6, y: abs * 24,
-                  scale: isActive ? 1 : 0.82, opacity: hidden ? 0 : 1, zIndex: 50 - abs,
-                }}
-                transition={{ type: "spring", stiffness: 260, damping: 30 }}
-                className="absolute w-[300px] md:w-[330px] h-[372px] cursor-pointer"
-                style={{ pointerEvents: hidden ? "none" : "auto" }}
-                aria-hidden={hidden}
-              >
-                <div className="relative h-full rounded-3xl border p-7 flex flex-col overflow-hidden"
-                  style={{
-                    background: "linear-gradient(165deg, var(--color-surface), var(--color-bg))",
-                    borderColor: isActive ? a : "var(--color-line)",
-                    boxShadow: isActive
-                      ? `0 30px 80px -22px ${a}66, inset 0 0 0 1px ${a}40`
-                      : "0 20px 50px -28px rgba(0,0,0,.7)",
-                  }}>
-                  {/* glow interno */}
-                  <div aria-hidden className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full blur-3xl transition-opacity duration-500"
-                    style={{ background: `${a}40`, opacity: isActive ? 1 : 0 }} />
+      {/* zona pinneada: la torre se construye con el scroll */}
+      <div ref={ref} className="relative" style={{ height: `${n * 55}vh` }}>
+        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+          <motion.div aria-hidden className="absolute right-[12%] top-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full blur-[130px] pointer-events-none"
+            animate={{ backgroundColor: `${accent}22` }} transition={{ duration: 0.5 }} />
 
-                  <div className="relative flex items-center justify-between">
-                    <span className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                      style={{ background: `${a}1f`, border: `1px solid ${a}55` }}>
-                      <Icon size={26} strokeWidth={1.6} style={{ color: a }} />
-                    </span>
-                    <span className="font-mono text-[12px] text-muted/40">{s.tag} / 06</span>
+          <div className="relative max-w-[1280px] mx-auto px-6 md:px-8 w-full grid lg:grid-cols-2 gap-10 items-center">
+            {/* izquierda: info de la capa activa */}
+            <div className="order-2 lg:order-1">
+              <AnimatePresence mode="wait">
+                <motion.div key={active.id}
+                  initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }}
+                  transition={{ duration: 0.3 }}>
+                  <div className="font-mono text-[12px] tracking-[.22em] uppercase mb-3" style={{ color: accent }}>
+                    Capa {String(idx + 1).padStart(2, "0")} / {String(n).padStart(2, "0")}
                   </div>
-
-                  <h3 className="relative font-display font-semibold text-[22px] tracking-tight text-ink leading-[1.3] mt-5 pb-0.5">
-                    {s.title}
+                  <h3 className="font-display font-semibold tracking-tight text-ink leading-[1.18]"
+                    style={{ fontSize: "clamp(1.9rem, 3.4vw, 3rem)" }}>
+                    {active.title}
                   </h3>
+                  <p className="mt-4 text-[16px] text-muted leading-relaxed max-w-md">{active.desc}</p>
+                  <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2">
+                    {active.chips.map((c) => (
+                      <span key={c} className="inline-flex items-center gap-1.5 text-[12.5px] font-mono text-muted/80">
+                        <span className="w-1 h-1 rounded-full" style={{ background: accent }} /> {c}
+                      </span>
+                    ))}
+                  </div>
+                  <button onClick={() => setModal(active)}
+                    className="mt-7 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90 cta-glow"
+                    style={{ background: accent }}>
+                    Conocé más <ArrowUpRight size={15} strokeWidth={2} />
+                  </button>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-                  <AnimatePresence mode="wait">
-                    {isActive && (
-                      <motion.div key="body"
-                        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }} className="relative flex-1 flex flex-col">
-                        <p className="mt-3 text-[14px] text-muted leading-relaxed line-clamp-3">{s.desc}</p>
-                        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
-                          {s.chips.slice(0, 3).map((c) => (
-                            <span key={c} className="text-[11.5px] font-mono text-muted/80 inline-flex items-center gap-1.5">
-                              <span className="w-1 h-1 rounded-full" style={{ background: a }} /> {c}
-                            </span>
-                          ))}
-                        </div>
-                        <button onClick={(e) => { e.stopPropagation(); setModal(s); }}
-                          className="mt-auto inline-flex items-center gap-1.5 text-[14px] font-medium transition-opacity hover:opacity-80"
-                          style={{ color: a }}>
-                          Conocé más <ArrowUpRight size={15} strokeWidth={2} />
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* ── controles ── */}
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <button type="button" onClick={() => go(-1)} aria-label="Anterior"
-            className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-muted hover:text-ink hover:border-primary/50 transition-colors">
-            <ChevronLeft size={18} />
-          </button>
-          <div className="flex items-center gap-1.5">
-            {SERVICES.map((s, i) => (
-              <button key={s.id} type="button" onClick={() => setActive(i)} aria-label={s.title}
-                className="h-1.5 rounded-full transition-all duration-300"
-                style={{ width: i === active ? 24 : 8, background: i === active ? accentOf(s.id) : "rgba(255,255,255,.18)" }} />
-            ))}
+            {/* derecha: la torre */}
+            <div className="order-1 lg:order-2 flex justify-center items-center" style={{ perspective: 1000 }}>
+              <div className="relative"
+                style={{ width: BLOCK_W, height: n * (BLOCK_H + BLOCK_GAP), transformStyle: "preserve-3d", transform: "rotateX(6deg) rotateY(-20deg)" }}>
+                {SERVICES.map((s, i) => (
+                  <TowerBlock key={s.id} s={s} a={accentOf(s.id)} i={i}
+                    placed={i <= idx} isTop={i === idx} onOpen={() => setModal(s)} />
+                ))}
+              </div>
+            </div>
           </div>
-          <button type="button" onClick={() => go(1)} aria-label="Siguiente"
-            className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-muted hover:text-ink hover:border-primary/50 transition-colors">
-            <ChevronRight size={18} />
-          </button>
         </div>
       </div>
 
