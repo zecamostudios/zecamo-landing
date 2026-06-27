@@ -68,7 +68,7 @@ export default function Timeline() {
               }} />
           </div>
 
-          <div className="flex flex-col gap-8 md:gap-14">
+          <div className="relative z-10 flex flex-col gap-8 md:gap-14">
             {STOPS.map((s, i) => {
               const right = i % 2 === 1; // alterna: pares izquierda, impares derecha (desktop)
               const Icon = s.Icon;

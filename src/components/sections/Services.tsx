@@ -334,9 +334,9 @@ export default function Services() {
                       <motion.div key="body"
                         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                         transition={{ duration: 0.25 }} className="relative flex-1 flex flex-col">
-                        <p className="mt-3 text-[14px] text-muted leading-relaxed">{s.desc}</p>
-                        <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1.5">
-                          {s.chips.map((c) => (
+                        <p className="mt-3 text-[14px] text-muted leading-relaxed line-clamp-3">{s.desc}</p>
+                        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
+                          {s.chips.slice(0, 3).map((c) => (
                             <span key={c} className="text-[11.5px] font-mono text-muted/80 inline-flex items-center gap-1.5">
                               <span className="w-1 h-1 rounded-full" style={{ background: a }} /> {c}
                             </span>

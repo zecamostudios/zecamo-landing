@@ -122,10 +122,10 @@ export default function Configurator() {
                     </span>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <h3 className="font-display font-semibold text-[15.5px] text-ink leading-snug">{m.name}</h3>
+                        <h3 className="font-display font-semibold text-[15.5px] text-ink leading-[1.3]">{m.name}</h3>
                         <Check size={13} strokeWidth={3} className="text-[#22C55E] shrink-0" />
                       </div>
-                      <p className="mt-1 text-[13px] text-muted leading-relaxed">{m.desc}</p>
+                      <p className="mt-2 text-[13px] text-muted leading-relaxed">{m.desc}</p>
                     </div>
                   </motion.div>
                 );

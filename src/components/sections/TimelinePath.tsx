@@ -13,16 +13,15 @@ interface Props {
   stops: number;
 }
 
-const ROW_H = 100;   // alto por parada en unidades de viewBox
-const AMP = 7;       // amplitud de la onda (suave, no garabato)
-const TAIL = 6;      // cuántos puntos de cola tiene el cometa
+const ROW_H = 100;
+const AMP = 6;        // amplitud suave
+const XS = [50 - AMP, 50 + AMP];
 
-// Espina central con ondas suaves (una curva por fila, tangente vertical en los cruces)
 function buildSpine(stops: number): string {
   let d = "M 50 0";
   for (let i = 0; i < stops; i++) {
     const y0 = i * ROW_H, yMid = y0 + 50, yEnd = y0 + ROW_H;
-    const x = 50 + (i % 2 === 0 ? -AMP : AMP);
+    const x = XS[i % 2];
     d += ` C 50 ${y0 + 16}, ${x} ${y0 + 30}, ${x} ${yMid}`;
     d += ` C ${x} ${yEnd - 30}, 50 ${yEnd - 16}, 50 ${yEnd}`;
   }
@@ -31,104 +30,74 @@ function buildSpine(stops: number): string {
 
 function nodePositions(stops: number) {
   return Array.from({ length: stops }, (_, i) => ({
-    x: 50 + (i % 2 === 0 ? -AMP : AMP),
-    y: i * ROW_H + 50,
-    at: (i + 0.5) / stops,
+    x: XS[i % 2], y: i * ROW_H + 50, at: (i + 0.5) / stops,
   }));
 }
 
-function TimelineNode({
-  x, y, at, progress, reduce,
-}: { x: number; y: number; at: number; progress: MotionValue<number>; reduce: boolean }) {
-  const lit = useTransform(progress, [at - 0.05, at, at + 0.02], [0, 1, 1]);
-  const coreScale = useTransform(lit, [0, 1], [0.5, 1]);
-  const coreColor = useTransform(lit, [0, 1], ["#1E1E2A", "#2B5BFF"]);
-  const burstScale = useTransform(lit, [0.6, 1], [0.4, 2.4]);
-  const burstOpacity = useTransform(lit, [0.6, 0.85, 1], [0, 0.5, 0]);
-  const haloOpacity = useTransform(lit, [0, 1], [0, 0.5]);
+function TimelineNode({ x, y, at, draw, reduce }: {
+  x: number; y: number; at: number; draw: MotionValue<number>; reduce: boolean;
+}) {
+  const lit = useTransform(draw, [at - 0.04, at], [0, 1]);
+  const fill = useTransform(lit, [0, 1], ["#1E1E2A", "#4F7BFF"]);
   return (
-    <g>
-      {/* anillo de estallido */}
-      {!reduce && (
-        <motion.circle cx={x} cy={y} r={3} fill="none" stroke="#4F7BFF"
-          strokeWidth={1} vectorEffect="non-scaling-stroke"
-          style={{ scale: burstScale, opacity: burstOpacity, transformBox: "fill-box", transformOrigin: "center" }} />
-      )}
-      {/* halo */}
-      <motion.circle cx={x} cy={y} r={4} fill="#2B5BFF" filter="url(#tlglow)"
-        style={{ opacity: reduce ? 0.5 : haloOpacity }} />
-      {/* núcleo */}
-      <motion.circle cx={x} cy={y} r={2.4} stroke="#4F7BFF" strokeWidth={0.8}
-        vectorEffect="non-scaling-stroke"
-        style={reduce
-          ? { fill: "#2B5BFF" }
-          : { fill: coreColor, scale: coreScale, transformBox: "fill-box", transformOrigin: "center" }} />
-    </g>
+    <motion.circle cx={x} cy={y} r={2} stroke="#4F7BFF" strokeWidth={0.8}
+      vectorEffect="non-scaling-stroke"
+      style={reduce ? { fill: "#4F7BFF" } : { fill, opacity: useTransform(lit, [0, 1], [0.5, 1]) }} />
   );
 }
 
 export default function TimelinePath({ progress, stops }: Props) {
   const reduce = useReducedMotion() ?? false;
   const pathRef = useRef<SVGPathElement>(null);
-  const [tail, setTail] = useState<{ x: number; y: number }[]>([]);
+  const [comet, setComet] = useState({ x: 50, y: 0, show: false });
   const d = buildSpine(stops);
   const nodes = nodePositions(stops);
   const totalH = stops * ROW_H;
 
-  // estela persistente: se dibuja a medida que bajás (queda encendida detrás)
-  const pathLength = useTransform(progress, [0, 0.9], [0, 1]);
+  // un único valor para dibujar Y para el cometa → siempre alineados
+  const draw = useTransform(progress, [0, 0.92], [0, 1]);
 
-  // cometa + cola: muestreo varios puntos detrás de la cabeza
-  useMotionValueEvent(progress, "change", (v) => {
+  useMotionValueEvent(draw, "change", (v) => {
     const el = pathRef.current;
     if (!el) return;
     const L = el.getTotalLength();
-    const pts: { x: number; y: number }[] = [];
-    for (let k = 0; k < TAIL; k++) {
-      const t = Math.max(0, Math.min(1, v - k * 0.012));
-      const p = el.getPointAtLength(t * L);
-      pts.push({ x: p.x, y: p.y });
-    }
-    setTail(pts);
+    const p = el.getPointAtLength(Math.min(Math.max(v, 0), 1) * L);
+    setComet({ x: p.x, y: p.y, show: v > 0.002 && v < 0.998 });
   });
 
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
+      style={{ zIndex: 0 }}
       viewBox={`0 0 100 ${totalH}`} preserveAspectRatio="none" aria-hidden>
       <defs>
-        <filter id="tlglow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="1.6" result="b" />
+        <filter id="tlglow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="0.7" result="b" />
           <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <linearGradient id="tlTrail" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2B5BFF" />
-          <stop offset="100%" stopColor="#7E9BFF" />
-        </linearGradient>
       </defs>
 
-      {/* ruta base tenue (guía, siempre visible) */}
-      <path d={d} fill="none" stroke="rgba(43,91,255,.14)" strokeWidth={1.2}
-        vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+      {/* ruta base, muy tenue (guía completa) */}
+      <path d={d} fill="none" stroke="rgba(43,91,255,.10)" strokeWidth={1} vectorEffect="non-scaling-stroke" strokeLinecap="round" />
 
-      {/* estela encendida que se dibuja con el scroll = el RASTRO */}
+      {/* rastro encendido — fino, sin glow exagerado, alineado al cometa */}
       <motion.path
-        ref={pathRef} d={d} fill="none" stroke="url(#tlTrail)" strokeWidth={1.8}
-        strokeLinecap="round" vectorEffect="non-scaling-stroke" filter="url(#tlglow)"
-        style={reduce ? { pathLength: 1 } : { pathLength }} />
+        ref={pathRef} d={d} fill="none" stroke="#4F7BFF" strokeWidth={1.6}
+        strokeLinecap="round" vectorEffect="non-scaling-stroke"
+        style={reduce ? { pathLength: 1, opacity: 0.85 } : { pathLength: draw, opacity: 0.85 }} />
 
       {/* nodos */}
       {nodes.map((n, i) => (
-        <TimelineNode key={i} x={n.x} y={n.y} at={n.at} progress={progress} reduce={reduce} />
+        <TimelineNode key={i} x={n.x} y={n.y} at={n.at} draw={draw} reduce={reduce} />
       ))}
 
-      {/* cola del cometa (se desvanece hacia atrás) */}
-      {!reduce && tail.map((p, k) => (
-        <circle key={k} cx={p.x} cy={p.y} r={2.2 - k * 0.28}
-          fill={k === 0 ? "#fff" : "#7E9BFF"}
-          opacity={1 - k / TAIL}
-          filter={k < 2 ? "url(#tlglow)" : undefined} />
-      ))}
+      {/* cometa: un solo punto en la punta del rastro */}
+      {!reduce && comet.show && (
+        <>
+          <circle cx={comet.x} cy={comet.y} r={2.6} fill="#4F7BFF" opacity={0.35} filter="url(#tlglow)" />
+          <circle cx={comet.x} cy={comet.y} r={1.4} fill="#dCe7ff" />
+        </>
+      )}
     </svg>
   );
 }
