@@ -69,12 +69,20 @@ export default function Hero() {
                 <div className="text-[11px] tracking-[.22em] uppercase text-muted/70 font-mono mb-3">
                   +7 negocios ya trabajan así
                 </div>
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                  {["LEVEL", "Máximo B", "Roland Cotton", "Finca Cajal"].map((n) => (
-                    <span key={n}
-                      className="font-display font-semibold text-[15px] md:text-[16px] tracking-tight text-muted/55 hover:text-muted transition-colors">
-                      {n}
-                    </span>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {[
+                    { src: "/logos/level.jpeg",         alt: "LEVEL",        blend: "screen" as const },
+                    { src: "/logos/maximo-b.png",       alt: "Máximo B" },
+                    { src: "/logos/roland-cotton.jpeg", alt: "Roland Cotton", blend: "screen" as const },
+                    { src: "/logos/finca-cajal.png",    alt: "Finca Cajal",  white: true },
+                  ].map((l) => (
+                    <div key={l.alt} title={l.alt}
+                      className="h-9 flex items-center justify-center px-3 rounded-lg border border-line transition-opacity opacity-70 hover:opacity-100"
+                      style={{ background: l.white ? "#fff" : "rgba(255,255,255,.04)" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={l.src} alt={l.alt} className="max-h-5 w-auto object-contain"
+                        style={{ mixBlendMode: l.blend }} />
+                    </div>
                   ))}
                 </div>
               </div>
