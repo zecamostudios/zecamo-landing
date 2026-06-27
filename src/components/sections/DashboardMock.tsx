@@ -511,7 +511,7 @@ export default function DashboardMock() {
 
   return (
     <div ref={ref}
-      className="w-full rounded-2xl border border-line overflow-hidden text-left flex h-[340px] lg:h-[384px]"
+      className="w-full rounded-2xl border border-line overflow-hidden text-left flex h-[324px] md:h-[360px] lg:h-[424px]"
       style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-card)" }}>
 
       {/* sidebar */}

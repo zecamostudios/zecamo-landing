@@ -329,8 +329,8 @@ export default function Services() {
         />
       </div>
 
-      {/* zona pinneada: la torre se construye con el scroll */}
-      <div ref={ref} className="relative" style={{ height: `${n * 55}vh` }}>
+      {/* zona pinneada: la torre se construye con el scroll (solo desktop) */}
+      <div ref={ref} className="relative hidden lg:block" style={{ height: `${n * 55}vh` }}>
         <div className="sticky top-0 h-screen flex items-center overflow-hidden">
           <motion.div aria-hidden className="absolute right-[12%] top-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full blur-[130px] pointer-events-none"
             animate={{ backgroundColor: `${accent}22` }} transition={{ duration: 0.5 }} />
@@ -378,6 +378,34 @@ export default function Services() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ── MOBILE: capas apiladas, tocás una y se abre el panel ── */}
+      <div className="lg:hidden mt-8 max-w-[480px] mx-auto px-5 flex flex-col gap-2.5">
+        {SERVICES.map((s, i) => {
+          const a = accentOf(s.id);
+          const Icon = s.Icon;
+          return (
+            <motion.button key={s.id} type="button" onClick={() => setModal(s)}
+              initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-8%" }}
+              transition={{ duration: 0.35, delay: (i % 3) * 0.05 }}
+              className="w-full text-left rounded-xl border p-4 flex items-center gap-3 active:scale-[.99] transition-transform"
+              style={{
+                background: "linear-gradient(160deg, var(--color-surface2), var(--color-bg))",
+                borderColor: "var(--color-line)", borderTopColor: `${a}66`,
+              }}>
+              <span className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: `${a}1f`, border: `1px solid ${a}55` }}>
+                <Icon size={19} strokeWidth={1.7} style={{ color: a }} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-display font-semibold text-[15px] text-ink leading-tight">{s.title}</span>
+                <span className="block text-[12.5px] text-muted leading-snug line-clamp-1 mt-0.5">{s.desc}</span>
+              </span>
+              <ArrowUpRight size={16} className="text-muted/50 shrink-0" />
+            </motion.button>
+          );
+        })}
       </div>
 
       <ServiceModal service={modal} onClose={() => setModal(null)} />

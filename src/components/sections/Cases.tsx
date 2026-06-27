@@ -154,7 +154,19 @@ export default function Cases() {
           kicker="Cuatro clientes, cuatro industrias. Tocá cada uno y mirá qué construimos."
         />
 
-        <div className="mt-10 grid lg:grid-cols-[1.25fr_1fr] gap-10 lg:gap-14 items-center">
+        {/* mobile: tabs de casos */}
+        <div className="lg:hidden mt-8 flex gap-2 overflow-x-auto pb-1 -mx-5 px-5">
+          {CASES.map((cc, i) => (
+            <button key={cc.id} type="button" onClick={() => setIdx(i)}
+              className={`shrink-0 rounded-full px-3.5 py-2 text-[13px] font-medium border transition-all ${
+                i === idx ? "bg-primary/15 border-primary text-ink" : "border-line text-muted"
+              }`}>
+              {cc.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-6 lg:mt-10 grid lg:grid-cols-[1.25fr_1fr] gap-10 lg:gap-14 items-center">
           {/* izquierda: preview + info (cambia con animación) */}
           <div className="relative">
             <AnimatePresence mode="wait">
@@ -189,8 +201,8 @@ export default function Cases() {
             </AnimatePresence>
           </div>
 
-          {/* derecha: lista clickeable que se ilumina */}
-          <Reveal>
+          {/* derecha: lista clickeable que se ilumina (solo desktop) */}
+          <Reveal className="hidden lg:block">
             <div className="flex flex-col">
               {CASES.map((cc, i) => {
                 const on = i === idx;

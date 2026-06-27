@@ -31,7 +31,7 @@ export default function Hero() {
       <ZWatermark className="-right-32 top-10 md:top-0 md:-right-20" size={760} opacity={0.06} />
 
       <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
-        <div className="grid lg:grid-cols-[1fr_1.12fr] gap-12 lg:gap-10 items-center">
+        <div className="grid lg:grid-cols-[0.92fr_1.25fr] gap-12 lg:gap-8 items-center">
 
           {/* ── Columna izquierda: copy ── */}
           <div>
@@ -125,7 +125,7 @@ export default function Hero() {
                   initial={reduce ? false : { opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.9, duration: 0.5 }}
-                  className="absolute -top-4 -right-3 md:-right-5 rounded-xl border border-[#22C55E]/40 px-3 py-1.5 backdrop-blur-md"
+                  className="absolute top-2 right-2 md:-top-4 md:-right-5 rounded-xl border border-[#22C55E]/40 px-3 py-1.5 backdrop-blur-md"
                   style={{ background: "rgba(34,197,94,.12)", boxShadow: "0 8px 24px rgba(0,0,0,.4)", transform: "translateZ(40px)" }}>
                   <div className="text-[10px] text-muted">Ingresos</div>
                   <div className="text-[15px] font-semibold text-[#22C55E] leading-none">+12% ▲</div>
