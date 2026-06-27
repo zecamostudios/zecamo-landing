@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useInView, useReducedMotion, animate } from "f
 import {
   Home, Package, Layers, ShoppingBag, Users, MessageCircle,
   Search, Bell, Settings, LogOut, ImageIcon, Plus,
+  BarChart3, Camera, Bot, Sparkles,
 } from "lucide-react";
 
 // Acento "voltage" del dashboard de Máximo B (verde). Cambiar a "#2B5BFF" para azul Zecamo.
@@ -12,7 +13,7 @@ const G = "#3DDC84";
 const G_SOFT = "rgba(61,220,132,.14)";
 const G_BORDER = "rgba(61,220,132,.35)";
 
-type TabId = "resumen" | "productos" | "stock" | "ventas" | "clientes" | "consultas";
+type TabId = "resumen" | "productos" | "stock" | "ventas" | "clientes" | "consultas" | "reportes" | "estudio" | "asistente";
 const NAV: { id: TabId; label: string; Icon: typeof Home; badge?: number }[] = [
   { id: "resumen",   label: "Resumen",   Icon: Home },
   { id: "productos", label: "Productos", Icon: Package },
@@ -20,6 +21,9 @@ const NAV: { id: TabId; label: string; Icon: typeof Home; badge?: number }[] = [
   { id: "ventas",    label: "Ventas",    Icon: ShoppingBag },
   { id: "clientes",  label: "Clientes",  Icon: Users },
   { id: "consultas", label: "Consultas", Icon: MessageCircle, badge: 5 },
+  { id: "reportes",  label: "Reportes",  Icon: BarChart3 },
+  { id: "estudio",   label: "Estudio",   Icon: Camera },
+  { id: "asistente", label: "Asistente IA", Icon: Bot },
 ];
 
 /* ───────── header reutilizable de cada vista ───────── */
@@ -77,7 +81,7 @@ function MiniChart({ play }: { play: boolean }) {
   );
 }
 
-function ResumenView({ play }: { play: boolean }) {
+function ReportesView({ play }: { play: boolean }) {
   const kpis = [
     { l: "Ingresos del período", v: 7062000, p: "$ ", d: "+8,1%" },
     { l: "Ticket promedio",      v: 461056,  p: "$ ", d: "+3,2%" },
@@ -113,6 +117,102 @@ function ResumenView({ play }: { play: boolean }) {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────── Resumen (inicio + actividad) ───────── */
+function ResumenView({ play }: { play: boolean }) {
+  const tiles = [
+    { l: "Ventas hoy", v: 1240000, p: "$ ", d: "+8% vs ayer" },
+    { l: "Consultas",  v: 5,        p: "",   d: "pendientes" },
+    { l: "Stock bajo", v: 2,        p: "",   d: "productos" },
+  ];
+  const act: { I: typeof Home; t: string; s: string; c: string }[] = [
+    { I: ShoppingBag,   t: "Nueva venta · Federico Luna", s: "$ 842.000 · Local",         c: G },
+    { I: MessageCircle, t: "Consulta de WhatsApp",        s: "Tomás A. · saco talle 50",   c: G },
+    { I: Layers,        t: "Stock bajo",                  s: "Sobretodo Lana Onyx · 6 u.", c: "#F59E0B" },
+  ];
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-3 gap-1.5">
+        {tiles.map((t) => (
+          <div key={t.l} className="rounded-lg border border-line p-2" style={{ background: "var(--color-bg)" }}>
+            <div className="font-mono text-[7px] uppercase tracking-wide text-muted/70 truncate">{t.l}</div>
+            <div className="font-serif text-[15px] text-ink tabular-nums leading-tight mt-0.5"><CountUp to={t.v} prefix={t.p} play={play} /></div>
+            <div className="text-[7.5px]" style={{ color: G }}>{t.d}</div>
+          </div>
+        ))}
+      </div>
+      <div className="rounded-lg border border-line p-2" style={{ background: "var(--color-bg)" }}>
+        <div className="text-[8px] text-muted mb-1.5">Actividad reciente</div>
+        <div className="flex flex-col gap-1.5">
+          {act.map((a, i) => (
+            <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+              className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg border border-line flex items-center justify-center shrink-0" style={{ color: a.c }}><a.I size={12} /></span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[9px] text-ink truncate">{a.t}</span>
+                <span className="block text-[7.5px] text-muted/70 truncate">{a.s}</span>
+              </span>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────── Estudio (contenido IA) ───────── */
+function EstudioView() {
+  const cards = [
+    { t: "Campaña Invierno", g: "linear-gradient(135deg,#1a2b4f,#0d1526)" },
+    { t: "Drop 02 · Sacos",  g: "linear-gradient(135deg,#3a2b1f,#1a1410)" },
+    { t: "Lookbook Lino",    g: "linear-gradient(135deg,#1f3a2b,#0d1a14)" },
+    { t: "Promo WhatsApp",   g: "linear-gradient(135deg,#2b1f3a,#14101a)" },
+  ];
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-1.5">
+        {cards.map((c, i) => (
+          <motion.div key={c.t} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.06 }}
+            className="relative rounded-lg overflow-hidden h-[54px] flex items-end p-1.5 border border-line" style={{ background: c.g }}>
+            <span className="absolute top-1 right-1 rounded px-1 py-px text-[6.5px] font-semibold text-black" style={{ background: G }}>IA</span>
+            <span className="text-[8px] text-white/90">{c.t}</span>
+          </motion.div>
+        ))}
+      </div>
+      <div className="flex items-center gap-1.5 rounded-lg border border-line px-2 py-1.5" style={{ background: "var(--color-bg)" }}>
+        <Sparkles size={12} style={{ color: G }} />
+        <span className="text-[9px] text-muted/50 flex-1 truncate">Describí la imagen que querés generar…</span>
+        <span className="rounded px-2 py-0.5 text-[8.5px] font-semibold text-black" style={{ background: G }}>Generar</span>
+      </div>
+    </div>
+  );
+}
+
+/* ───────── Asistente IA (copiloto) ───────── */
+function AsistenteView() {
+  const msgs = [
+    { me: true,  t: "¿Cuánto facturé esta semana?" },
+    { me: false, t: "Facturaste $ 1.240.000 (+8% vs la anterior). Tu top fue el Sweater Merino Humo 🔥" },
+    { me: true,  t: "¿Qué stock está por agotarse?" },
+    { me: false, t: "El Sobretodo Lana Onyx está en 6 u. ¿Armo una orden de reposición?" },
+  ];
+  return (
+    <div className="rounded-lg border border-line p-2.5 flex flex-col gap-2" style={{ background: "var(--color-bg)" }}>
+      <div className="flex items-center gap-2 pb-1.5 border-b border-line/70">
+        <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: G_SOFT, border: `1px solid ${G_BORDER}` }}><Bot size={12} style={{ color: G }} /></span>
+        <span className="text-[10px] font-semibold text-ink">Asistente IA</span>
+        <span className="ml-auto text-[8px]" style={{ color: G }}>● activo</span>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        {msgs.map((m, i) => (
+          <motion.div key={i} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+            className={`max-w-[82%] px-2 py-1 text-[9.5px] leading-snug rounded-xl ${m.me ? "self-end text-black rounded-br-sm" : "self-start text-ink rounded-bl-sm"}`}
+            style={m.me ? { background: G } : { background: "var(--color-surface2)" }}>{m.t}</motion.div>
+        ))}
       </div>
     </div>
   );
@@ -275,12 +375,15 @@ function ConsultasView() {
 }
 
 const VIEWS: Record<TabId, { eyebrow: string; title: string; sub: string; action?: string; node: (play: boolean) => ReactNode }> = {
-  resumen:   { eyebrow: "Finanzas",     title: "Resumen",   sub: "Ventas, canales y clientes del período.", node: (p) => <ResumenView play={p} /> },
+  resumen:   { eyebrow: "Inicio",       title: "Resumen",   sub: "Tu negocio de un vistazo, hoy.",          node: (p) => <ResumenView play={p} /> },
   productos: { eyebrow: "13 artículos", title: "Productos", sub: "Catálogo, precios y disponibilidad.",     action: "Nuevo", node: () => <ProductosView /> },
   stock:     { eyebrow: "Inventario",   title: "Stock",     sub: "Unidades por producto en tiempo real.",   node: () => <StockView /> },
   ventas:    { eyebrow: "18 operaciones", title: "Ventas",  sub: "Historial por local, web y WhatsApp.",     action: "Nueva", node: () => <VentasView /> },
   clientes:  { eyebrow: "8 registros",  title: "Clientes",  sub: "CRM liviano con consentimiento (Ley 25.326).", action: "Nuevo", node: () => <ClientesView /> },
   consultas: { eyebrow: "WhatsApp",     title: "Consultas", sub: "Bandeja entrante atendida por la IA.",     node: () => <ConsultasView /> },
+  reportes:  { eyebrow: "Finanzas",     title: "Reportes",  sub: "Ventas, canales y clientes del período.", node: (p) => <ReportesView play={p} /> },
+  estudio:   { eyebrow: "Contenido IA", title: "Estudio",   sub: "Generá imágenes y posts con IA.",         action: "Generar", node: () => <EstudioView /> },
+  asistente: { eyebrow: "Copiloto",     title: "Asistente IA", sub: "Preguntale lo que sea de tu negocio.", node: () => <AsistenteView /> },
 };
 
 /* ───────────────────── shell (estructura Máximo B) ───────────────────── */
