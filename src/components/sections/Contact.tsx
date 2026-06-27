@@ -27,7 +27,7 @@ export default function Contact() {
         </Reveal>
 
         <Reveal delay={80}>
-          <h2 className="mt-5 font-display font-semibold tracking-tight text-ink leading-[1.25] pb-2"
+          <h2 className="mt-5 font-display font-semibold tracking-tight text-ink leading-[1.3] pb-2.5"
               style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.75rem)" }}>
             ¿Hablamos de <span className="text-primary">tu negocio</span>?
           </h2>

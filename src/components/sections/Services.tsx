@@ -1,11 +1,10 @@
 "use client";
-import { useEffect, useState, useRef, KeyboardEvent } from "react";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Workflow, Code2, BotMessageSquare, Compass,
-  LayoutDashboard, Share2, BarChart3, ArrowUpRight,
+  LayoutDashboard, Share2, BarChart3, ArrowUpRight, ChevronLeft, ChevronRight,
 } from "lucide-react";
-import Reveal from "@/components/ui/Reveal";
-import Mesh from "@/components/ui/Mesh";
 import SectionTitle from "@/components/ui/SectionTitle";
 import ServiceModal, { type ServiceData } from "./ServiceModal";
 
@@ -239,137 +238,145 @@ export const SERVICES: ServiceData[] = [
   },
 ];
 
-interface ServiceCardProps {
-  s: ServiceData;
-  i: number;
-  featured?: boolean;
-  span?: string;
-  onOpen: (s: ServiceData) => void;
-}
-
-// Bento card con spotlight que sigue el cursor + hover-lift.
-function ServiceCard({ s, i, featured = false, span = "", onOpen }: ServiceCardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(s); }
-  };
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    el.style.setProperty("--my", `${e.clientY - r.top}px`);
-  };
-  const Icon = s.Icon;
-
-  return (
-    <Reveal delay={i * 55} className={`h-full ${span}`}>
-      <div
-        ref={ref}
-        role="button" tabIndex={0} aria-label={`Ver servicio: ${s.title}`}
-        onClick={() => onOpen(s)} onKeyDown={onKey} onMouseMove={onMove}
-        className="group relative h-full rounded-2xl border border-line overflow-hidden cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/60 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_12px_50px_-12px_rgba(43,91,255,.4)]"
-        style={{ background: "var(--color-surface)" }}
-      >
-        {/* spotlight que sigue el mouse */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{ background: "radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(43,91,255,.16), transparent 70%)" }} />
-        {/* línea superior que se enciende */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-        <div className={`relative h-full flex flex-col ${featured ? "p-6 md:p-7" : "p-5"}`}>
-          <div className="flex items-start justify-between">
-            <div className={`rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-primary/20 ${featured ? "w-14 h-14" : "w-11 h-11"}`}
-              style={{ background: "rgba(43,91,255,.1)", border: "1px solid rgba(43,91,255,.25)" }}>
-              <Icon size={featured ? 26 : 20} strokeWidth={1.6} className="text-primary" />
-            </div>
-            <ArrowUpRight size={18} strokeWidth={2}
-              className="text-muted/30 -translate-y-1 translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:text-primary transition-all duration-300" />
-          </div>
-
-          {featured && (
-            <span className="mt-4 inline-flex self-start items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] tracking-[.22em] uppercase text-primary">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" style={{ boxShadow: "0 0 8px rgba(43,91,255,.8)" }} /> Empezá acá
-            </span>
-          )}
-
-          <h3 className={`font-display font-semibold tracking-tight text-ink leading-snug ${featured ? "text-[24px] md:text-[28px] mt-4" : "text-[17px] mt-4"}`}>
-            {s.title}
-          </h3>
-          <p className={`mt-2 text-muted leading-relaxed ${featured ? "text-[15px] max-w-md" : "text-[13.5px] line-clamp-2"}`}>
-            {s.desc}
-          </p>
-
-          {featured && (
-            <div className="mt-auto pt-5 flex flex-wrap gap-x-4 gap-y-2">
-              {s.chips.map((c) => (
-                <span key={c} className="inline-flex items-center gap-1.5 text-[12px] font-mono tracking-wide text-muted/80">
-                  <span className="w-1 h-1 rounded-full bg-primary" /> {c}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
-// Distribución bento (lg). El resto cae 1×1.
-const BENTO_SPAN: Record<string, string> = {
-  diagnostico: "sm:col-span-2 lg:col-span-2 lg:row-span-2",
-  vibe: "lg:row-span-2",
-  dashboards: "sm:col-span-2 lg:col-span-2",
+// Acento por servicio — el entorno cambia con cada carta (paleta fría cohesiva).
+const ACCENT: Record<string, string> = {
+  diagnostico:    "#2B5BFF",
+  automatizacion: "#4F7BFF",
+  vibe:           "#7C5CFF",
+  agentes:        "#22D3A7",
+  dashboards:     "#06B6D4",
+  integraciones:  "#0EA5E9",
+  reportes:       "#818CF8",
 };
+const accentOf = (id: string) => ACCENT[id] ?? "#2B5BFF";
 
 export default function Services() {
-  const [active, setActive] = useState<ServiceData | null>(null);
+  const [modal, setModal] = useState<ServiceData | null>(null);
+  const [active, setActive] = useState(0);
+  const n = SERVICES.length;
+  const accent = accentOf(SERVICES[active].id);
+  const go = (d: number) => setActive((a) => (a + d + n) % n);
 
+  // Abre el modal desde otras secciones (ej. Contacto)
   useEffect(() => {
     const onOpen = (e: Event) => {
       const ce = e as CustomEvent<{ id: string }>;
-      const svc = SERVICES.find((s) => s.id === ce.detail.id);
-      if (svc) setActive(svc);
+      const idx = SERVICES.findIndex((s) => s.id === ce.detail.id);
+      if (idx >= 0) { setActive(idx); setModal(SERVICES[idx]); }
     };
     window.addEventListener("zcm:open-service", onOpen);
     return () => window.removeEventListener("zcm:open-service", onOpen);
   }, []);
 
   return (
-    <section id="servicios" className="relative py-16 md:py-24">
-      <Mesh variant="soft" />
-      <div className="absolute inset-0 line-grid opacity-50" aria-hidden />
+    <section id="servicios" className="relative py-16 md:py-24 overflow-hidden">
+      <div className="absolute inset-0 line-grid opacity-25" aria-hidden />
+      {/* entorno que cambia con la carta activa */}
+      <motion.div aria-hidden className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[640px] h-[640px] rounded-full blur-[130px] pointer-events-none"
+        animate={{ backgroundColor: `${accent}26` }} transition={{ duration: 0.6 }} />
 
       <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
-          <SectionTitle
-            eyebrow="Servicios · 07"
-            title={
-              <>
-                Primero, ordenamos.
-                <br className="hidden md:block" /> Después,{" "}
-                <span className="text-primary">ejecutamos</span>.
-              </>
-            }
-          />
-          <Reveal delay={200}>
-            <p className="text-muted max-w-sm text-[15px]">
-              Empezamos con un diagnóstico, construimos sobre certezas y operamos
-              lo entregado. Cero humo, resultados medibles.
-            </p>
-          </Reveal>
+        <SectionTitle
+          align="center"
+          eyebrow="Servicios · 07"
+          title={<>Primero, ordenamos. Después, <span style={{ color: accent }}>ejecutamos</span>.</>}
+          kicker="Elegí una carta y vela a fondo. Empezamos con un diagnóstico, construimos sobre certezas y operamos lo entregado."
+        />
+
+        {/* ── abanico de cartas ── */}
+        <div className="relative mt-10 md:mt-14 h-[400px] flex items-center justify-center select-none" style={{ perspective: 1400 }}>
+          {SERVICES.map((s, i) => {
+            const offset = i - active;
+            const abs = Math.abs(offset);
+            const isActive = offset === 0;
+            const a = accentOf(s.id);
+            const Icon = s.Icon;
+            const hidden = abs > 1;
+            return (
+              <motion.div key={s.id}
+                onClick={() => (isActive ? setModal(s) : setActive(i))}
+                initial={false}
+                animate={{
+                  x: offset * 230, rotate: offset * 6, y: abs * 24,
+                  scale: isActive ? 1 : 0.82, opacity: hidden ? 0 : 1, zIndex: 50 - abs,
+                }}
+                transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                className="absolute w-[290px] md:w-[300px] h-[360px] cursor-pointer"
+                style={{ pointerEvents: hidden ? "none" : "auto" }}
+                aria-hidden={hidden}
+              >
+                <div className="relative h-full rounded-3xl border p-6 flex flex-col overflow-hidden"
+                  style={{
+                    background: "linear-gradient(165deg, var(--color-surface), var(--color-bg))",
+                    borderColor: isActive ? a : "var(--color-line)",
+                    boxShadow: isActive
+                      ? `0 30px 80px -22px ${a}66, inset 0 0 0 1px ${a}40`
+                      : "0 20px 50px -28px rgba(0,0,0,.7)",
+                  }}>
+                  {/* glow interno */}
+                  <div aria-hidden className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full blur-3xl transition-opacity duration-500"
+                    style={{ background: `${a}40`, opacity: isActive ? 1 : 0 }} />
+
+                  <div className="relative flex items-center justify-between">
+                    <span className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                      style={{ background: `${a}1f`, border: `1px solid ${a}55` }}>
+                      <Icon size={26} strokeWidth={1.6} style={{ color: a }} />
+                    </span>
+                    <span className="font-mono text-[12px] text-muted/40">{s.tag} / 06</span>
+                  </div>
+
+                  <h3 className="relative font-display font-semibold text-[22px] tracking-tight text-ink leading-[1.3] mt-5 pb-0.5">
+                    {s.title}
+                  </h3>
+
+                  <AnimatePresence mode="wait">
+                    {isActive && (
+                      <motion.div key="body"
+                        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }} className="relative flex-1 flex flex-col">
+                        <p className="mt-3 text-[14px] text-muted leading-relaxed">{s.desc}</p>
+                        <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1.5">
+                          {s.chips.map((c) => (
+                            <span key={c} className="text-[11.5px] font-mono text-muted/80 inline-flex items-center gap-1.5">
+                              <span className="w-1 h-1 rounded-full" style={{ background: a }} /> {c}
+                            </span>
+                          ))}
+                        </div>
+                        <button onClick={(e) => { e.stopPropagation(); setModal(s); }}
+                          className="mt-auto inline-flex items-center gap-1.5 text-[14px] font-medium transition-opacity hover:opacity-80"
+                          style={{ color: a }}>
+                          Conocé más <ArrowUpRight size={15} strokeWidth={2} />
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* Bento interactivo con spotlight */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-[178px] gap-3 grid-flow-dense">
-          {SERVICES.map((s, i) => (
-            <ServiceCard key={s.id} s={s} i={i}
-              featured={s.id === "diagnostico"} span={BENTO_SPAN[s.id] ?? ""} onOpen={setActive} />
-          ))}
+        {/* ── controles ── */}
+        <div className="flex items-center justify-center gap-4 mt-8">
+          <button type="button" onClick={() => go(-1)} aria-label="Anterior"
+            className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-muted hover:text-ink hover:border-primary/50 transition-colors">
+            <ChevronLeft size={18} />
+          </button>
+          <div className="flex items-center gap-1.5">
+            {SERVICES.map((s, i) => (
+              <button key={s.id} type="button" onClick={() => setActive(i)} aria-label={s.title}
+                className="h-1.5 rounded-full transition-all duration-300"
+                style={{ width: i === active ? 24 : 8, background: i === active ? accentOf(s.id) : "rgba(255,255,255,.18)" }} />
+            ))}
+          </div>
+          <button type="button" onClick={() => go(1)} aria-label="Siguiente"
+            className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-muted hover:text-ink hover:border-primary/50 transition-colors">
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
 
-      <ServiceModal service={active} onClose={() => setActive(null)} />
+      <ServiceModal service={modal} onClose={() => setModal(null)} />
     </section>
   );
 }
