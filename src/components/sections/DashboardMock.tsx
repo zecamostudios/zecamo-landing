@@ -355,8 +355,8 @@ export default function DashboardMock() {
           ))}
         </div>
 
-        {/* contenido — ALTURA FIJA anti-resize */}
-        <div className="p-3 h-[244px] overflow-hidden">
+        {/* contenido — ALTURA FIJA anti-resize (más alta en desktop) */}
+        <div className="p-3 h-[244px] lg:h-[284px] overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }}>
               <ViewHeader eyebrow={view.eyebrow} title={view.title} sub={view.sub} action={view.action} />

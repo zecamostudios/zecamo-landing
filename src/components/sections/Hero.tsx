@@ -20,7 +20,7 @@ export default function Hero() {
       <ZWatermark className="-right-32 top-10 md:top-0 md:-right-20" size={760} opacity={0.06} />
 
       <div className="relative max-w-[1280px] mx-auto px-5 md:px-8">
-        <div className="grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-10 items-center">
+        <div className="grid lg:grid-cols-[0.9fr_1.18fr] gap-12 lg:gap-8 items-center">
 
           {/* ── Columna izquierda: copy ── */}
           <div>
@@ -95,12 +95,12 @@ export default function Hero() {
             <div className="absolute -inset-6 rounded-[32px] pointer-events-none"
               style={{ background: "radial-gradient(60% 60% at 60% 30%, rgba(43,91,255,.28), transparent 70%)", filter: "blur(20px)" }} />
             <motion.div
-              initial={reduce ? false : { opacity: 0, y: 40, rotateY: -24, rotateX: 10 }}
-              animate={reduce ? {} : { opacity: 1, y: 0, rotateY: -15, rotateX: 6 }}
+              initial={reduce ? false : { opacity: 0, y: 40, rotateY: -20, rotateX: 8 }}
+              animate={reduce ? {} : { opacity: 1, y: 0, rotateY: -11, rotateX: 5 }}
               transition={{ duration: 1, ease: [0.2, 0.7, 0.2, 1] }}
               style={{
                 transformStyle: "preserve-3d",
-                transform: reduce ? undefined : "rotateY(-15deg) rotateX(6deg)",
+                transform: reduce ? undefined : "rotateY(-11deg) rotateX(5deg)",
                 boxShadow: "-18px 30px 60px rgba(0,0,0,.55), 0 0 60px -10px rgba(43,91,255,.35)",
                 borderRadius: 16,
               }}
