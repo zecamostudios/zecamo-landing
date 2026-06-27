@@ -69,7 +69,7 @@ const CASES: CaseItem[] = [
     desc: "Sitio de cabañas + dashboard de gestión con reservas y finanzas. Todo el alojamiento operado desde un panel.",
     chips: ["Sitio + reservas", "Dashboard", "Finanzas"],
     url: "https://lasflores-web.vercel.app", domain: "lasflores-web.vercel.app",
-    image: "/cases/cabanas.png", imagePosition: "top", imageZoom: 1,
+    image: "/cases/cabanas.png", imagePosition: "left top", imageZoom: 1,
     gradient: "linear-gradient(135deg, #14532d 0%, #0d1a14 100%)",
     challenge: "Necesitaba un sitio de cabañas y, sobre todo, un panel para gestionar reservas y finanzas en un solo lugar, sin planillas sueltas.",
     built: [
