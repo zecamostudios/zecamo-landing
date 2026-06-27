@@ -1,118 +1,102 @@
 // src/components/sections/Timeline.tsx
 "use client";
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { MessageCircle, Coffee, Handshake, UtensilsCrossed, Lock, Moon } from "lucide-react";
+import { motion, useScroll, useTransform, useReducedMotion, type MotionValue } from "framer-motion";
+import { MessageCircle, Check } from "lucide-react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import Mesh from "@/components/ui/Mesh";
 import PrimaryBtn from "@/components/ui/PrimaryBtn";
-import TimelinePath from "@/components/sections/TimelinePath";
 import { WHATSAPP_URL } from "@/lib/constants";
 
-interface Stop {
-  time: string;
-  Icon: typeof Coffee;
-  feel: string;     // lo que SENTÍS (el dueño)
-  system: string;   // lo que el sistema hizo solo
-}
+interface Stop { time: string; you: string; system: string }
 
 const STOPS: Stop[] = [
-  { time: "8:00",  Icon: Coffee,           feel: "Tomás el primer café",   system: "El reporte de ayer ya está listo en el sistema." },
-  { time: "11:30", Icon: Handshake,        feel: "Atendés a un cliente",   system: "La IA contestó 8 consultas por WhatsApp." },
-  { time: "14:00", Icon: UtensilsCrossed,  feel: "Almorzás tranquilo",     system: "El stock se actualizó solo con cada venta." },
-  { time: "18:00", Icon: Lock,             feel: "Cerrás el local",        system: "Las facturas del día ya se emitieron." },
-  { time: "22:00", Icon: Moon,             feel: "Cenás con tu familia",   system: "Tu negocio funciona sin vos. Descansás." },
+  { time: "7:30",  you: "Todavía dormís.",        system: "Ya te dejó en el WhatsApp el reporte de ventas de ayer." },
+  { time: "9:00",  you: "Abrís sin apuro.",       system: "Las consultas de anoche están respondidas y hay 3 reservas confirmadas." },
+  { time: "13:00", you: "Almorzás afuera.",       system: "Cada venta descontó el stock y emitió su comprobante sola." },
+  { time: "17:00", you: "Estás con un cliente.",  system: "El bot calificó 4 leads nuevos y agendó 2 reuniones." },
+  { time: "20:00", you: "Bajás la persiana.",     system: "Cuadró la caja del día y te avisó qué hay que reponer." },
+  { time: "23:00", you: "Dormís tranquilo.",      system: "Sigue atendiendo. Mañana arrancás con todo al día." },
 ];
+
+function RailNode({ at, progress, reduce }: { at: number; progress: MotionValue<number>; reduce: boolean }) {
+  const lit = useTransform(progress, [at - 0.06, at], [0, 1]);
+  const bg = useTransform(lit, [0, 1], ["#0D1526", "#2B5BFF"]);
+  const scale = useTransform(lit, [0, 1], [0.75, 1.1]);
+  return (
+    <motion.span
+      className="absolute w-3.5 h-3.5 rounded-full border-2 border-primary z-10"
+      style={{
+        top: `${at * 100}%`, left: 16, x: "-50%", y: "-50%",
+        background: reduce ? "#2B5BFF" : bg, scale: reduce ? 1 : scale,
+        boxShadow: "0 0 12px rgba(43,91,255,.6)",
+      }} />
+  );
+}
 
 export default function Timeline() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    // rango largo = el camino se dibuja lento a medida que scrolleás
-    offset: ["start 90%", "end 35%"],
-  });
-  // rail animado para mobile
-  const mobileFill = useTransform(scrollYProgress, [0, 0.9], [0, 1]);
-  const mobileTop = useTransform(scrollYProgress, [0, 0.9], ["0%", "100%"]);
+  const reduce = useReducedMotion() ?? false;
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 78%", "end 62%"] });
+  const fillScaleY = useTransform(scrollYProgress, [0, 0.95], [0, 1]);
+  const cometTop = useTransform(scrollYProgress, [0, 0.95], ["0%", "100%"]);
+  const cometOpacity = useTransform(scrollYProgress, [0, 0.01, 0.97, 1], [0, 1, 1, 0]);
+  const n = STOPS.length;
 
   return (
     <section id="dia" className="relative py-16 md:py-24 overflow-hidden">
       <Mesh variant="soft" />
-      <div className="relative max-w-[1100px] mx-auto px-5 md:px-8">
+      <div className="relative max-w-[760px] mx-auto px-5 md:px-8">
         <SectionTitle
           align="center"
           eyebrow="Un día en tu negocio"
-          title={<>Así se siente <span className="text-primary">tenerlo todo resuelto</span>.</>}
-          kicker="No te mostramos el sistema funcionando. Te mostramos tu día, mientras el sistema trabaja por detrás."
+          title={<>Vos hacés tu vida. <span className="text-primary">El sistema, el laburo.</span></>}
+          kicker="Así es un día cualquiera cuando tu negocio anda solo. Lo mejor: ni te enterás del trabajo que se hizo."
         />
 
-        <div ref={ref} className="relative mt-10 md:mt-12">
-          {/* camino serpenteante (desktop) */}
-          <TimelinePath progress={scrollYProgress} stops={STOPS.length} />
-
-          {/* rail animado mobile: se rellena al scrollear + punto brillante */}
-          <div className="md:hidden absolute left-[18px] top-0 bottom-0 w-[2px]" aria-hidden>
-            <div className="absolute inset-0 rounded-full bg-line" />
-            <motion.div
-              className="absolute inset-x-0 top-0 h-full rounded-full origin-top"
-              style={{
-                scaleY: mobileFill,
-                background: "linear-gradient(#2B5BFF, #7E9BFF)",
-                boxShadow: "0 0 10px rgba(43,91,255,.6)",
-              }} />
-            <motion.div
-              className="absolute -left-[6px] w-3.5 h-3.5 rounded-full bg-white"
-              style={{
-                top: mobileTop, marginTop: -7,
-                boxShadow: "0 0 14px 3px rgba(79,123,255,.9)",
-              }} />
+        <div ref={ref} className="relative mt-14 pl-12">
+          {/* rail (línea + rastro + cometa + nodos) */}
+          <div className="absolute left-0 top-0 bottom-0 w-[34px]" aria-hidden>
+            <div className="absolute left-4 top-0 bottom-0 w-[2px] rounded-full -translate-x-1/2" style={{ background: "rgba(43,91,255,.14)" }} />
+            <motion.div className="absolute left-4 top-0 w-[2px] h-full origin-top rounded-full -translate-x-1/2"
+              style={{ scaleY: reduce ? 1 : fillScaleY, background: "linear-gradient(180deg, #2B5BFF, #7E9BFF)", boxShadow: "0 0 10px rgba(43,91,255,.5)" }} />
+            {STOPS.map((s, i) => (
+              <RailNode key={s.time} at={(i + 0.5) / n} progress={scrollYProgress} reduce={reduce} />
+            ))}
+            {!reduce && (
+              <motion.span className="absolute w-3.5 h-3.5 rounded-full z-20"
+                style={{
+                  top: cometTop, left: 16, x: "-50%", y: "-50%", opacity: cometOpacity,
+                  background: "radial-gradient(circle, #eaf1ff 0%, #4F7BFF 70%)",
+                  boxShadow: "0 0 16px 4px rgba(79,123,255,.85)",
+                }} />
+            )}
           </div>
 
-          <div className="relative z-10 flex flex-col gap-8 md:gap-14">
-            {STOPS.map((s, i) => {
-              const right = i % 2 === 1; // alterna: pares izquierda, impares derecha (desktop)
-              const Icon = s.Icon;
-              return (
-                <div key={s.time} className="relative md:grid md:grid-cols-[1fr_80px_1fr] md:items-center">
-                  {/* FEEL card */}
-                  <motion.div
-                    initial={{ opacity: 0, x: right ? 30 : -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-15%" }}
-                    transition={{ duration: 0.5 }}
-                    className={`pl-12 md:pl-0 ${right ? "md:col-start-3" : "md:col-start-1 md:text-right"}`}>
-                    <div className="font-mono text-[11px] font-bold tracking-[.06em] text-primary-hover">{s.time}</div>
-                    <h3 className="font-display text-[20px] md:text-[24px] font-semibold text-ink leading-snug mt-1 inline-flex items-center gap-2">
-                      <Icon size={18} strokeWidth={1.75} className="text-muted md:hidden" />{s.feel}
-                    </h3>
-                  </motion.div>
-
-                  {/* centro (solo desktop, el SVG dibuja el nodo) */}
-                  <div className="hidden md:block" aria-hidden />
-
-                  {/* SYSTEM chip */}
-                  <motion.div
-                    initial={{ opacity: 0, x: right ? -30 : 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-15%" }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className={`pl-12 md:pl-0 mt-2 md:mt-0 ${right ? "md:col-start-1 md:row-start-1 md:text-right md:flex md:justify-end" : "md:col-start-3 md:row-start-1"}`}>
-                    <span className="inline-flex items-start gap-2 rounded-xl border border-primary/30 bg-surface px-3.5 py-2.5 text-[13px] text-muted"
-                      style={{ boxShadow: "0 0 18px -6px rgba(43,91,255,.35)" }}>
-                      <span className="mt-0.5 w-3.5 h-3.5 rounded bg-primary/80 shrink-0" style={{ boxShadow: "0 0 8px rgba(43,91,255,.7)" }} />
-                      {s.system}
-                    </span>
-                  </motion.div>
+          {/* cards (una sola columna) */}
+          <div className="flex flex-col gap-5 md:gap-6">
+            {STOPS.map((s) => (
+              <motion.div key={s.time}
+                initial={{ opacity: 0, x: 28 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-12%" }}
+                transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
+                className="rounded-2xl border border-line p-5" style={{ background: "rgba(13,21,38,.5)" }}>
+                <div className="font-mono text-[12px] font-bold tracking-[.08em] text-primary-hover">{s.time}</div>
+                <div className="font-display text-[19px] md:text-[21px] font-semibold text-ink leading-snug mt-1">{s.you}</div>
+                <div className="mt-2.5 flex items-start gap-2.5 text-[14px] text-muted leading-relaxed">
+                  <span className="mt-0.5 w-5 h-5 rounded-md bg-primary/15 border border-primary/40 flex items-center justify-center shrink-0">
+                    <Check size={12} strokeWidth={3} className="text-primary" />
+                  </span>
+                  <span><span className="text-ink/75 font-medium">El sistema:</span> {s.system}</span>
                 </div>
-              );
-            })}
+              </motion.div>
+            ))}
           </div>
         </div>
 
-        <div className="flex justify-center mt-10 md:mt-12">
+        <div className="flex justify-center mt-12">
           <PrimaryBtn as="a" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
             className="!px-8 !py-4 !text-[16px]" icon={<MessageCircle size={18} strokeWidth={1.75} />}>
-            Quiero días así
+            Quiero un día así
           </PrimaryBtn>
         </div>
       </div>
