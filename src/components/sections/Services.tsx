@@ -250,9 +250,9 @@ const ACCENT: Record<string, string> = {
 };
 const accentOf = (id: string) => ACCENT[id] ?? "#2B5BFF";
 
-const BLOCK_W = 330;
-const BLOCK_H = 62;
-const BLOCK_GAP = 14;
+const BLOCK_W = 420;
+const BLOCK_H = 76;
+const BLOCK_GAP = 13;
 
 // Una "caja" de la torre.
 function TowerBlock({ s, a, i, placed, isTop, onOpen }: {
@@ -281,12 +281,12 @@ function TowerBlock({ s, a, i, placed, isTop, onOpen }: {
           cursor: placed ? "pointer" : "default",
         }}
       >
-        <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+        <span className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
           style={{ background: `${a}22`, border: `1px solid ${a}55` }}>
-          <Icon size={18} strokeWidth={1.7} style={{ color: a }} />
+          <Icon size={21} strokeWidth={1.7} style={{ color: a }} />
         </span>
-        <span className="font-display font-semibold text-[14px] text-ink leading-tight truncate flex-1">{s.title}</span>
-        <span className="font-mono text-[11px] tabular-nums" style={{ color: isTop ? a : "var(--color-muted)" }}>
+        <span className="font-display font-semibold text-[16px] text-ink leading-tight truncate flex-1">{s.title}</span>
+        <span className="font-mono text-[12px] tabular-nums" style={{ color: isTop ? a : "var(--color-muted)" }}>
           {String(i + 1).padStart(2, "0")}
         </span>
       </div>
@@ -301,7 +301,8 @@ export default function Services() {
   const n = SERVICES.length;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    setIdx(Math.min(n - 1, Math.max(0, Math.floor(v * n * 0.999))));
+    // factor 1.15: la última capa se alcanza antes del fin del pin (queda bien pinneada, no se corta)
+    setIdx(Math.min(n - 1, Math.max(0, Math.floor(v * n * 1.15))));
   });
 
   // Abre el modal desde otras secciones (ej. Contacto)
@@ -329,15 +330,15 @@ export default function Services() {
         />
       </div>
 
-      {/* zona pinneada: la torre se construye con el scroll (solo desktop) */}
-      <div ref={ref} className="relative hidden lg:block" style={{ height: `${n * 55}vh` }}>
-        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+      {/* zona pinneada: la torre se construye con el scroll (desktop y mobile) */}
+      <div ref={ref} className="relative block" style={{ height: `${n * 55}vh` }}>
+        <div className="sticky top-0 h-screen flex items-start lg:items-center overflow-hidden pt-28 lg:pt-0">
           <motion.div aria-hidden className="absolute right-[12%] top-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full blur-[130px] pointer-events-none"
             animate={{ backgroundColor: `${accent}22` }} transition={{ duration: 0.5 }} />
 
-          <div className="relative max-w-[1280px] mx-auto px-6 md:px-8 w-full grid lg:grid-cols-2 gap-10 items-center">
+          <div className="relative max-w-[1080px] mx-auto px-6 md:px-8 w-full grid lg:grid-cols-[minmax(0,430px)_auto] lg:justify-center gap-x-12 gap-y-6 lg:gap-y-10 items-center">
             {/* izquierda: info de la capa activa */}
-            <div className="order-2 lg:order-1">
+            <div className="order-1 text-center lg:text-left">
               <AnimatePresence mode="wait">
                 <motion.div key={active.id}
                   initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }}
@@ -349,8 +350,8 @@ export default function Services() {
                     style={{ fontSize: "clamp(1.9rem, 3.4vw, 3rem)" }}>
                     {active.title}
                   </h3>
-                  <p className="mt-4 text-[16px] text-muted leading-relaxed max-w-md">{active.desc}</p>
-                  <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2">
+                  <p className="mt-4 hidden lg:block text-[16px] text-muted leading-relaxed max-w-md mx-auto lg:mx-0">{active.desc}</p>
+                  <div className="mt-5 hidden lg:flex flex-wrap gap-x-4 gap-y-2 justify-center lg:justify-start">
                     {active.chips.map((c) => (
                       <span key={c} className="inline-flex items-center gap-1.5 text-[12.5px] font-mono text-muted/80">
                         <span className="w-1 h-1 rounded-full" style={{ background: accent }} /> {c}
@@ -358,54 +359,31 @@ export default function Services() {
                     ))}
                   </div>
                   <button onClick={() => setModal(active)}
-                    className="mt-7 inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90 cta-glow"
+                    className="mt-6 lg:mt-7 hidden lg:inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-[14px] font-medium text-white transition-opacity hover:opacity-90 cta-glow"
                     style={{ background: accent }}>
                     Conocé más <ArrowUpRight size={15} strokeWidth={2} />
                   </button>
+                  <p className="mt-3 lg:hidden text-[12px] text-muted/60 font-mono">Tocá una capa para ver el detalle</p>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* derecha: la torre */}
-            <div className="order-1 lg:order-2 flex justify-center items-center" style={{ perspective: 1000 }}>
-              <div className="relative"
-                style={{ width: BLOCK_W, height: n * (BLOCK_H + BLOCK_GAP), transformStyle: "preserve-3d", transform: "rotateX(6deg) rotateY(-20deg)" }}>
-                {SERVICES.map((s, i) => (
-                  <TowerBlock key={s.id} s={s} a={accentOf(s.id)} i={i}
-                    placed={i <= idx} isTop={i === idx} onOpen={() => setModal(s)} />
-                ))}
+            {/* derecha: la torre — mobile: ventana de alto fijo con fade; desktop: torre completa */}
+            <div className="order-2 flex justify-center lg:items-center lg:pr-4">
+              <div className="w-full lg:w-auto flex justify-center h-[46vh] lg:h-auto overflow-hidden lg:overflow-visible [mask-image:linear-gradient(to_bottom,#000_78%,transparent)] lg:[mask-image:none]">
+                <div className="[zoom:0.8] sm:[zoom:0.9] lg:[zoom:1]" style={{ perspective: 1000 }}>
+                  <div className="relative transition-[height] duration-300"
+                    style={{ width: BLOCK_W, height: (idx + 1) * (BLOCK_H + BLOCK_GAP), transformStyle: "preserve-3d", transform: "rotateX(8deg) rotateY(-13deg)" }}>
+                    {SERVICES.map((s, i) => (
+                      <TowerBlock key={s.id} s={s} a={accentOf(s.id)} i={i}
+                        placed={i <= idx} isTop={i === idx} onOpen={() => setModal(s)} />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* ── MOBILE: capas apiladas, tocás una y se abre el panel ── */}
-      <div className="lg:hidden mt-8 max-w-[480px] mx-auto px-5 flex flex-col gap-2.5">
-        {SERVICES.map((s, i) => {
-          const a = accentOf(s.id);
-          const Icon = s.Icon;
-          return (
-            <motion.button key={s.id} type="button" onClick={() => setModal(s)}
-              initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-8%" }}
-              transition={{ duration: 0.35, delay: (i % 3) * 0.05 }}
-              className="w-full text-left rounded-xl border p-4 flex items-center gap-3 active:scale-[.99] transition-transform"
-              style={{
-                background: "linear-gradient(160deg, var(--color-surface2), var(--color-bg))",
-                borderColor: "var(--color-line)", borderTopColor: `${a}66`,
-              }}>
-              <span className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: `${a}1f`, border: `1px solid ${a}55` }}>
-                <Icon size={19} strokeWidth={1.7} style={{ color: a }} />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-display font-semibold text-[15px] text-ink leading-tight">{s.title}</span>
-                <span className="block text-[12.5px] text-muted leading-snug line-clamp-1 mt-0.5">{s.desc}</span>
-              </span>
-              <ArrowUpRight size={16} className="text-muted/50 shrink-0" />
-            </motion.button>
-          );
-        })}
       </div>
 
       <ServiceModal service={modal} onClose={() => setModal(null)} />

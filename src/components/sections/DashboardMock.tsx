@@ -511,7 +511,7 @@ export default function DashboardMock() {
 
   return (
     <div ref={ref}
-      className="w-full rounded-2xl border border-line overflow-hidden text-left flex h-[324px] md:h-[360px] lg:h-[424px]"
+      className="w-full rounded-2xl border border-line overflow-hidden text-left flex h-[300px] md:h-[380px] lg:h-[500px]"
       style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-card)" }}>
 
       {/* sidebar */}
@@ -574,10 +574,11 @@ export default function DashboardMock() {
           ))}
         </div>
 
-        {/* contenido — llena la altura fija de la tarjeta (anti-resize) */}
-        <div className="p-3 flex-1 min-h-0 overflow-hidden">
+        {/* contenido — altura fija + vistas absolutas con crossfade (cero reflow / cero temblor) */}
+        <div className="relative flex-1 min-h-0 overflow-hidden">
           <AnimatePresence mode="wait">
-            <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }}>
+            <motion.div key={tab} className="absolute inset-0 p-3 overflow-hidden"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
               <ViewHeader eyebrow={view.eyebrow} title={view.title} sub={view.sub} action={view.action} />
               {view.node(inView)}
             </motion.div>
