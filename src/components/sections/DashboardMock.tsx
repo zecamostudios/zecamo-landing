@@ -5,7 +5,8 @@ import { motion, AnimatePresence, useInView, useReducedMotion, animate } from "f
 import {
   Home, Package, Layers, ShoppingBag, Users, MessageCircle,
   Search, Bell, Settings, LogOut, ImageIcon, Plus,
-  BarChart3, Camera, Bot, Sparkles,
+  BarChart3, Camera, Bot, Sparkles, Wallet, ArrowRightLeft,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 
 // Acento "voltage" del dashboard de Máximo B (verde). Cambiar a "#2B5BFF" para azul Zecamo.
@@ -13,17 +14,20 @@ const G = "#3DDC84";
 const G_SOFT = "rgba(61,220,132,.14)";
 const G_BORDER = "rgba(61,220,132,.35)";
 
-type TabId = "resumen" | "productos" | "stock" | "ventas" | "clientes" | "consultas" | "reportes" | "estudio" | "asistente";
+type TabId = "resumen" | "productos" | "stock" | "ventas" | "clientes" | "consultas"
+  | "movimientos" | "finanzas" | "reportes" | "estudio" | "asistente";
 const NAV: { id: TabId; label: string; Icon: typeof Home; badge?: number }[] = [
-  { id: "resumen",   label: "Resumen",   Icon: Home },
-  { id: "productos", label: "Productos", Icon: Package },
-  { id: "stock",     label: "Stock",     Icon: Layers },
-  { id: "ventas",    label: "Ventas",    Icon: ShoppingBag },
-  { id: "clientes",  label: "Clientes",  Icon: Users },
-  { id: "consultas", label: "Consultas", Icon: MessageCircle, badge: 5 },
-  { id: "reportes",  label: "Reportes",  Icon: BarChart3 },
-  { id: "estudio",   label: "Estudio",   Icon: Camera },
-  { id: "asistente", label: "Asistente IA", Icon: Bot },
+  { id: "resumen",     label: "Resumen",     Icon: Home },
+  { id: "productos",   label: "Productos",   Icon: Package },
+  { id: "stock",       label: "Stock",       Icon: Layers },
+  { id: "ventas",      label: "Ventas",      Icon: ShoppingBag },
+  { id: "clientes",    label: "Clientes",    Icon: Users },
+  { id: "consultas",   label: "Consultas",   Icon: MessageCircle, badge: 5 },
+  { id: "movimientos", label: "Movimientos", Icon: ArrowRightLeft },
+  { id: "finanzas",    label: "Finanzas",    Icon: Wallet },
+  { id: "reportes",    label: "Reportes",    Icon: BarChart3 },
+  { id: "estudio",     label: "Estudio",     Icon: Camera },
+  { id: "asistente",   label: "Asistente IA", Icon: Bot },
 ];
 
 /* ───────── header reutilizable de cada vista ───────── */
@@ -229,7 +233,7 @@ function ProductosView() {
     { n: "Camisa Lino Hueso",      c: "Camisas",    price: "$ 96.000",  stock: "14 u." },
   ];
   return (
-    <div className="grid grid-cols-3 gap-1.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
       {prods.map((p, i) => (
         <motion.div key={p.n} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
           className="rounded-lg border border-line overflow-hidden" style={{ background: "var(--color-bg)" }}>
@@ -344,30 +348,140 @@ function ClientesView() {
 }
 
 /* ───────── Consultas (bandeja WhatsApp) ───────── */
+const CONVOS = [
+  { n: "Tomás Aguirre", ini: "TA", t: "13:26", on: true,
+    thread: [
+      { me: false, t: "Hola! Tienen el saco cruzado en talle 50?" },
+      { me: true,  t: "¡Hola Tomás! 🙌 Sí, nos queda 1 en talle 50. ¿Te lo reservo?" },
+      { me: false, t: "Dale, lo reservo" },
+      { me: true,  t: "Listo ✅ Reservado a tu nombre. Pasás por el local o te lo enviamos?" },
+    ] },
+  { n: "Nahuel Méndez", ini: "NM", t: "12:10", on: false,
+    thread: [
+      { me: false, t: "Hacen envíos a Yerba Buena? cuánto sale" },
+      { me: true,  t: "Sí 🚚 A Yerba Buena $1.500 y llega en 24h." },
+    ] },
+  { n: "Iván Domínguez", ini: "ID", t: "11:02", on: false,
+    thread: [
+      { me: false, t: "La parka técnica está disponible en L?" },
+      { me: true,  t: "Sí, en L y XL. ¿Te paso fotos del color?" },
+    ] },
+  { n: "Federico Luna", ini: "FL", t: "hace 3 h", on: false,
+    thread: [
+      { me: false, t: "Aceptan Mercado Pago en cuotas?" },
+      { me: true,  t: "Sí, hasta 3 cuotas sin interés 💳" },
+    ] },
+];
+
 function ConsultasView() {
-  const convos = [
-    { n: "Tomás Aguirre",  ini: "TA", m: "Hola! Tienen el saco cruzado en talle 50?", t: "13:26", on: true },
-    { n: "Nahuel Méndez",  ini: "NM", m: "Hacen envíos a Yerba Buena? cuánto sale", t: "12:10" },
-    { n: "Iván Domínguez", ini: "ID", m: "La parka técnica está disponible en L?", t: "11:02" },
-    { n: "Federico Luna",  ini: "FL", m: "Aceptan Mercado Pago en cuotas?", t: "hace 3 h" },
-  ];
+  const [sel, setSel] = useState<number | null>(null);
+
+  if (sel !== null) {
+    const c = CONVOS[sel];
+    return (
+      <div className="rounded-lg border border-line overflow-hidden flex flex-col" style={{ background: "var(--color-bg)" }}>
+        <div className="flex items-center gap-2 px-2.5 py-1.5 border-b border-line/70">
+          <button type="button" onClick={() => setSel(null)} className="text-muted hover:text-ink"><ChevronLeft size={14} /></button>
+          <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[7px] text-muted">{c.ini}</span>
+          <span className="text-[10px] text-ink">{c.n}</span>
+          <span className="ml-auto text-[7.5px]" style={{ color: c.on ? G : "var(--color-muted)" }}>● {c.on ? "Pendiente" : "Resuelta"}</span>
+        </div>
+        <div className="p-2.5 flex flex-col gap-1.5">
+          {c.thread.map((m, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+              className={`max-w-[80%] px-2 py-1 text-[9.5px] leading-snug rounded-xl ${m.me ? "self-end text-black rounded-br-sm" : "self-start text-ink rounded-bl-sm"}`}
+              style={m.me ? { background: G } : { background: "var(--color-surface2)" }}>{m.t}</motion.div>
+          ))}
+        </div>
+        <div className="flex items-center gap-1.5 border-t border-line/70 px-2.5 py-1.5">
+          <span className="text-[9px] text-muted/45 flex-1">Escribí una respuesta…</span>
+          <span className="rounded px-2 py-0.5 text-[8.5px] font-semibold text-black" style={{ background: G }}>Enviar</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border border-line overflow-hidden" style={{ background: "var(--color-bg)" }}>
       <div className="flex items-center gap-2 px-2.5 py-1.5 border-b border-line/70">
         <span className="font-mono text-[8px] uppercase tracking-wide text-muted/60">Bandeja · WhatsApp</span>
         <span className="ml-auto rounded-full px-1.5 py-px text-[7.5px] font-semibold text-black" style={{ background: G }}>● 1 pendiente</span>
       </div>
-      {convos.map((c, i) => (
-        <motion.div key={c.n} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-          className="flex items-center gap-2 px-2.5 py-1.5 border-b border-line/40 last:border-0">
+      {CONVOS.map((c, i) => (
+        <motion.button type="button" key={c.n} onClick={() => setSel(i)}
+          initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
+          className="w-full flex items-center gap-2 px-2.5 py-1.5 border-b border-line/40 last:border-0 text-left hover:bg-white/[.03] transition-colors">
           <span className="relative w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[7px] text-muted shrink-0">
             {c.ini}{c.on && <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full" style={{ background: G }} />}
           </span>
           <span className="min-w-0 flex-1">
             <span className="text-[9.5px] text-ink">{c.n}</span>
-            <span className="block text-[8px] text-muted/70 truncate">{c.m}</span>
+            <span className="block text-[8px] text-muted/70 truncate">{c.thread[0].t}</span>
           </span>
           <span className="text-[7px] text-muted/50 shrink-0">{c.t}</span>
+          <ChevronRight size={11} className="text-muted/40 shrink-0" />
+        </motion.button>
+      ))}
+    </div>
+  );
+}
+
+/* ───────── Finanzas (caja: ingresos vs egresos) ───────── */
+function FinanzasView({ play }: { play: boolean }) {
+  const kpis = [
+    { l: "Ingresos del mes", v: 7062000, p: "$ ", c: G },
+    { l: "Egresos del mes",  v: 2140000, p: "$ ", c: "#F59E0B" },
+    { l: "Balance",          v: 4922000, p: "$ ", c: "var(--color-ink)" },
+  ];
+  const ing = 7062000, egr = 2140000, tot = ing + egr;
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-3 gap-1.5">
+        {kpis.map((k) => (
+          <div key={k.l} className="rounded-lg border border-line p-2" style={{ background: "var(--color-bg)" }}>
+            <div className="font-mono text-[7px] uppercase tracking-wide text-muted/70 truncate">{k.l}</div>
+            <div className="font-serif text-[14px] tabular-nums leading-tight mt-0.5" style={{ color: k.c }}><CountUp to={k.v} prefix={k.p} play={play} /></div>
+          </div>
+        ))}
+      </div>
+      <div className="rounded-lg border border-line p-2.5" style={{ background: "var(--color-bg)" }}>
+        <div className="flex items-center justify-between text-[8px] text-muted mb-1.5">
+          <span>Ingresos vs egresos</span><span style={{ color: G }}>Ganancia 70%</span>
+        </div>
+        <div className="h-2.5 rounded-full overflow-hidden flex" style={{ background: "var(--color-surface2)" }}>
+          <motion.div initial={{ width: 0 }} animate={{ width: `${(ing / tot) * 100}%` }} transition={{ duration: 0.8 }} style={{ background: G }} />
+          <motion.div initial={{ width: 0 }} animate={{ width: `${(egr / tot) * 100}%` }} transition={{ duration: 0.8, delay: 0.2 }} style={{ background: "#F59E0B" }} />
+        </div>
+        <div className="flex gap-3 mt-2 text-[8px]">
+          <span className="flex items-center gap-1 text-muted"><span className="w-2 h-2 rounded-sm" style={{ background: G }} /> Ingresos</span>
+          <span className="flex items-center gap-1 text-muted"><span className="w-2 h-2 rounded-sm" style={{ background: "#F59E0B" }} /> Egresos</span>
+          <span className="ml-auto text-muted">Caja: <span className="text-ink tabular-nums">$ 1.380.000</span></span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────── Movimientos (libro de caja) ───────── */
+function MovimientosView() {
+  const rows = [
+    { f: "11 jun", c: "Venta web · Mateo Ríos",   m: "+ $ 192.000", in: true },
+    { f: "11 jun", c: "Compra de telas",          m: "− $ 340.000", in: false },
+    { f: "10 jun", c: "Venta local · F. Luna",    m: "+ $ 842.000", in: true },
+    { f: "09 jun", c: "Sueldos quincena",         m: "− $ 600.000", in: false },
+    { f: "08 jun", c: "Venta WhatsApp · I. Domínguez", m: "+ $ 441.000", in: true },
+  ];
+  return (
+    <div className="rounded-lg border border-line overflow-hidden" style={{ background: "var(--color-bg)" }}>
+      <div className="grid grid-cols-[auto_1fr_auto] gap-2 px-2.5 py-1.5 border-b border-line/70 font-mono text-[7.5px] uppercase tracking-wide text-muted/50">
+        <span className="w-10">Fecha</span><span>Concepto</span><span className="text-right">Monto</span>
+      </div>
+      {rows.map((r, i) => (
+        <motion.div key={i} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
+          className="grid grid-cols-[auto_1fr_auto] gap-2 px-2.5 py-1.5 items-center border-b border-line/40 last:border-0">
+          <span className="font-mono text-[8px] text-muted/60 w-10">{r.f}</span>
+          <span className="text-[9.5px] text-ink truncate">{r.c}</span>
+          <span className="text-[9.5px] tabular-nums text-right" style={{ color: r.in ? G : "#F59E0B" }}>{r.m}</span>
         </motion.div>
       ))}
     </div>
@@ -381,7 +495,9 @@ const VIEWS: Record<TabId, { eyebrow: string; title: string; sub: string; action
   ventas:    { eyebrow: "18 operaciones", title: "Ventas",  sub: "Historial por local, web y WhatsApp.",     action: "Nueva", node: () => <VentasView /> },
   clientes:  { eyebrow: "8 registros",  title: "Clientes",  sub: "CRM liviano con consentimiento (Ley 25.326).", action: "Nuevo", node: () => <ClientesView /> },
   consultas: { eyebrow: "WhatsApp",     title: "Consultas", sub: "Bandeja entrante atendida por la IA.",     node: () => <ConsultasView /> },
-  reportes:  { eyebrow: "Finanzas",     title: "Reportes",  sub: "Ventas, canales y clientes del período.", node: (p) => <ReportesView play={p} /> },
+  movimientos: { eyebrow: "Caja",       title: "Movimientos", sub: "Ingresos y egresos, día por día.",      action: "Cargar", node: () => <MovimientosView /> },
+  finanzas:  { eyebrow: "Caja",         title: "Finanzas",  sub: "Ingresos, egresos y balance del mes.",     node: (p) => <FinanzasView play={p} /> },
+  reportes:  { eyebrow: "Analítica",    title: "Reportes",  sub: "Ventas, canales y clientes del período.", node: (p) => <ReportesView play={p} /> },
   estudio:   { eyebrow: "Contenido IA", title: "Estudio",   sub: "Generá imágenes y posts con IA.",         action: "Generar", node: () => <EstudioView /> },
   asistente: { eyebrow: "Copiloto",     title: "Asistente IA", sub: "Preguntale lo que sea de tu negocio.", node: () => <AsistenteView /> },
 };
@@ -395,7 +511,7 @@ export default function DashboardMock() {
 
   return (
     <div ref={ref}
-      className="w-full rounded-2xl border border-line overflow-hidden text-left flex"
+      className="w-full rounded-2xl border border-line overflow-hidden text-left flex h-[340px] lg:h-[384px]"
       style={{ background: "var(--color-surface)", boxShadow: "var(--shadow-card)" }}>
 
       {/* sidebar */}
@@ -404,7 +520,7 @@ export default function DashboardMock() {
           <span className="font-display text-[12.5px] font-bold tracking-wide text-ink">MI NEGOCIO</span>
         </div>
         <div className="px-3 pt-2.5 pb-1 text-[8px] font-medium uppercase tracking-[0.18em] text-muted/45">Tienda</div>
-        <nav className="flex-1 px-2 space-y-0.5">
+        <nav className="flex-1 min-h-0 overflow-y-auto px-2 space-y-0.5 [scrollbar-width:thin]">
           {NAV.map(({ id, label, Icon, badge }) => {
             const active = id === tab;
             return (
@@ -458,8 +574,8 @@ export default function DashboardMock() {
           ))}
         </div>
 
-        {/* contenido — ALTURA FIJA anti-resize (más alta en desktop) */}
-        <div className="p-3 h-[244px] lg:h-[284px] overflow-hidden">
+        {/* contenido — llena la altura fija de la tarjeta (anti-resize) */}
+        <div className="p-3 flex-1 min-h-0 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }}>
               <ViewHeader eyebrow={view.eyebrow} title={view.title} sub={view.sub} action={view.action} />

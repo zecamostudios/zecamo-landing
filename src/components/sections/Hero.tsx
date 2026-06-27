@@ -1,6 +1,6 @@
 // src/components/sections/Hero.tsx
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MessageCircle, ArrowDownRight, Maximize2, X } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
@@ -14,6 +14,15 @@ import { WHATSAPP_URL } from "@/lib/constants";
 export default function Hero() {
   const reduce = useReducedMotion();
   const [demoOpen, setDemoOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const tilt = isDesktop && !reduce;
 
   return (
     <section id="top" className="relative overflow-hidden pt-32 pb-14 md:pt-40 md:pb-20">
@@ -98,13 +107,15 @@ export default function Hero() {
               <div className="absolute -inset-6 rounded-[32px] pointer-events-none"
                 style={{ background: "radial-gradient(60% 60% at 60% 30%, rgba(43,91,255,.28), transparent 70%)", filter: "blur(20px)" }} />
               <motion.div
-                initial={reduce ? false : { opacity: 0, y: 40, rotateY: -20, rotateX: 8 }}
-                animate={reduce ? {} : { opacity: 1, y: 0, rotateY: -11, rotateX: 5 }}
+                initial={tilt ? { opacity: 0, y: 40, rotateY: -20, rotateX: 8 } : reduce ? false : { opacity: 0, y: 30 }}
+                animate={tilt ? { opacity: 1, y: 0, rotateY: -11, rotateX: 5 } : reduce ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.2, 0.7, 0.2, 1] }}
                 style={{
                   transformStyle: "preserve-3d",
-                  transform: reduce ? undefined : "rotateY(-11deg) rotateX(5deg)",
-                  boxShadow: "-18px 30px 60px rgba(0,0,0,.55), 0 0 60px -10px rgba(43,91,255,.35)",
+                  transform: tilt ? "rotateY(-11deg) rotateX(5deg)" : undefined,
+                  boxShadow: tilt
+                    ? "-18px 30px 60px rgba(0,0,0,.55), 0 0 60px -10px rgba(43,91,255,.35)"
+                    : "0 20px 50px rgba(0,0,0,.5), 0 0 50px -15px rgba(43,91,255,.3)",
                   borderRadius: 16,
                 }}
                 className="relative">
