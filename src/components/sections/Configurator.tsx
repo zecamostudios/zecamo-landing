@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Dumbbell, Shirt, PartyPopper, UtensilsCrossed, Briefcase,
-  Check, MessageCircle, type LucideIcon,
+  MessageCircle, Building2, type LucideIcon,
 } from "lucide-react";
 import {
   CalendarClock, Users, CreditCard, Bot, LayoutDashboard, Boxes,
@@ -67,20 +67,25 @@ const RUBROS: Rubro[] = [
   },
 ];
 
+const R = 172; // radio de la constelación (desktop)
+
 export default function Configurator() {
   const [active, setActive] = useState(0);
+  const [hovered, setHovered] = useState<number | null>(null);
   const rubro = RUBROS[active];
+  const n = rubro.modules.length;
+  const caption = hovered !== null ? rubro.modules[hovered] : null;
 
   return (
     <section id="configurador" className="relative py-16 md:py-24 overflow-hidden">
       <Mesh variant="soft" />
-      <div className="absolute inset-0 line-grid opacity-40" aria-hidden />
+      <div className="absolute inset-0 line-grid opacity-30" aria-hidden />
       <div className="relative max-w-[1100px] mx-auto px-5 md:px-8">
         <SectionTitle
           align="center"
           eyebrow="Armá tu sistema"
           title={<>¿Qué necesita <span className="text-primary">tu negocio</span>?</>}
-          kicker="Elegí tu rubro y mirá los módulos que armaríamos para vos. Cada sistema es a medida — esto es solo el punto de partida."
+          kicker="Elegí tu rubro y mirá cómo se arma tu sistema: cada módulo se conecta a tu negocio. Es a medida — esto es el punto de partida."
         />
 
         {/* selector de rubro */}
@@ -90,7 +95,7 @@ export default function Configurator() {
               const on = i === active;
               const Icon = r.Icon;
               return (
-                <button key={r.id} type="button" onClick={() => setActive(i)}
+                <button key={r.id} type="button" onClick={() => { setActive(i); setHovered(null); }}
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[14px] font-medium border transition-all ${
                     on ? "bg-primary/15 border-primary text-ink" : "border-line text-muted hover:text-ink hover:border-primary/50"
                   }`}
@@ -102,49 +107,123 @@ export default function Configurator() {
           </div>
         </Reveal>
 
-        {/* módulos del rubro */}
-        <div className="mt-8 min-h-[300px]">
+        {/* ── DESKTOP: constelación que se ensambla ── */}
+        <div className="hidden lg:block">
+          <div className="relative mx-auto mt-6 h-[440px] w-[440px]">
+            {/* spokes + nodos (se rearman al cambiar de rubro) */}
+            <AnimatePresence mode="wait">
+              <motion.div key={rubro.id} className="absolute inset-0"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                {rubro.modules.map((m, i) => {
+                  const angle = (-90 + (i * 360) / n) * (Math.PI / 180);
+                  const x = Math.cos(angle) * R;
+                  const y = Math.sin(angle) * R;
+                  const deg = (angle * 180) / Math.PI;
+                  const Icon = m.Icon;
+                  const isHot = hovered === i;
+                  return (
+                    <div key={m.name}>
+                      {/* línea al centro */}
+                      <div className="absolute left-1/2 top-1/2 h-[2px] origin-left"
+                        style={{ width: R, transform: `rotate(${deg}deg)` }}>
+                        <motion.div className="h-full w-full origin-left rounded-full"
+                          style={{ background: isHot
+                            ? "linear-gradient(90deg, rgba(43,91,255,.9), rgba(43,91,255,.2))"
+                            : "linear-gradient(90deg, rgba(43,91,255,.5), rgba(43,91,255,.08))" }}
+                          initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+                          transition={{ duration: 0.5, delay: 0.15 + i * 0.08, ease: "easeOut" }} />
+                      </div>
+                      {/* nodo */}
+                      <motion.button type="button"
+                        onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
+                        onClick={() => setHovered(i)}
+                        className="absolute left-1/2 top-1/2 w-[124px] -ml-[62px] -mt-[34px] rounded-2xl border px-3 py-2.5 text-left backdrop-blur-md"
+                        style={{
+                          transform: `translate(${x}px, ${y}px)`,
+                          background: isHot ? "rgba(43,91,255,.14)" : "var(--color-surface)",
+                          borderColor: isHot ? "var(--color-primary)" : "var(--color-line)",
+                          boxShadow: isHot ? "0 10px 30px -10px rgba(43,91,255,.6)" : "0 8px 24px -12px rgba(0,0,0,.6)",
+                        }}
+                        initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.25 + i * 0.08, type: "spring", stiffness: 280, damping: 20 }}>
+                        <span className="w-8 h-8 rounded-lg flex items-center justify-center mb-1.5"
+                          style={{ background: "rgba(43,91,255,.12)", border: "1px solid rgba(43,91,255,.25)" }}>
+                          <Icon size={16} strokeWidth={1.75} className="text-primary" />
+                        </span>
+                        <span className="block font-display font-semibold text-[12.5px] text-ink leading-[1.25]">{m.name}</span>
+                      </motion.button>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* hub central: tu negocio */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <div className="absolute -inset-6 rounded-full blur-2xl pointer-events-none" style={{ background: "rgba(43,91,255,.25)" }} />
+              <div className="relative w-[128px] h-[128px] rounded-full border border-primary/50 flex flex-col items-center justify-center text-center"
+                style={{ background: "linear-gradient(160deg, var(--color-surface), var(--color-bg))", boxShadow: "0 0 50px -10px rgba(43,91,255,.6), inset 0 0 30px -10px rgba(43,91,255,.35)" }}>
+                <AnimatePresence mode="wait">
+                  <motion.div key={rubro.id} className="flex flex-col items-center"
+                    initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                    <span className="w-11 h-11 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center mb-1.5">
+                      <rubro.Icon size={22} strokeWidth={1.6} className="text-primary" />
+                    </span>
+                    <span className="font-display font-semibold text-[13px] text-ink">Tu negocio</span>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted/70">{rubro.label}</span>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          {/* caption del módulo activo / resumen */}
+          <div className="mx-auto mt-2 max-w-md text-center min-h-[44px]">
+            <AnimatePresence mode="wait">
+              <motion.p key={caption ? caption.name : "default"}
+                initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
+                className="text-[14px] text-muted">
+                {caption
+                  ? <><span className="text-ink font-semibold">{caption.name}.</span> {caption.desc}</>
+                  : <>Pasá el mouse por cada módulo para ver qué hace. Todos conectados a <Building2 size={13} className="inline -mt-0.5 text-primary" /> <span className="text-ink">tu negocio</span>.</>}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* ── MOBILE: lista de módulos ── */}
+        <div className="lg:hidden mt-8">
           <AnimatePresence mode="wait">
             <motion.div key={rubro.id}
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25 }}
+              className="grid sm:grid-cols-2 gap-3">
               {rubro.modules.map((m, i) => {
                 const Icon = m.Icon;
                 return (
                   <motion.div key={m.name}
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                    className="rounded-2xl border border-line p-5 flex items-start gap-3.5"
-                    style={{ background: "var(--color-surface)" }}>
+                    className="rounded-2xl border border-line p-5 flex items-start gap-3.5" style={{ background: "var(--color-surface)" }}>
                     <span className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
                       style={{ background: "rgba(43,91,255,.1)", border: "1px solid rgba(43,91,255,.25)" }}>
                       <Icon size={20} strokeWidth={1.75} className="text-primary" />
                     </span>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <h3 className="font-display font-semibold text-[15.5px] text-ink leading-[1.3]">{m.name}</h3>
-                        <Check size={13} strokeWidth={3} className="text-[#22C55E] shrink-0" />
-                      </div>
+                      <h3 className="font-display font-semibold text-[15.5px] text-ink leading-[1.3]">{m.name}</h3>
                       <p className="mt-2 text-[13px] text-muted leading-relaxed">{m.desc}</p>
                     </div>
                   </motion.div>
                 );
               })}
-
-              {/* card CTA */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: rubro.modules.length * 0.06 }}
-                className="rounded-2xl p-5 flex flex-col justify-center items-start gap-3"
-                style={{ background: "linear-gradient(160deg, rgba(43,91,255,.14), rgba(13,21,38,.4))", border: "1px solid rgba(43,91,255,.35)" }}>
-                <h3 className="font-display font-semibold text-[16px] text-ink leading-snug">¿Tu negocio es de {rubro.label.toLowerCase()}?</h3>
-                <p className="text-[13px] text-muted">Te armamos exactamente esto, conectado y a tu medida.</p>
-                <PrimaryBtn as="a" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
-                  className="!py-3 mt-1" icon={<MessageCircle size={15} strokeWidth={1.75} />}>
-                  Armá el mío
-                </PrimaryBtn>
-              </motion.div>
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        {/* CTA */}
+        <div className="flex justify-center mt-10">
+          <PrimaryBtn as="a" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
+            className="!px-8 !py-3.5" icon={<MessageCircle size={16} strokeWidth={1.75} />}>
+            Armá el mío
+          </PrimaryBtn>
         </div>
       </div>
     </section>
