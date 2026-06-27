@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Syne, Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import CursorBlob from "@/components/ui/CursorBlob";
 
-const syne = Syne({
+// Fuente de títulos: Space Grotesk (reemplaza a Syne, cuya 'g' se leía cortada).
+// Se mantiene la variable --font-syne para no tocar globals.css.
+const syne = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-syne",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
-  adjustFontFallback: false, // evita el descent-override que recorta las colas (g, j, q)
 });
 
 const inter = Inter({
