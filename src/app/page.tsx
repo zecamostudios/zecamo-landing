@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import StickyContactCTA from "@/components/layout/StickyContactCTA";
+import AiChat from "@/components/chat/AiChat";
 import Hero from "@/components/sections/Hero";
 import Timeline from "@/components/sections/Timeline";
 import Services from "@/components/sections/Services";
@@ -19,7 +19,7 @@ export default function Page() {
         <Contact />
       </main>
       <Footer />
-      <StickyContactCTA />
+      <AiChat />
     </>
   );
 }
