@@ -2,5 +2,8 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "redirects": [
+    { "source": "/lasflores", "destination": "https://xn--cabaaslasflores-1qb.com/", "permanent": false }
+  ]
 }
