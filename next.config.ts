@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
+          // COD-07 (nucleo#32): las cuatro obligatorias las cuida tests/cabeceras.test.mjs (npm test).
+          // HSTS lo pone Vercel por su cuenta hoy (mismo valor); va acá para que no dependa de la plataforma.
+          { key: "Strict-Transport-Security", value: "max-age=63072000" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
